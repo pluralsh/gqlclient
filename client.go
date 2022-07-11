@@ -3060,13 +3060,13 @@ func (v *InstallationFragmentRepository) __premarshalJSON() (*__premarshalInstal
 }
 
 type IntegrationAttributes struct {
-	Description string          `json:"description"`
-	Icon        string          `json:"icon"`
-	Name        string          `json:"name"`
-	SourceUrl   string          `json:"sourceUrl"`
-	Spec        string          `json:"spec"`
-	Tags        []TagAttributes `json:"tags"`
-	Type        string          `json:"type"`
+	Description string                 `json:"description"`
+	Icon        string                 `json:"icon"`
+	Name        string                 `json:"name"`
+	SourceUrl   string                 `json:"sourceUrl"`
+	Spec        map[string]interface{} `json:"spec"`
+	Tags        []TagAttributes        `json:"tags"`
+	Type        string                 `json:"type"`
 }
 
 // GetDescription returns IntegrationAttributes.Description, and is useful for accessing the field via an interface.
@@ -3082,7 +3082,7 @@ func (v *IntegrationAttributes) GetName() string { return v.Name }
 func (v *IntegrationAttributes) GetSourceUrl() string { return v.SourceUrl }
 
 // GetSpec returns IntegrationAttributes.Spec, and is useful for accessing the field via an interface.
-func (v *IntegrationAttributes) GetSpec() string { return v.Spec }
+func (v *IntegrationAttributes) GetSpec() map[string]interface{} { return v.Spec }
 
 // GetTags returns IntegrationAttributes.Tags, and is useful for accessing the field via an interface.
 func (v *IntegrationAttributes) GetTags() []TagAttributes { return v.Tags }
@@ -5022,7 +5022,7 @@ type RepositoryAttributes struct {
 	OauthSettings                 OauthSettingsAttributes      `json:"oauthSettings"`
 	Private                       bool                         `json:"private"`
 	Readme                        string                       `json:"readme"`
-	Secrets                       string                       `json:"secrets"`
+	Secrets                       map[string]interface{}       `json:"secrets"`
 	Tags                          []TagAttributes              `json:"tags"`
 }
 
@@ -5071,7 +5071,7 @@ func (v *RepositoryAttributes) GetPrivate() bool { return v.Private }
 func (v *RepositoryAttributes) GetReadme() string { return v.Readme }
 
 // GetSecrets returns RepositoryAttributes.Secrets, and is useful for accessing the field via an interface.
-func (v *RepositoryAttributes) GetSecrets() string { return v.Secrets }
+func (v *RepositoryAttributes) GetSecrets() map[string]interface{} { return v.Secrets }
 
 // GetTags returns RepositoryAttributes.Tags, and is useful for accessing the field via an interface.
 func (v *RepositoryAttributes) GetTags() []TagAttributes { return v.Tags }

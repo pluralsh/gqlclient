@@ -1,0 +1,25 @@
+query GetRecipe($repo: String, $name: String) {
+    recipe(repo: $repo, name: $name) {
+        ...RecipeFragment
+        recipeSections { ...RecipeSectionFragment }
+        recipeDependencies { ...RecipeFragment }
+    }
+}
+
+query ListRecipes($repo: String, $provider: Provider) {
+    recipes(repositoryName: $repo, provider: $provider, first: 500) {
+        edges { node { ...RecipeFragment } }
+    }
+}
+
+mutation CreateRecipe($name: String!, $attributes: RecipeAttributes!) {
+    createRecipe(repositoryName: $name, attributes: $attributes) {
+        id
+    }
+}
+
+mutation InstallRecipe($id: ID!, $context: Map!) {
+    installRecipe(recipeId: $id, context: $context) {
+        id
+    }
+}

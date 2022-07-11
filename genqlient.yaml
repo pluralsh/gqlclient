@@ -11,4 +11,4 @@ bindings:
   UploadOrUrl:
     type: string
   Yaml:
-    type: map[string]interface{}
+    type: interface{}

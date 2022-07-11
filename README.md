@@ -1,0 +1,2 @@
+# gqlclient
+Plural GraphQL client

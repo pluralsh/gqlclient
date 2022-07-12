@@ -316,12 +316,12 @@ func (v *ChartInstallationFragmentChartDependencies) GetWirings() DependenciesFr
 }
 
 // GetProviderWirings returns ChartInstallationFragmentChartDependencies.ProviderWirings, and is useful for accessing the field via an interface.
-func (v *ChartInstallationFragmentChartDependencies) GetProviderWirings() map[string]interface{} {
+func (v *ChartInstallationFragmentChartDependencies) GetProviderWirings() map[string]string {
 	return v.DependenciesFragment.ProviderWirings
 }
 
 // GetOutputs returns ChartInstallationFragmentChartDependencies.Outputs, and is useful for accessing the field via an interface.
-func (v *ChartInstallationFragmentChartDependencies) GetOutputs() map[string]interface{} {
+func (v *ChartInstallationFragmentChartDependencies) GetOutputs() map[string]string {
 	return v.DependenciesFragment.Outputs
 }
 
@@ -363,9 +363,9 @@ type __premarshalChartInstallationFragmentChartDependencies struct {
 
 	Wirings DependenciesFragmentWirings `json:"wirings"`
 
-	ProviderWirings map[string]interface{} `json:"providerWirings"`
+	ProviderWirings map[string]string `json:"providerWirings"`
 
-	Outputs map[string]interface{} `json:"outputs"`
+	Outputs map[string]string `json:"outputs"`
 }
 
 func (v *ChartInstallationFragmentChartDependencies) MarshalJSON() ([]byte, error) {
@@ -940,8 +940,8 @@ type DependenciesFragment struct {
 	Providers       []Provider                                   `json:"providers"`
 	Secrets         []string                                     `json:"secrets"`
 	Wirings         DependenciesFragmentWirings                  `json:"wirings"`
-	ProviderWirings map[string]interface{}                       `json:"providerWirings"`
-	Outputs         map[string]interface{}                       `json:"outputs"`
+	ProviderWirings map[string]string                            `json:"providerWirings"`
+	Outputs         map[string]string                            `json:"outputs"`
 }
 
 // GetDependencies returns DependenciesFragment.Dependencies, and is useful for accessing the field via an interface.
@@ -965,10 +965,10 @@ func (v *DependenciesFragment) GetSecrets() []string { return v.Secrets }
 func (v *DependenciesFragment) GetWirings() DependenciesFragmentWirings { return v.Wirings }
 
 // GetProviderWirings returns DependenciesFragment.ProviderWirings, and is useful for accessing the field via an interface.
-func (v *DependenciesFragment) GetProviderWirings() map[string]interface{} { return v.ProviderWirings }
+func (v *DependenciesFragment) GetProviderWirings() map[string]string { return v.ProviderWirings }
 
 // GetOutputs returns DependenciesFragment.Outputs, and is useful for accessing the field via an interface.
-func (v *DependenciesFragment) GetOutputs() map[string]interface{} { return v.Outputs }
+func (v *DependenciesFragment) GetOutputs() map[string]string { return v.Outputs }
 
 // DependenciesFragmentDependenciesDependency includes the requested fields of the GraphQL type Dependency.
 type DependenciesFragmentDependenciesDependency struct {
@@ -988,15 +988,15 @@ func (v *DependenciesFragmentDependenciesDependency) GetRepo() string { return v
 
 // DependenciesFragmentWirings includes the requested fields of the GraphQL type Wirings.
 type DependenciesFragmentWirings struct {
-	Terraform map[string]interface{} `json:"terraform"`
-	Helm      map[string]interface{} `json:"helm"`
+	Terraform map[string]string `json:"terraform"`
+	Helm      map[string]string `json:"helm"`
 }
 
 // GetTerraform returns DependenciesFragmentWirings.Terraform, and is useful for accessing the field via an interface.
-func (v *DependenciesFragmentWirings) GetTerraform() map[string]interface{} { return v.Terraform }
+func (v *DependenciesFragmentWirings) GetTerraform() map[string]string { return v.Terraform }
 
 // GetHelm returns DependenciesFragmentWirings.Helm, and is useful for accessing the field via an interface.
-func (v *DependenciesFragmentWirings) GetHelm() map[string]interface{} { return v.Helm }
+func (v *DependenciesFragmentWirings) GetHelm() map[string]string { return v.Helm }
 
 type DependencyType string
 
@@ -1364,7 +1364,7 @@ type GetInstallationByIdInstallation struct {
 func (v *GetInstallationByIdInstallation) GetId() string { return v.InstallationFragment.Id }
 
 // GetContext returns GetInstallationByIdInstallation.Context, and is useful for accessing the field via an interface.
-func (v *GetInstallationByIdInstallation) GetContext() map[string]interface{} {
+func (v *GetInstallationByIdInstallation) GetContext() map[string]string {
 	return v.InstallationFragment.Context
 }
 
@@ -1421,7 +1421,7 @@ func (v *GetInstallationByIdInstallation) UnmarshalJSON(b []byte) error {
 type __premarshalGetInstallationByIdInstallation struct {
 	Id string `json:"id"`
 
-	Context map[string]interface{} `json:"context"`
+	Context map[string]string `json:"context"`
 
 	LicenseKey string `json:"licenseKey"`
 
@@ -1474,7 +1474,7 @@ type GetInstallationInstallation struct {
 func (v *GetInstallationInstallation) GetId() string { return v.InstallationFragment.Id }
 
 // GetContext returns GetInstallationInstallation.Context, and is useful for accessing the field via an interface.
-func (v *GetInstallationInstallation) GetContext() map[string]interface{} {
+func (v *GetInstallationInstallation) GetContext() map[string]string {
 	return v.InstallationFragment.Context
 }
 
@@ -1529,7 +1529,7 @@ func (v *GetInstallationInstallation) UnmarshalJSON(b []byte) error {
 type __premarshalGetInstallationInstallation struct {
 	Id string `json:"id"`
 
-	Context map[string]interface{} `json:"context"`
+	Context map[string]string `json:"context"`
 
 	LicenseKey string `json:"licenseKey"`
 
@@ -1604,7 +1604,7 @@ func (v *GetInstallationsInstallationsInstallationConnectionEdgesInstallationEdg
 }
 
 // GetContext returns GetInstallationsInstallationsInstallationConnectionEdgesInstallationEdgeNodeInstallation.Context, and is useful for accessing the field via an interface.
-func (v *GetInstallationsInstallationsInstallationConnectionEdgesInstallationEdgeNodeInstallation) GetContext() map[string]interface{} {
+func (v *GetInstallationsInstallationsInstallationConnectionEdgesInstallationEdgeNodeInstallation) GetContext() map[string]string {
 	return v.InstallationFragment.Context
 }
 
@@ -1661,7 +1661,7 @@ func (v *GetInstallationsInstallationsInstallationConnectionEdgesInstallationEdg
 type __premarshalGetInstallationsInstallationsInstallationConnectionEdgesInstallationEdgeNodeInstallation struct {
 	Id string `json:"id"`
 
-	Context map[string]interface{} `json:"context"`
+	Context map[string]string `json:"context"`
 
 	LicenseKey string `json:"licenseKey"`
 
@@ -2838,7 +2838,7 @@ func (v *InstallRecipeResponse) GetInstallRecipe() []InstallRecipeInstallRecipeI
 // InstallationFragment includes the GraphQL fields of Installation requested by the fragment InstallationFragment.
 type InstallationFragment struct {
 	Id           string                           `json:"id"`
-	Context      map[string]interface{}           `json:"context"`
+	Context      map[string]string                `json:"context"`
 	LicenseKey   string                           `json:"licenseKey"`
 	AcmeKeyId    string                           `json:"acmeKeyId"`
 	AcmeSecret   string                           `json:"acmeSecret"`
@@ -2850,7 +2850,7 @@ type InstallationFragment struct {
 func (v *InstallationFragment) GetId() string { return v.Id }
 
 // GetContext returns InstallationFragment.Context, and is useful for accessing the field via an interface.
-func (v *InstallationFragment) GetContext() map[string]interface{} { return v.Context }
+func (v *InstallationFragment) GetContext() map[string]string { return v.Context }
 
 // GetLicenseKey returns InstallationFragment.LicenseKey, and is useful for accessing the field via an interface.
 func (v *InstallationFragment) GetLicenseKey() string { return v.LicenseKey }
@@ -3060,13 +3060,13 @@ func (v *InstallationFragmentRepository) __premarshalJSON() (*__premarshalInstal
 }
 
 type IntegrationAttributes struct {
-	Description string          `json:"description"`
-	Icon        string          `json:"icon"`
-	Name        string          `json:"name"`
-	SourceUrl   string          `json:"sourceUrl"`
-	Spec        interface{}     `json:"spec"`
-	Tags        []TagAttributes `json:"tags"`
-	Type        string          `json:"type"`
+	Description string            `json:"description"`
+	Icon        string            `json:"icon"`
+	Name        string            `json:"name"`
+	SourceUrl   string            `json:"sourceUrl"`
+	Spec        map[string]string `json:"spec"`
+	Tags        []TagAttributes   `json:"tags"`
+	Type        string            `json:"type"`
 }
 
 // GetDescription returns IntegrationAttributes.Description, and is useful for accessing the field via an interface.
@@ -3082,7 +3082,7 @@ func (v *IntegrationAttributes) GetName() string { return v.Name }
 func (v *IntegrationAttributes) GetSourceUrl() string { return v.SourceUrl }
 
 // GetSpec returns IntegrationAttributes.Spec, and is useful for accessing the field via an interface.
-func (v *IntegrationAttributes) GetSpec() interface{} { return v.Spec }
+func (v *IntegrationAttributes) GetSpec() map[string]string { return v.Spec }
 
 // GetTags returns IntegrationAttributes.Tags, and is useful for accessing the field via an interface.
 func (v *IntegrationAttributes) GetTags() []TagAttributes { return v.Tags }
@@ -5022,7 +5022,7 @@ type RepositoryAttributes struct {
 	OauthSettings                 OauthSettingsAttributes      `json:"oauthSettings"`
 	Private                       bool                         `json:"private"`
 	Readme                        string                       `json:"readme"`
-	Secrets                       interface{}                  `json:"secrets"`
+	Secrets                       map[string]string            `json:"secrets"`
 	Tags                          []TagAttributes              `json:"tags"`
 }
 
@@ -5071,7 +5071,7 @@ func (v *RepositoryAttributes) GetPrivate() bool { return v.Private }
 func (v *RepositoryAttributes) GetReadme() string { return v.Readme }
 
 // GetSecrets returns RepositoryAttributes.Secrets, and is useful for accessing the field via an interface.
-func (v *RepositoryAttributes) GetSecrets() interface{} { return v.Secrets }
+func (v *RepositoryAttributes) GetSecrets() map[string]string { return v.Secrets }
 
 // GetTags returns RepositoryAttributes.Tags, and is useful for accessing the field via an interface.
 func (v *RepositoryAttributes) GetTags() []TagAttributes { return v.Tags }
@@ -5268,12 +5268,12 @@ func (v *TerraformFragmentDependencies) GetWirings() DependenciesFragmentWirings
 }
 
 // GetProviderWirings returns TerraformFragmentDependencies.ProviderWirings, and is useful for accessing the field via an interface.
-func (v *TerraformFragmentDependencies) GetProviderWirings() map[string]interface{} {
+func (v *TerraformFragmentDependencies) GetProviderWirings() map[string]string {
 	return v.DependenciesFragment.ProviderWirings
 }
 
 // GetOutputs returns TerraformFragmentDependencies.Outputs, and is useful for accessing the field via an interface.
-func (v *TerraformFragmentDependencies) GetOutputs() map[string]interface{} {
+func (v *TerraformFragmentDependencies) GetOutputs() map[string]string {
 	return v.DependenciesFragment.Outputs
 }
 
@@ -5315,9 +5315,9 @@ type __premarshalTerraformFragmentDependencies struct {
 
 	Wirings DependenciesFragmentWirings `json:"wirings"`
 
-	ProviderWirings map[string]interface{} `json:"providerWirings"`
+	ProviderWirings map[string]string `json:"providerWirings"`
 
-	Outputs map[string]interface{} `json:"outputs"`
+	Outputs map[string]string `json:"outputs"`
 }
 
 func (v *TerraformFragmentDependencies) MarshalJSON() ([]byte, error) {
@@ -5904,12 +5904,12 @@ func (v *VersionFragmentDependencies) GetWirings() DependenciesFragmentWirings {
 }
 
 // GetProviderWirings returns VersionFragmentDependencies.ProviderWirings, and is useful for accessing the field via an interface.
-func (v *VersionFragmentDependencies) GetProviderWirings() map[string]interface{} {
+func (v *VersionFragmentDependencies) GetProviderWirings() map[string]string {
 	return v.DependenciesFragment.ProviderWirings
 }
 
 // GetOutputs returns VersionFragmentDependencies.Outputs, and is useful for accessing the field via an interface.
-func (v *VersionFragmentDependencies) GetOutputs() map[string]interface{} {
+func (v *VersionFragmentDependencies) GetOutputs() map[string]string {
 	return v.DependenciesFragment.Outputs
 }
 
@@ -5951,9 +5951,9 @@ type __premarshalVersionFragmentDependencies struct {
 
 	Wirings DependenciesFragmentWirings `json:"wirings"`
 
-	ProviderWirings map[string]interface{} `json:"providerWirings"`
+	ProviderWirings map[string]string `json:"providerWirings"`
 
-	Outputs map[string]interface{} `json:"outputs"`
+	Outputs map[string]string `json:"outputs"`
 }
 
 func (v *VersionFragmentDependencies) MarshalJSON() ([]byte, error) {
@@ -6278,15 +6278,11 @@ func (v *__ImpersonateServiceAccountInput) GetEmail() string { return v.Email }
 
 // __InstallRecipeInput is used internally by genqlient
 type __InstallRecipeInput struct {
-	Id      string                 `json:"id"`
-	Context map[string]interface{} `json:"context"`
+	Id string `json:"id"`
 }
 
 // GetId returns __InstallRecipeInput.Id, and is useful for accessing the field via an interface.
 func (v *__InstallRecipeInput) GetId() string { return v.Id }
-
-// GetContext returns __InstallRecipeInput.Context, and is useful for accessing the field via an interface.
-func (v *__InstallRecipeInput) GetContext() map[string]interface{} { return v.Context }
 
 // __ListArtifactsInput is used internally by genqlient
 type __ListArtifactsInput struct {
@@ -8051,20 +8047,18 @@ func InstallRecipe(
 	ctx context.Context,
 	client graphql.Client,
 	id string,
-	context map[string]interface{},
 ) (*InstallRecipeResponse, error) {
 	req := &graphql.Request{
 		OpName: "InstallRecipe",
 		Query: `
-mutation InstallRecipe ($id: ID!, $context: Map!) {
-	installRecipe(recipeId: $id, context: $context) {
+mutation InstallRecipe ($id: ID!) {
+	installRecipe(recipeId: $id, context: "{}") {
 		id
 	}
 }
 `,
 		Variables: &__InstallRecipeInput{
-			Id:      id,
-			Context: context,
+			Id: id,
 		},
 	}
 	var err error

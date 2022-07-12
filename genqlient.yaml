@@ -7,8 +7,8 @@ generated: client.go
 # see genqlient_directive.graphql for more details.
 bindings:
   Map:
-    type: map[string]interface{}
+    type: map[string]string
   UploadOrUrl:
     type: string
   Yaml:
-    type: interface{}
+    type: map[string]string

@@ -18,8 +18,8 @@ mutation CreateRecipe($name: String!, $attributes: RecipeAttributes!) {
     }
 }
 
-mutation InstallRecipe($id: ID!, $context: Map!) {
-    installRecipe(recipeId: $id, context: $context) {
+mutation InstallRecipe($id: ID!) {
+    installRecipe(recipeId: $id, context: "{}") {
         id
     }
 }

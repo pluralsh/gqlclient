@@ -6255,10 +6255,14 @@ func (v *__GetTerraformInstallationsInput) GetId() string { return v.Id }
 // __GetTfProviderScaffoldInput is used internally by genqlient
 type __GetTfProviderScaffoldInput struct {
 	Name Provider `json:"name"`
+	Vsn  string   `json:"vsn"`
 }
 
 // GetName returns __GetTfProviderScaffoldInput.Name, and is useful for accessing the field via an interface.
 func (v *__GetTfProviderScaffoldInput) GetName() Provider { return v.Name }
+
+// GetVsn returns __GetTfProviderScaffoldInput.Vsn, and is useful for accessing the field via an interface.
+func (v *__GetTfProviderScaffoldInput) GetVsn() string { return v.Vsn }
 
 // __GetVersionsInput is used internally by genqlient
 type __GetVersionsInput struct {
@@ -7884,12 +7888,13 @@ func GetTfProviderScaffold(
 	ctx context.Context,
 	client graphql.Client,
 	name Provider,
+	vsn string,
 ) (*GetTfProviderScaffoldResponse, error) {
 	req := &graphql.Request{
 		OpName: "GetTfProviderScaffold",
 		Query: `
-query GetTfProviderScaffold ($name: Provider!) {
-	terraformProvider(name: $name) {
+query GetTfProviderScaffold ($name: Provider!, $vsn: String) {
+	terraformProvider(name: $name, vsn: $vsn) {
 		name
 		content
 	}
@@ -7897,6 +7902,7 @@ query GetTfProviderScaffold ($name: Provider!) {
 `,
 		Variables: &__GetTfProviderScaffoldInput{
 			Name: name,
+			Vsn:  vsn,
 		},
 	}
 	var err error

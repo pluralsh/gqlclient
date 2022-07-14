@@ -1,0 +1,6 @@
+name: test
+description: test deployed on plural
+category: DEVOPS
+private: true
+icon: plural/icons/test.png
+notes: plural/notes.tpl

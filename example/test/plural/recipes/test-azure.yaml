@@ -1,0 +1,16 @@
+name: test-azure
+description: Installs test on an aws eks cluster
+provider: AZURE
+dependencies:
+- repo: bootstrap
+  name: azure-k8s
+
+
+sections:
+- name: test
+  configuration: []
+  items:
+  - type: TERRAFORM
+    name: azure
+  - type: HELM
+    name: test

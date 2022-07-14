@@ -1,0 +1,1 @@
+Use `plural watch test` to track the status of your application

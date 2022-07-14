@@ -28,7 +28,7 @@ mutation PollLoginToken($token: String!) {
     loginToken(token: $token) { jwt }
 }
 
-mutation DeviceLogin {
+mutation DoDeviceLogin {
     deviceLogin { loginUrl deviceToken }
 }
 

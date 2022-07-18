@@ -44,3 +44,9 @@ query Scaffolds($app: String!, $pub: String!, $cat: Category!, $ing: Boolean, $p
         content
     }
 }
+
+mutation DeleteRepository($id: ID!) {
+    deleteRepository(repositoryId: $id){
+        id
+    }
+}

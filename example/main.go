@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/Khan/genqlient/graphql"
 	"github.com/pluralsh/gqlclient"
 )
 
@@ -37,13 +36,12 @@ func main() {
 			wrapped: http.DefaultTransport,
 		},
 	}
-	graphqlClient := graphql.NewClient("https://app.plural.sh/gql", &httpClient)
+	graphqlClient := gqlclient.NewClient(&httpClient, "https://app.plural.sh/gql")
 
-	var viewerResp *gqlclient.MeResponse
-	viewerResp, err = gqlclient.Me(context.Background(), graphqlClient)
+	meResp, err := graphqlClient.Me(context.Background())
 	if err != nil {
 		return
 	}
-	fmt.Println("you are", viewerResp.Me)
+	fmt.Println("you are", meResp.Me)
 
 }

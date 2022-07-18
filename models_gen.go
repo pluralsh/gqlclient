@@ -1523,6 +1523,7 @@ type Repository struct {
 	Secrets       map[string]interface{} `json:"secrets,omitempty"`
 	Tags          []*Tag                 `json:"tags,omitempty"`
 	UpdatedAt     *string                `json:"updatedAt,omitempty"`
+	Verified      *bool                  `json:"verified,omitempty"`
 }
 
 type RepositoryAttributes struct {
@@ -1542,6 +1543,7 @@ type RepositoryAttributes struct {
 	Readme                        *string                       `json:"readme,omitempty"`
 	Secrets                       *string                       `json:"secrets,omitempty"`
 	Tags                          []*TagAttributes              `json:"tags,omitempty"`
+	Verified                      *bool                         `json:"verified,omitempty"`
 }
 
 type RepositoryConnection struct {

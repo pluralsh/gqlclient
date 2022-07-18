@@ -34,7 +34,7 @@ query GetPackageInstallations($id: ID!) {
 }
 
 mutation CreateCrd($chartName: ChartName!, $name: String!, $blob: UploadOrUrl!) {
-    createCrd(chartName: $chartName, attributes: {name: $name, blob: $blob}) {
+    createCrd(chartName: $chartName, attributes: {name:$name, blob:$blob}) {
         id
     }
 }

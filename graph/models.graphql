@@ -193,3 +193,16 @@ fragment EabCredentialFragment on EabCredential {
     cluster
     provider
 }
+
+fragment TestFragment on Test {
+    id
+    name
+    status
+    promoteTag
+    steps {
+        id
+        name
+        description
+        status
+    }
+}

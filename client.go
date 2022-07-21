@@ -415,6 +415,18 @@ type EabCredentialFragment struct {
 	Cluster  string   "json:\"cluster\" graphql:\"cluster\""
 	Provider Provider "json:\"provider\" graphql:\"provider\""
 }
+type TestFragment struct {
+	ID         string     "json:\"id\" graphql:\"id\""
+	Name       *string    "json:\"name\" graphql:\"name\""
+	Status     TestStatus "json:\"status\" graphql:\"status\""
+	PromoteTag string     "json:\"promoteTag\" graphql:\"promoteTag\""
+	Steps      []*struct {
+		ID          string     "json:\"id\" graphql:\"id\""
+		Name        string     "json:\"name\" graphql:\"name\""
+		Description string     "json:\"description\" graphql:\"description\""
+		Status      TestStatus "json:\"status\" graphql:\"status\""
+	} "json:\"steps\" graphql:\"steps\""
+}
 type ListArtifacts struct {
 	Repository *struct {
 		Artifacts []*ArtifactFragment "json:\"artifacts\" graphql:\"artifacts\""
@@ -615,6 +627,22 @@ type GetTerraformInstallations struct {
 }
 type UploadTerraform struct {
 	UploadTerraform *TerraformFragment "json:\"uploadTerraform\" graphql:\"uploadTerraform\""
+}
+type CreateTest struct {
+	CreateTest *TestFragment "json:\"createTest\" graphql:\"createTest\""
+}
+type UpdateTest struct {
+	UpdateTest *TestFragment "json:\"updateTest\" graphql:\"updateTest\""
+}
+type UpdateStep struct {
+	UpdateStep *struct {
+		ID string "json:\"id\" graphql:\"id\""
+	} "json:\"updateStep\" graphql:\"updateStep\""
+}
+type PublishLogs struct {
+	PublishLogs *struct {
+		ID string "json:\"id\" graphql:\"id\""
+	} "json:\"publishLogs\" graphql:\"publishLogs\""
 }
 type Me struct {
 	Me *struct {
@@ -859,24 +887,6 @@ const GetChartInstallationsDocument = `query GetChartInstallations ($id: ID!) {
 		}
 	}
 }
-fragment VersionFragment on Version {
-	id
-	readme
-	version
-	valuesTemplate
-	package
-	crds {
-		... CrdFragment
-	}
-	dependencies {
-		... DependenciesFragment
-	}
-}
-fragment CrdFragment on Crd {
-	id
-	name
-	blob
-}
 fragment ChartInstallationFragment on ChartInstallation {
 	id
 	chart {
@@ -912,6 +922,24 @@ fragment DependenciesFragment on Dependencies {
 	providerWirings
 	outputs
 }
+fragment VersionFragment on Version {
+	id
+	readme
+	version
+	valuesTemplate
+	package
+	crds {
+		... CrdFragment
+	}
+	dependencies {
+		... DependenciesFragment
+	}
+}
+fragment CrdFragment on Crd {
+	id
+	name
+	blob
+}
 `
 
 func (c *Client) GetChartInstallations(ctx context.Context, id string, httpRequestOptions ...client.HTTPRequestOption) (*GetChartInstallations, error) {
@@ -941,36 +969,6 @@ const GetPackageInstallationsDocument = `query GetPackageInstallations ($id: ID!
 				... TerraformInstallationFragment
 			}
 		}
-	}
-}
-fragment DependenciesFragment on Dependencies {
-	dependencies {
-		type
-		name
-		repo
-	}
-	wait
-	application
-	providers
-	secrets
-	wirings {
-		terraform
-		helm
-	}
-	providerWirings
-	outputs
-}
-fragment VersionFragment on Version {
-	id
-	readme
-	version
-	valuesTemplate
-	package
-	crds {
-		... CrdFragment
-	}
-	dependencies {
-		... DependenciesFragment
 	}
 }
 fragment CrdFragment on Crd {
@@ -1014,6 +1012,36 @@ fragment ChartFragment on Chart {
 	name
 	description
 	latestVersion
+}
+fragment DependenciesFragment on Dependencies {
+	dependencies {
+		type
+		name
+		repo
+	}
+	wait
+	application
+	providers
+	secrets
+	wirings {
+		terraform
+		helm
+	}
+	providerWirings
+	outputs
+}
+fragment VersionFragment on Version {
+	id
+	readme
+	version
+	valuesTemplate
+	package
+	crds {
+		... CrdFragment
+	}
+	dependencies {
+		... DependenciesFragment
+	}
 }
 `
 
@@ -1151,6 +1179,19 @@ const GetInstallationByIDDocument = `query GetInstallationById ($id: ID) {
 		... InstallationFragment
 	}
 }
+fragment InstallationFragment on Installation {
+	id
+	context
+	licenseKey
+	acmeKeyId
+	acmeSecret
+	repository {
+		... RepositoryFragment
+	}
+	oidcProvider {
+		... OIDCProvider
+	}
+}
 fragment RepositoryFragment on Repository {
 	id
 	name
@@ -1186,19 +1227,6 @@ fragment OIDCProvider on OidcProvider {
 		tokenEndpoint
 		jwksUri
 		userinfoEndpoint
-	}
-}
-fragment InstallationFragment on Installation {
-	id
-	context
-	licenseKey
-	acmeKeyId
-	acmeSecret
-	repository {
-		... RepositoryFragment
-	}
-	oidcProvider {
-		... OIDCProvider
 	}
 }
 `
@@ -1977,15 +2005,6 @@ const GetTerraformInstallationsDocument = `query GetTerraformInstallations ($id:
 		}
 	}
 }
-fragment TerraformInstallationFragment on TerraformInstallation {
-	id
-	terraform {
-		... TerraformFragment
-	}
-	version {
-		... VersionFragment
-	}
-}
 fragment TerraformFragment on Terraform {
 	id
 	name
@@ -2030,6 +2049,15 @@ fragment CrdFragment on Crd {
 	id
 	name
 	blob
+}
+fragment TerraformInstallationFragment on TerraformInstallation {
+	id
+	terraform {
+		... TerraformFragment
+	}
+	version {
+		... VersionFragment
+	}
 }
 `
 
@@ -2089,6 +2117,114 @@ func (c *Client) UploadTerraform(ctx context.Context, repoName string, name stri
 
 	var res UploadTerraform
 	if err := c.Client.Post(ctx, "UploadTerraform", UploadTerraformDocument, &res, vars, httpRequestOptions...); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+const CreateTestDocument = `mutation CreateTest ($name: String!, $attrs: TestAttributes!) {
+	createTest(name: $name, attributes: $attrs) {
+		... TestFragment
+	}
+}
+fragment TestFragment on Test {
+	id
+	name
+	status
+	promoteTag
+	steps {
+		id
+		name
+		description
+		status
+	}
+}
+`
+
+func (c *Client) CreateTest(ctx context.Context, name string, attrs TestAttributes, httpRequestOptions ...client.HTTPRequestOption) (*CreateTest, error) {
+	vars := map[string]interface{}{
+		"name":  name,
+		"attrs": attrs,
+	}
+
+	var res CreateTest
+	if err := c.Client.Post(ctx, "CreateTest", CreateTestDocument, &res, vars, httpRequestOptions...); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+const UpdateTestDocument = `mutation UpdateTest ($id: ID!, $attrs: TestAttributes!) {
+	updateTest(id: $id, attributes: $attrs) {
+		... TestFragment
+	}
+}
+fragment TestFragment on Test {
+	id
+	name
+	status
+	promoteTag
+	steps {
+		id
+		name
+		description
+		status
+	}
+}
+`
+
+func (c *Client) UpdateTest(ctx context.Context, id string, attrs TestAttributes, httpRequestOptions ...client.HTTPRequestOption) (*UpdateTest, error) {
+	vars := map[string]interface{}{
+		"id":    id,
+		"attrs": attrs,
+	}
+
+	var res UpdateTest
+	if err := c.Client.Post(ctx, "UpdateTest", UpdateTestDocument, &res, vars, httpRequestOptions...); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+const UpdateStepDocument = `mutation UpdateStep ($id: ID!, $logs: UploadOrUrl!) {
+	updateStep(id: $id, attributes: {logs:$logs}) {
+		id
+	}
+}
+`
+
+func (c *Client) UpdateStep(ctx context.Context, id string, logs string, httpRequestOptions ...client.HTTPRequestOption) (*UpdateStep, error) {
+	vars := map[string]interface{}{
+		"id":   id,
+		"logs": logs,
+	}
+
+	var res UpdateStep
+	if err := c.Client.Post(ctx, "UpdateStep", UpdateStepDocument, &res, vars, httpRequestOptions...); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+const PublishLogsDocument = `mutation PublishLogs ($id: ID!, $logs: String!) {
+	publishLogs(id: $id, logs: $logs) {
+		id
+	}
+}
+`
+
+func (c *Client) PublishLogs(ctx context.Context, id string, logs string, httpRequestOptions ...client.HTTPRequestOption) (*PublishLogs, error) {
+	vars := map[string]interface{}{
+		"id":   id,
+		"logs": logs,
+	}
+
+	var res PublishLogs
+	if err := c.Client.Post(ctx, "PublishLogs", PublishLogsDocument, &res, vars, httpRequestOptions...); err != nil {
 		return nil, err
 	}
 

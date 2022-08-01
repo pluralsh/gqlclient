@@ -209,6 +209,11 @@ type RootMutationType struct {
 	UpsertOidcProvider        *OidcProvider           "json:\"upsertOidcProvider\" graphql:\"upsertOidcProvider\""
 	UpsertRepository          *Repository             "json:\"upsertRepository\" graphql:\"upsertRepository\""
 }
+type DNSRecordFragment struct {
+	Type    DNSRecordType "json:\"type\" graphql:\"type\""
+	Name    string        "json:\"name\" graphql:\"name\""
+	Records []*string     "json:\"records\" graphql:\"records\""
+}
 type ApplyLockFragment struct {
 	ID   string  "json:\"id\" graphql:\"id\""
 	Lock *string "json:\"lock\" graphql:\"lock\""
@@ -472,6 +477,19 @@ type CreateCrd struct {
 	CreateCrd *struct {
 		ID string "json:\"id\" graphql:\"id\""
 	} "json:\"createCrd\" graphql:\"createCrd\""
+}
+type GetDNSRecords struct {
+	DNSRecords *struct {
+		Edges []*struct {
+			Node *DNSRecordFragment "json:\"node\" graphql:\"node\""
+		} "json:\"edges\" graphql:\"edges\""
+	} "json:\"dnsRecords\" graphql:\"dnsRecords\""
+}
+type CreateDNSRecord struct {
+	CreateDNSRecord *DNSRecordFragment "json:\"createDnsRecord\" graphql:\"createDnsRecord\""
+}
+type DeleteDNSRecord struct {
+	DeleteDNSRecord *DNSRecordFragment "json:\"deleteDnsRecord\" graphql:\"deleteDnsRecord\""
 }
 type CreateDomain struct {
 	ProvisionDomain *DNSDomainFragment "json:\"provisionDomain\" graphql:\"provisionDomain\""
@@ -971,42 +989,6 @@ const GetPackageInstallationsDocument = `query GetPackageInstallations ($id: ID!
 		}
 	}
 }
-fragment CrdFragment on Crd {
-	id
-	name
-	blob
-}
-fragment TerraformInstallationFragment on TerraformInstallation {
-	id
-	terraform {
-		... TerraformFragment
-	}
-	version {
-		... VersionFragment
-	}
-}
-fragment TerraformFragment on Terraform {
-	id
-	name
-	package
-	description
-	dependencies {
-		... DependenciesFragment
-	}
-	valuesTemplate
-}
-fragment ChartInstallationFragment on ChartInstallation {
-	id
-	chart {
-		... ChartFragment
-		dependencies {
-			... DependenciesFragment
-		}
-	}
-	version {
-		... VersionFragment
-	}
-}
 fragment ChartFragment on Chart {
 	id
 	name
@@ -1041,6 +1023,42 @@ fragment VersionFragment on Version {
 	}
 	dependencies {
 		... DependenciesFragment
+	}
+}
+fragment CrdFragment on Crd {
+	id
+	name
+	blob
+}
+fragment TerraformInstallationFragment on TerraformInstallation {
+	id
+	terraform {
+		... TerraformFragment
+	}
+	version {
+		... VersionFragment
+	}
+}
+fragment TerraformFragment on Terraform {
+	id
+	name
+	package
+	description
+	dependencies {
+		... DependenciesFragment
+	}
+	valuesTemplate
+}
+fragment ChartInstallationFragment on ChartInstallation {
+	id
+	chart {
+		... ChartFragment
+		dependencies {
+			... DependenciesFragment
+		}
+	}
+	version {
+		... VersionFragment
 	}
 }
 `
@@ -1080,6 +1098,89 @@ func (c *Client) CreateCrd(ctx context.Context, chartName ChartName, name string
 	return &res, nil
 }
 
+const GetDNSRecordsDocument = `query GetDnsRecords ($cluster: String!, $provider: Provider!) {
+	dnsRecords(cluster: $cluster, provider: $provider, first: 500) {
+		edges {
+			node {
+				... DnsRecordFragment
+			}
+		}
+	}
+}
+fragment DnsRecordFragment on DnsRecord {
+	type
+	name
+	records
+}
+`
+
+func (c *Client) GetDNSRecords(ctx context.Context, cluster string, provider Provider, httpRequestOptions ...client.HTTPRequestOption) (*GetDNSRecords, error) {
+	vars := map[string]interface{}{
+		"cluster":  cluster,
+		"provider": provider,
+	}
+
+	var res GetDNSRecords
+	if err := c.Client.Post(ctx, "GetDnsRecords", GetDNSRecordsDocument, &res, vars, httpRequestOptions...); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+const CreateDNSRecordDocument = `mutation CreateDnsRecord ($cluster: String!, $provider: Provider!, $attributes: DnsRecordAttributes!) {
+	createDnsRecord(cluster: $cluster, provider: $provider, attributes: $attributes) {
+		... DnsRecordFragment
+	}
+}
+fragment DnsRecordFragment on DnsRecord {
+	type
+	name
+	records
+}
+`
+
+func (c *Client) CreateDNSRecord(ctx context.Context, cluster string, provider Provider, attributes DNSRecordAttributes, httpRequestOptions ...client.HTTPRequestOption) (*CreateDNSRecord, error) {
+	vars := map[string]interface{}{
+		"cluster":    cluster,
+		"provider":   provider,
+		"attributes": attributes,
+	}
+
+	var res CreateDNSRecord
+	if err := c.Client.Post(ctx, "CreateDnsRecord", CreateDNSRecordDocument, &res, vars, httpRequestOptions...); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+const DeleteDNSRecordDocument = `mutation DeleteDnsRecord ($name: String!, $type: DnsRecordType!) {
+	deleteDnsRecord(name: $name, type: $type) {
+		... DnsRecordFragment
+	}
+}
+fragment DnsRecordFragment on DnsRecord {
+	type
+	name
+	records
+}
+`
+
+func (c *Client) DeleteDNSRecord(ctx context.Context, name string, typeArg DNSRecordType, httpRequestOptions ...client.HTTPRequestOption) (*DeleteDNSRecord, error) {
+	vars := map[string]interface{}{
+		"name": name,
+		"type": typeArg,
+	}
+
+	var res DeleteDNSRecord
+	if err := c.Client.Post(ctx, "DeleteDnsRecord", DeleteDNSRecordDocument, &res, vars, httpRequestOptions...); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
 const CreateDomainDocument = `mutation CreateDomain ($name: String!) {
 	provisionDomain(name: $name) {
 		... DnsDomainFragment
@@ -1107,6 +1208,19 @@ func (c *Client) CreateDomain(ctx context.Context, name string, httpRequestOptio
 const GetInstallationDocument = `query GetInstallation ($name: String) {
 	installation(name: $name) {
 		... InstallationFragment
+	}
+}
+fragment InstallationFragment on Installation {
+	id
+	context
+	licenseKey
+	acmeKeyId
+	acmeSecret
+	repository {
+		... RepositoryFragment
+	}
+	oidcProvider {
+		... OIDCProvider
 	}
 }
 fragment RepositoryFragment on Repository {
@@ -1144,19 +1258,6 @@ fragment OIDCProvider on OidcProvider {
 		tokenEndpoint
 		jwksUri
 		userinfoEndpoint
-	}
-}
-fragment InstallationFragment on Installation {
-	id
-	context
-	licenseKey
-	acmeKeyId
-	acmeSecret
-	repository {
-		... RepositoryFragment
-	}
-	oidcProvider {
-		... OIDCProvider
 	}
 }
 `
@@ -1364,6 +1465,12 @@ const GetRecipeDocument = `query GetRecipe ($repo: String, $name: String) {
 		}
 	}
 }
+fragment ChartFragment on Chart {
+	id
+	name
+	description
+	latestVersion
+}
 fragment TerraformFragment on Terraform {
 	id
 	name
@@ -1475,12 +1582,6 @@ fragment RecipeItemFragment on RecipeItem {
 	configuration {
 		... RecipeConfigurationFragment
 	}
-}
-fragment ChartFragment on Chart {
-	id
-	name
-	description
-	latestVersion
 }
 `
 
@@ -1954,16 +2055,6 @@ const GetTerraformDocument = `query GetTerraform ($id: ID!) {
 		}
 	}
 }
-fragment TerraformFragment on Terraform {
-	id
-	name
-	package
-	description
-	dependencies {
-		... DependenciesFragment
-	}
-	valuesTemplate
-}
 fragment DependenciesFragment on Dependencies {
 	dependencies {
 		type
@@ -1980,6 +2071,16 @@ fragment DependenciesFragment on Dependencies {
 	}
 	providerWirings
 	outputs
+}
+fragment TerraformFragment on Terraform {
+	id
+	name
+	package
+	description
+	dependencies {
+		... DependenciesFragment
+	}
+	valuesTemplate
 }
 `
 
@@ -2004,16 +2105,6 @@ const GetTerraformInstallationsDocument = `query GetTerraformInstallations ($id:
 			}
 		}
 	}
-}
-fragment TerraformFragment on Terraform {
-	id
-	name
-	package
-	description
-	dependencies {
-		... DependenciesFragment
-	}
-	valuesTemplate
 }
 fragment DependenciesFragment on Dependencies {
 	dependencies {
@@ -2058,6 +2149,16 @@ fragment TerraformInstallationFragment on TerraformInstallation {
 	version {
 		... VersionFragment
 	}
+}
+fragment TerraformFragment on Terraform {
+	id
+	name
+	package
+	description
+	dependencies {
+		... DependenciesFragment
+	}
+	valuesTemplate
 }
 `
 
@@ -2302,17 +2403,17 @@ const ListKeysDocument = `query ListKeys ($emails: [String]) {
 		}
 	}
 }
+fragment UserFragment on User {
+	id
+	name
+	email
+}
 fragment PublicKeyFragment on PublicKey {
 	id
 	content
 	user {
 		... UserFragment
 	}
-}
-fragment UserFragment on User {
-	id
-	name
-	email
 }
 `
 

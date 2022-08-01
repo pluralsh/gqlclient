@@ -1967,6 +1967,7 @@ type User struct {
 	Address             *Address             `json:"address"`
 	Avatar              *string              `json:"avatar"`
 	BackgroundColor     *string              `json:"backgroundColor"`
+	BoundRoles          []*Role              `json:"boundRoles"`
 	Cards               *CardConnection      `json:"cards"`
 	DefaultQueueID      *string              `json:"defaultQueueId"`
 	Email               string               `json:"email"`

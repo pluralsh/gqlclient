@@ -78,6 +78,8 @@ type RootQueryType struct {
 	SearchRepositories     *RepositoryConnection             "json:\"searchRepositories\" graphql:\"searchRepositories\""
 	SearchUsers            *UserConnection                   "json:\"searchUsers\" graphql:\"searchUsers\""
 	Shell                  *CloudShell                       "json:\"shell\" graphql:\"shell\""
+	Stack                  *Stack                            "json:\"stack\" graphql:\"stack\""
+	Stacks                 *StackConnection                  "json:\"stacks\" graphql:\"stacks\""
 	Subscriptions          *RepositorySubscriptionConnection "json:\"subscriptions\" graphql:\"subscriptions\""
 	Tags                   *GroupedTagConnection             "json:\"tags\" graphql:\"tags\""
 	Terraform              *TerraformConnection              "json:\"terraform\" graphql:\"terraform\""
@@ -128,6 +130,7 @@ type RootMutationType struct {
 	CreateRole                *Role                   "json:\"createRole\" graphql:\"createRole\""
 	CreateServiceAccount      *User                   "json:\"createServiceAccount\" graphql:\"createServiceAccount\""
 	CreateShell               *CloudShell             "json:\"createShell\" graphql:\"createShell\""
+	CreateStack               *Stack                  "json:\"createStack\" graphql:\"createStack\""
 	CreateSubscription        *RepositorySubscription "json:\"createSubscription\" graphql:\"createSubscription\""
 	CreateTerraform           *Terraform              "json:\"createTerraform\" graphql:\"createTerraform\""
 	CreateTest                *Test                   "json:\"createTest\" graphql:\"createTest\""
@@ -152,6 +155,7 @@ type RootMutationType struct {
 	DeleteRepository          *Repository             "json:\"deleteRepository\" graphql:\"deleteRepository\""
 	DeleteRole                *Role                   "json:\"deleteRole\" graphql:\"deleteRole\""
 	DeleteShell               *CloudShell             "json:\"deleteShell\" graphql:\"deleteShell\""
+	DeleteStack               *Stack                  "json:\"deleteStack\" graphql:\"deleteStack\""
 	DeleteTerraform           *Terraform              "json:\"deleteTerraform\" graphql:\"deleteTerraform\""
 	DeleteToken               *PersistedToken         "json:\"deleteToken\" graphql:\"deleteToken\""
 	DeleteUser                *User                   "json:\"deleteUser\" graphql:\"deleteUser\""
@@ -177,8 +181,10 @@ type RootMutationType struct {
 	RebootShell               *CloudShell             "json:\"rebootShell\" graphql:\"rebootShell\""
 	ReleaseLock               *ApplyLock              "json:\"releaseLock\" graphql:\"releaseLock\""
 	ResetInstallations        *int64                  "json:\"resetInstallations\" graphql:\"resetInstallations\""
+	RestartShell              *bool                   "json:\"restartShell\" graphql:\"restartShell\""
 	Signup                    *User                   "json:\"signup\" graphql:\"signup\""
 	SsoCallback               *User                   "json:\"ssoCallback\" graphql:\"ssoCallback\""
+	StopShell                 *bool                   "json:\"stopShell\" graphql:\"stopShell\""
 	UnfollowIncident          *Follower               "json:\"unfollowIncident\" graphql:\"unfollowIncident\""
 	UninstallTerraform        *TerraformInstallation  "json:\"uninstallTerraform\" graphql:\"uninstallTerraform\""
 	UnlockRepository          *int64                  "json:\"unlockRepository\" graphql:\"unlockRepository\""
@@ -432,6 +438,12 @@ type TestFragment struct {
 		Status      TestStatus "json:\"status\" graphql:\"status\""
 	} "json:\"steps\" graphql:\"steps\""
 }
+type StackFragment struct {
+	ID          string            "json:\"id\" graphql:\"id\""
+	Name        string            "json:\"name\" graphql:\"name\""
+	Description *string           "json:\"description\" graphql:\"description\""
+	Bundles     []*RecipeFragment "json:\"bundles\" graphql:\"bundles\""
+}
 type ListArtifacts struct {
 	Repository *struct {
 		Artifacts []*ArtifactFragment "json:\"artifacts\" graphql:\"artifacts\""
@@ -563,6 +575,14 @@ type InstallRecipe struct {
 	InstallRecipe []*struct {
 		ID string "json:\"id\" graphql:\"id\""
 	} "json:\"installRecipe\" graphql:\"installRecipe\""
+}
+type CreateStack struct {
+	CreateStack *struct {
+		ID string "json:\"id\" graphql:\"id\""
+	} "json:\"createStack\" graphql:\"createStack\""
+}
+type GetStack struct {
+	Stack *StackFragment "json:\"stack\" graphql:\"stack\""
 }
 type GetRepository struct {
 	Repository *RepositoryFragment "json:\"repository\" graphql:\"repository\""
@@ -905,6 +925,24 @@ const GetChartInstallationsDocument = `query GetChartInstallations ($id: ID!) {
 		}
 	}
 }
+fragment VersionFragment on Version {
+	id
+	readme
+	version
+	valuesTemplate
+	package
+	crds {
+		... CrdFragment
+	}
+	dependencies {
+		... DependenciesFragment
+	}
+}
+fragment CrdFragment on Crd {
+	id
+	name
+	blob
+}
 fragment ChartInstallationFragment on ChartInstallation {
 	id
 	chart {
@@ -940,24 +978,6 @@ fragment DependenciesFragment on Dependencies {
 	providerWirings
 	outputs
 }
-fragment VersionFragment on Version {
-	id
-	readme
-	version
-	valuesTemplate
-	package
-	crds {
-		... CrdFragment
-	}
-	dependencies {
-		... DependenciesFragment
-	}
-}
-fragment CrdFragment on Crd {
-	id
-	name
-	blob
-}
 `
 
 func (c *Client) GetChartInstallations(ctx context.Context, id string, httpRequestOptions ...client.HTTPRequestOption) (*GetChartInstallations, error) {
@@ -988,29 +1008,6 @@ const GetPackageInstallationsDocument = `query GetPackageInstallations ($id: ID!
 			}
 		}
 	}
-}
-fragment ChartFragment on Chart {
-	id
-	name
-	description
-	latestVersion
-}
-fragment DependenciesFragment on Dependencies {
-	dependencies {
-		type
-		name
-		repo
-	}
-	wait
-	application
-	providers
-	secrets
-	wirings {
-		terraform
-		helm
-	}
-	providerWirings
-	outputs
 }
 fragment VersionFragment on Version {
 	id
@@ -1060,6 +1057,29 @@ fragment ChartInstallationFragment on ChartInstallation {
 	version {
 		... VersionFragment
 	}
+}
+fragment ChartFragment on Chart {
+	id
+	name
+	description
+	latestVersion
+}
+fragment DependenciesFragment on Dependencies {
+	dependencies {
+		type
+		name
+		repo
+	}
+	wait
+	application
+	providers
+	secrets
+	wirings {
+		terraform
+		helm
+	}
+	providerWirings
+	outputs
 }
 `
 
@@ -1465,58 +1485,6 @@ const GetRecipeDocument = `query GetRecipe ($repo: String, $name: String) {
 		}
 	}
 }
-fragment ChartFragment on Chart {
-	id
-	name
-	description
-	latestVersion
-}
-fragment TerraformFragment on Terraform {
-	id
-	name
-	package
-	description
-	dependencies {
-		... DependenciesFragment
-	}
-	valuesTemplate
-}
-fragment DependenciesFragment on Dependencies {
-	dependencies {
-		type
-		name
-		repo
-	}
-	wait
-	application
-	providers
-	secrets
-	wirings {
-		terraform
-		helm
-	}
-	providerWirings
-	outputs
-}
-fragment RecipeConfigurationFragment on RecipeConfiguration {
-	name
-	type
-	default
-	documentation
-	optional
-	placeholder
-	functionName
-	condition {
-		field
-		operation
-		value
-	}
-	validation {
-		type
-		regex
-		message
-	}
-}
 fragment RecipeFragment on Recipe {
 	id
 	name
@@ -1581,6 +1549,58 @@ fragment RecipeItemFragment on RecipeItem {
 	}
 	configuration {
 		... RecipeConfigurationFragment
+	}
+}
+fragment ChartFragment on Chart {
+	id
+	name
+	description
+	latestVersion
+}
+fragment TerraformFragment on Terraform {
+	id
+	name
+	package
+	description
+	dependencies {
+		... DependenciesFragment
+	}
+	valuesTemplate
+}
+fragment DependenciesFragment on Dependencies {
+	dependencies {
+		type
+		name
+		repo
+	}
+	wait
+	application
+	providers
+	secrets
+	wirings {
+		terraform
+		helm
+	}
+	providerWirings
+	outputs
+}
+fragment RecipeConfigurationFragment on RecipeConfiguration {
+	name
+	type
+	default
+	documentation
+	optional
+	placeholder
+	functionName
+	condition {
+		field
+		operation
+		value
+	}
+	validation {
+		type
+		regex
+		message
 	}
 }
 `
@@ -1687,6 +1707,83 @@ func (c *Client) InstallRecipe(ctx context.Context, id string, httpRequestOption
 
 	var res InstallRecipe
 	if err := c.Client.Post(ctx, "InstallRecipe", InstallRecipeDocument, &res, vars, httpRequestOptions...); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+const CreateStackDocument = `mutation CreateStack ($attributes: StackAttributes!) {
+	createStack(attributes: $attributes) {
+		id
+	}
+}
+`
+
+func (c *Client) CreateStack(ctx context.Context, attributes StackAttributes, httpRequestOptions ...client.HTTPRequestOption) (*CreateStack, error) {
+	vars := map[string]interface{}{
+		"attributes": attributes,
+	}
+
+	var res CreateStack
+	if err := c.Client.Post(ctx, "CreateStack", CreateStackDocument, &res, vars, httpRequestOptions...); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+const GetStackDocument = `query GetStack ($name: String!, $provider: Provider!) {
+	stack(name: $name, provider: $provider) {
+		... StackFragment
+	}
+}
+fragment StackFragment on Stack {
+	id
+	name
+	description
+	bundles {
+		... RecipeFragment
+	}
+}
+fragment RecipeFragment on Recipe {
+	id
+	name
+	description
+	restricted
+	provider
+	tests {
+		type
+		name
+		message
+		args {
+			name
+			repo
+			key
+		}
+	}
+	repository {
+		id
+		name
+	}
+	oidcSettings {
+		uriFormat
+		uriFormats
+		authMethod
+		domainKey
+		subdomain
+	}
+}
+`
+
+func (c *Client) GetStack(ctx context.Context, name string, provider Provider, httpRequestOptions ...client.HTTPRequestOption) (*GetStack, error) {
+	vars := map[string]interface{}{
+		"name":     name,
+		"provider": provider,
+	}
+
+	var res GetStack
+	if err := c.Client.Post(ctx, "GetStack", GetStackDocument, &res, vars, httpRequestOptions...); err != nil {
 		return nil, err
 	}
 
@@ -2055,6 +2152,16 @@ const GetTerraformDocument = `query GetTerraform ($id: ID!) {
 		}
 	}
 }
+fragment TerraformFragment on Terraform {
+	id
+	name
+	package
+	description
+	dependencies {
+		... DependenciesFragment
+	}
+	valuesTemplate
+}
 fragment DependenciesFragment on Dependencies {
 	dependencies {
 		type
@@ -2071,16 +2178,6 @@ fragment DependenciesFragment on Dependencies {
 	}
 	providerWirings
 	outputs
-}
-fragment TerraformFragment on Terraform {
-	id
-	name
-	package
-	description
-	dependencies {
-		... DependenciesFragment
-	}
-	valuesTemplate
 }
 `
 
@@ -2105,6 +2202,25 @@ const GetTerraformInstallationsDocument = `query GetTerraformInstallations ($id:
 			}
 		}
 	}
+}
+fragment TerraformInstallationFragment on TerraformInstallation {
+	id
+	terraform {
+		... TerraformFragment
+	}
+	version {
+		... VersionFragment
+	}
+}
+fragment TerraformFragment on Terraform {
+	id
+	name
+	package
+	description
+	dependencies {
+		... DependenciesFragment
+	}
+	valuesTemplate
 }
 fragment DependenciesFragment on Dependencies {
 	dependencies {
@@ -2140,25 +2256,6 @@ fragment CrdFragment on Crd {
 	id
 	name
 	blob
-}
-fragment TerraformInstallationFragment on TerraformInstallation {
-	id
-	terraform {
-		... TerraformFragment
-	}
-	version {
-		... VersionFragment
-	}
-}
-fragment TerraformFragment on Terraform {
-	id
-	name
-	package
-	description
-	dependencies {
-		... DependenciesFragment
-	}
-	valuesTemplate
 }
 `
 
@@ -2403,17 +2500,17 @@ const ListKeysDocument = `query ListKeys ($emails: [String]) {
 		}
 	}
 }
-fragment UserFragment on User {
-	id
-	name
-	email
-}
 fragment PublicKeyFragment on PublicKey {
 	id
 	content
 	user {
 		... UserFragment
 	}
+}
+fragment UserFragment on User {
+	id
+	name
+	email
 }
 `
 

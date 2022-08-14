@@ -206,3 +206,10 @@ fragment TestFragment on Test {
         status
     }
 }
+
+fragment StackFragment on Stack {
+    id
+    name
+    description
+    bundles { ...RecipeFragment }
+}

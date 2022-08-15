@@ -261,6 +261,20 @@ type ClusterInformationAttributes struct {
 	Version   *string `json:"version,omitempty"`
 }
 
+type Community struct {
+	Discord *string   `json:"discord"`
+	Slack   *string   `json:"slack"`
+	Twitter *string   `json:"twitter"`
+	Videos  []*string `json:"videos"`
+}
+
+type CommunityAttributes struct {
+	Discord *string   `json:"discord,omitempty"`
+	Slack   *string   `json:"slack,omitempty"`
+	Twitter *string   `json:"twitter,omitempty"`
+	Videos  []*string `json:"videos,omitempty"`
+}
+
 type ConsentRequest struct {
 	RequestedScope []*string `json:"requestedScope"`
 	Skip           *bool     `json:"skip"`
@@ -1372,15 +1386,15 @@ type Recipe struct {
 }
 
 type RecipeAttributes struct {
-	Dependencies []*RecipeDependencyAttributes `json:"dependencies,omitempty"`
-	Description  *string                       `json:"description,omitempty"`
-	Name         string                        `json:"name"`
-	OidcSettings *OidcSettingsAttributes       `json:"oidcSettings,omitempty"`
-	Private      *bool                         `json:"private,omitempty"`
-	Provider     *Provider                     `json:"provider,omitempty"`
-	Restricted   *bool                         `json:"restricted,omitempty"`
-	Sections     []*RecipeSectionAttributes    `json:"sections,omitempty"`
-	Tests        []*RecipeTestAttributes       `json:"tests,omitempty"`
+	Dependencies []*RecipeReference         `json:"dependencies,omitempty"`
+	Description  *string                    `json:"description,omitempty"`
+	Name         string                     `json:"name"`
+	OidcSettings *OidcSettingsAttributes    `json:"oidcSettings,omitempty"`
+	Private      *bool                      `json:"private,omitempty"`
+	Provider     *Provider                  `json:"provider,omitempty"`
+	Restricted   *bool                      `json:"restricted,omitempty"`
+	Sections     []*RecipeSectionAttributes `json:"sections,omitempty"`
+	Tests        []*RecipeTestAttributes    `json:"tests,omitempty"`
 }
 
 type RecipeCondition struct {
@@ -1427,11 +1441,6 @@ type RecipeConnection struct {
 	PageInfo PageInfo      `json:"pageInfo"`
 }
 
-type RecipeDependencyAttributes struct {
-	Name string `json:"name"`
-	Repo string `json:"repo"`
-}
-
 type RecipeEdge struct {
 	Cursor *string `json:"cursor"`
 	Node   *Recipe `json:"node"`
@@ -1451,6 +1460,11 @@ type RecipeItemAttributes struct {
 	Configuration []*RecipeConfigurationAttributes `json:"configuration,omitempty"`
 	Name          string                           `json:"name"`
 	Type          RecipeItemType                   `json:"type"`
+}
+
+type RecipeReference struct {
+	Name string `json:"name"`
+	Repo string `json:"repo"`
 }
 
 type RecipeSection struct {
@@ -1499,6 +1513,7 @@ type RecipeValidationAttributes struct {
 type Repository struct {
 	Artifacts     []*Artifact            `json:"artifacts"`
 	Category      *Category              `json:"category"`
+	Community     *Community             `json:"community"`
 	DarkIcon      *string                `json:"darkIcon"`
 	DefaultTag    *string                `json:"defaultTag"`
 	Description   *string                `json:"description"`
@@ -1511,6 +1526,7 @@ type Repository struct {
 	InsertedAt    *string                `json:"insertedAt"`
 	Installation  *Installation          `json:"installation"`
 	License       *License               `json:"license"`
+	MainBranch    *string                `json:"mainBranch"`
 	Name          string                 `json:"name"`
 	Notes         *string                `json:"notes"`
 	OauthSettings *OauthSettings         `json:"oauthSettings"`
@@ -1528,6 +1544,7 @@ type Repository struct {
 
 type RepositoryAttributes struct {
 	Category                      *Category                     `json:"category,omitempty"`
+	Community                     *CommunityAttributes          `json:"community,omitempty"`
 	DarkIcon                      *string                       `json:"darkIcon,omitempty"`
 	DefaultTag                    *string                       `json:"defaultTag,omitempty"`
 	Description                   *string                       `json:"description,omitempty"`
@@ -1756,6 +1773,55 @@ type SpecificationAttributes struct {
 	Required *bool                      `json:"required,omitempty"`
 	Spec     []*SpecificationAttributes `json:"spec,omitempty"`
 	Type     SpecDatatype               `json:"type"`
+}
+
+type Stack struct {
+	Bundles     []*Recipe          `json:"bundles"`
+	Collections []*StackCollection `json:"collections"`
+	Creator     *User              `json:"creator"`
+	Description *string            `json:"description"`
+	Featured    *bool              `json:"featured"`
+	ID          string             `json:"id"`
+	InsertedAt  *string            `json:"insertedAt"`
+	Name        string             `json:"name"`
+	UpdatedAt   *string            `json:"updatedAt"`
+}
+
+type StackAttributes struct {
+	Collections []*StackCollectionAttributes `json:"collections,omitempty"`
+	Description *string                      `json:"description,omitempty"`
+	Featured    *bool                        `json:"featured,omitempty"`
+	Name        string                       `json:"name"`
+}
+
+type StackCollection struct {
+	Bundles    []*StackRecipe `json:"bundles"`
+	ID         string         `json:"id"`
+	InsertedAt *string        `json:"insertedAt"`
+	Provider   Provider       `json:"provider"`
+	UpdatedAt  *string        `json:"updatedAt"`
+}
+
+type StackCollectionAttributes struct {
+	Bundles  []*RecipeReference `json:"bundles,omitempty"`
+	Provider Provider           `json:"provider"`
+}
+
+type StackConnection struct {
+	Edges    []*StackEdge `json:"edges"`
+	PageInfo PageInfo     `json:"pageInfo"`
+}
+
+type StackEdge struct {
+	Cursor *string `json:"cursor"`
+	Node   *Stack  `json:"node"`
+}
+
+type StackRecipe struct {
+	ID         string  `json:"id"`
+	InsertedAt *string `json:"insertedAt"`
+	Recipe     Recipe  `json:"recipe"`
+	UpdatedAt  *string `json:"updatedAt"`
 }
 
 type StepLogs struct {

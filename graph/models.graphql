@@ -74,6 +74,7 @@ fragment RecipeFragment on Recipe {
         domainKey
         subdomain
     }
+    recipeSections { ...RecipeSectionFragment }
 }
 
 fragment RecipeItemFragment on RecipeItem {

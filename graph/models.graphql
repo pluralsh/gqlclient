@@ -211,6 +211,7 @@ fragment TestFragment on Test {
 fragment StackFragment on Stack {
     id
     name
+    featured
     description
     bundles { ...RecipeFragment }
 }

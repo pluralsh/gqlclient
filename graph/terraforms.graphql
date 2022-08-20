@@ -23,3 +23,7 @@ mutation UploadTerraform($repoName: String!, $name: String!, $uploadOrUrl: Uploa
         ...TerraformFragment
     }
 }
+
+mutation UninstallTerraform($id: ID!) {
+    uninstallTerraform(id: $id) { id }
+}

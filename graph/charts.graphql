@@ -38,3 +38,7 @@ mutation CreateCrd($chartName: ChartName!, $name: String!, $blob: UploadOrUrl!) 
         id
     }
 }
+
+mutation UninstallChart($id: ID!) {
+    deleteChartInstallation(id: $id) { id }
+}

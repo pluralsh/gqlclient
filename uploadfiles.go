@@ -63,7 +63,7 @@ func WithFiles(files []Upload) func(req *http.Request) {
 		reader := progressbar.NewReader(bodyBuf, bar)
 		defer reader.Close()
 
-		req.ContentLength = 0 //int64(bodyBuf.Len())
+		req.ContentLength = int64(bodyBuf.Len())
 		req.Body = &reader
 		req.Header.Set("Accept", "application/json; charset=utf-8")
 		req.Header.Set("Content-Type", bodyWriter.FormDataContentType())

@@ -876,9 +876,11 @@ type IntegrationWebhookEdge struct {
 type Invite struct {
 	Account    *Account `json:"account"`
 	Email      *string  `json:"email"`
+	Existing   bool     `json:"existing"`
+	ExpiresAt  *string  `json:"expiresAt"`
 	ID         string   `json:"id"`
 	InsertedAt *string  `json:"insertedAt"`
-	SecureID   string   `json:"secureId"`
+	SecureID   *string  `json:"secureId"`
 	UpdatedAt  *string  `json:"updatedAt"`
 	User       *User    `json:"user"`
 }
@@ -2057,6 +2059,7 @@ type User struct {
 
 type UserAttributes struct {
 	Avatar      *string          `json:"avatar,omitempty"`
+	Confirm     *string          `json:"confirm,omitempty"`
 	Email       *string          `json:"email,omitempty"`
 	LoginMethod *LoginMethod     `json:"loginMethod,omitempty"`
 	Name        *string          `json:"name,omitempty"`

@@ -160,6 +160,7 @@ type RootMutationType struct {
 	DeleteTerraform           *Terraform              "json:\"deleteTerraform\" graphql:\"deleteTerraform\""
 	DeleteToken               *PersistedToken         "json:\"deleteToken\" graphql:\"deleteToken\""
 	DeleteUser                *User                   "json:\"deleteUser\" graphql:\"deleteUser\""
+	DestroyCluster            *bool                   "json:\"destroyCluster\" graphql:\"destroyCluster\""
 	DeviceLogin               *DeviceLogin            "json:\"deviceLogin\" graphql:\"deviceLogin\""
 	ExternalToken             *string                 "json:\"externalToken\" graphql:\"externalToken\""
 	FollowIncident            *Follower               "json:\"followIncident\" graphql:\"followIncident\""
@@ -186,6 +187,7 @@ type RootMutationType struct {
 	Signup                    *User                   "json:\"signup\" graphql:\"signup\""
 	SsoCallback               *User                   "json:\"ssoCallback\" graphql:\"ssoCallback\""
 	StopShell                 *bool                   "json:\"stopShell\" graphql:\"stopShell\""
+	TransferDemoProject       *DemoProject            "json:\"transferDemoProject\" graphql:\"transferDemoProject\""
 	UnfollowIncident          *Follower               "json:\"unfollowIncident\" graphql:\"unfollowIncident\""
 	UninstallTerraform        *TerraformInstallation  "json:\"uninstallTerraform\" graphql:\"uninstallTerraform\""
 	UnlockRepository          *int64                  "json:\"unlockRepository\" graphql:\"unlockRepository\""
@@ -262,6 +264,7 @@ type DependenciesFragment struct {
 	} "json:\"wirings\" graphql:\"wirings\""
 	ProviderWirings map[string]interface{} "json:\"providerWirings\" graphql:\"providerWirings\""
 	Outputs         map[string]interface{} "json:\"outputs\" graphql:\"outputs\""
+	ProviderVsn     *string                "json:\"providerVsn\" graphql:\"providerVsn\""
 }
 type DNSDomainFragment struct {
 	ID   string "json:\"id\" graphql:\"id\""
@@ -920,6 +923,7 @@ fragment DependenciesFragment on Dependencies {
 	}
 	providerWirings
 	outputs
+	providerVsn
 }
 `
 
@@ -979,6 +983,7 @@ fragment DependenciesFragment on Dependencies {
 	}
 	providerWirings
 	outputs
+	providerVsn
 }
 fragment VersionFragment on Version {
 	id
@@ -1028,6 +1033,24 @@ const GetPackageInstallationsDocument = `query GetPackageInstallations ($id: ID!
 			}
 		}
 	}
+}
+fragment DependenciesFragment on Dependencies {
+	dependencies {
+		type
+		name
+		repo
+	}
+	wait
+	application
+	providers
+	secrets
+	wirings {
+		terraform
+		helm
+	}
+	providerWirings
+	outputs
+	providerVsn
 }
 fragment VersionFragment on Version {
 	id
@@ -1083,23 +1106,6 @@ fragment ChartFragment on Chart {
 	name
 	description
 	latestVersion
-}
-fragment DependenciesFragment on Dependencies {
-	dependencies {
-		type
-		name
-		repo
-	}
-	wait
-	application
-	providers
-	secrets
-	wirings {
-		terraform
-		helm
-	}
-	providerWirings
-	outputs
 }
 `
 
@@ -1414,6 +1420,29 @@ const GetInstallationsDocument = `query GetInstallations {
 		}
 	}
 }
+fragment OIDCProvider on OidcProvider {
+	id
+	clientId
+	clientSecret
+	redirectUris
+	bindings {
+		user {
+			id
+			email
+		}
+		group {
+			id
+			name
+		}
+	}
+	configuration {
+		issuer
+		authorizationEndpoint
+		tokenEndpoint
+		jwksUri
+		userinfoEndpoint
+	}
+}
 fragment InstallationFragment on Installation {
 	id
 	context
@@ -1439,29 +1468,6 @@ fragment RepositoryFragment on Repository {
 	}
 	recipes {
 		name
-	}
-}
-fragment OIDCProvider on OidcProvider {
-	id
-	clientId
-	clientSecret
-	redirectUris
-	bindings {
-		user {
-			id
-			email
-		}
-		group {
-			id
-			name
-		}
-	}
-	configuration {
-		issuer
-		authorizationEndpoint
-		tokenEndpoint
-		jwksUri
-		userinfoEndpoint
 	}
 }
 `
@@ -1580,6 +1586,7 @@ fragment DependenciesFragment on Dependencies {
 	}
 	providerWirings
 	outputs
+	providerVsn
 }
 fragment RecipeConfigurationFragment on RecipeConfiguration {
 	name
@@ -1726,6 +1733,7 @@ fragment DependenciesFragment on Dependencies {
 	}
 	providerWirings
 	outputs
+	providerVsn
 }
 fragment RecipeConfigurationFragment on RecipeConfiguration {
 	name
@@ -1871,25 +1879,6 @@ const GetStackDocument = `query GetStack ($name: String!, $provider: Provider!) 
 		... StackFragment
 	}
 }
-fragment RecipeConfigurationFragment on RecipeConfiguration {
-	name
-	type
-	default
-	documentation
-	optional
-	placeholder
-	functionName
-	condition {
-		field
-		operation
-		value
-	}
-	validation {
-		type
-		regex
-		message
-	}
-}
 fragment RecipeFragment on Recipe {
 	id
 	name
@@ -1921,6 +1910,46 @@ fragment RecipeFragment on Recipe {
 		... RecipeSectionFragment
 	}
 }
+fragment RecipeConfigurationFragment on RecipeConfiguration {
+	name
+	type
+	default
+	documentation
+	optional
+	placeholder
+	functionName
+	condition {
+		field
+		operation
+		value
+	}
+	validation {
+		type
+		regex
+		message
+	}
+}
+fragment StackFragment on Stack {
+	id
+	name
+	featured
+	description
+	bundles {
+		... RecipeFragment
+	}
+}
+fragment RecipeSectionFragment on RecipeSection {
+	index
+	repository {
+		... RepositoryFragment
+	}
+	recipeItems {
+		... RecipeItemFragment
+	}
+	configuration {
+		... RecipeConfigurationFragment
+	}
+}
 fragment RepositoryFragment on Repository {
 	id
 	name
@@ -1947,6 +1976,22 @@ fragment RecipeItemFragment on RecipeItem {
 		... RecipeConfigurationFragment
 	}
 }
+fragment ChartFragment on Chart {
+	id
+	name
+	description
+	latestVersion
+}
+fragment TerraformFragment on Terraform {
+	id
+	name
+	package
+	description
+	dependencies {
+		... DependenciesFragment
+	}
+	valuesTemplate
+}
 fragment DependenciesFragment on Dependencies {
 	dependencies {
 		type
@@ -1963,43 +2008,7 @@ fragment DependenciesFragment on Dependencies {
 	}
 	providerWirings
 	outputs
-}
-fragment StackFragment on Stack {
-	id
-	name
-	featured
-	description
-	bundles {
-		... RecipeFragment
-	}
-}
-fragment RecipeSectionFragment on RecipeSection {
-	index
-	repository {
-		... RepositoryFragment
-	}
-	recipeItems {
-		... RecipeItemFragment
-	}
-	configuration {
-		... RecipeConfigurationFragment
-	}
-}
-fragment ChartFragment on Chart {
-	id
-	name
-	description
-	latestVersion
-}
-fragment TerraformFragment on Terraform {
-	id
-	name
-	package
-	description
-	dependencies {
-		... DependenciesFragment
-	}
-	valuesTemplate
+	providerVsn
 }
 `
 
@@ -2026,99 +2035,6 @@ const ListStacksDocument = `query ListStacks ($featured: Boolean, $cursor: Strin
 		}
 	}
 }
-fragment RepositoryFragment on Repository {
-	id
-	name
-	notes
-	icon
-	darkIcon
-	description
-	publisher {
-		name
-	}
-	recipes {
-		name
-	}
-}
-fragment RecipeItemFragment on RecipeItem {
-	id
-	chart {
-		... ChartFragment
-	}
-	terraform {
-		... TerraformFragment
-	}
-	configuration {
-		... RecipeConfigurationFragment
-	}
-}
-fragment TerraformFragment on Terraform {
-	id
-	name
-	package
-	description
-	dependencies {
-		... DependenciesFragment
-	}
-	valuesTemplate
-}
-fragment RecipeConfigurationFragment on RecipeConfiguration {
-	name
-	type
-	default
-	documentation
-	optional
-	placeholder
-	functionName
-	condition {
-		field
-		operation
-		value
-	}
-	validation {
-		type
-		regex
-		message
-	}
-}
-fragment StackFragment on Stack {
-	id
-	name
-	featured
-	description
-	bundles {
-		... RecipeFragment
-	}
-}
-fragment RecipeSectionFragment on RecipeSection {
-	index
-	repository {
-		... RepositoryFragment
-	}
-	recipeItems {
-		... RecipeItemFragment
-	}
-	configuration {
-		... RecipeConfigurationFragment
-	}
-}
-fragment DependenciesFragment on Dependencies {
-	dependencies {
-		type
-		name
-		repo
-	}
-	wait
-	application
-	providers
-	secrets
-	wirings {
-		terraform
-		helm
-	}
-	providerWirings
-	outputs
-}
 fragment RecipeFragment on Recipe {
 	id
 	name
@@ -2155,6 +2071,100 @@ fragment ChartFragment on Chart {
 	name
 	description
 	latestVersion
+}
+fragment StackFragment on Stack {
+	id
+	name
+	featured
+	description
+	bundles {
+		... RecipeFragment
+	}
+}
+fragment RecipeSectionFragment on RecipeSection {
+	index
+	repository {
+		... RepositoryFragment
+	}
+	recipeItems {
+		... RecipeItemFragment
+	}
+	configuration {
+		... RecipeConfigurationFragment
+	}
+}
+fragment RepositoryFragment on Repository {
+	id
+	name
+	notes
+	icon
+	darkIcon
+	description
+	publisher {
+		name
+	}
+	recipes {
+		name
+	}
+}
+fragment RecipeItemFragment on RecipeItem {
+	id
+	chart {
+		... ChartFragment
+	}
+	terraform {
+		... TerraformFragment
+	}
+	configuration {
+		... RecipeConfigurationFragment
+	}
+}
+fragment TerraformFragment on Terraform {
+	id
+	name
+	package
+	description
+	dependencies {
+		... DependenciesFragment
+	}
+	valuesTemplate
+}
+fragment DependenciesFragment on Dependencies {
+	dependencies {
+		type
+		name
+		repo
+	}
+	wait
+	application
+	providers
+	secrets
+	wirings {
+		terraform
+		helm
+	}
+	providerWirings
+	outputs
+	providerVsn
+}
+fragment RecipeConfigurationFragment on RecipeConfiguration {
+	name
+	type
+	default
+	documentation
+	optional
+	placeholder
+	functionName
+	condition {
+		field
+		operation
+		value
+	}
+	validation {
+		type
+		regex
+		message
+	}
 }
 `
 
@@ -2560,6 +2570,7 @@ fragment DependenciesFragment on Dependencies {
 	}
 	providerWirings
 	outputs
+	providerVsn
 }
 `
 
@@ -2585,16 +2596,6 @@ const GetTerraformInstallationsDocument = `query GetTerraformInstallations ($id:
 		}
 	}
 }
-fragment TerraformFragment on Terraform {
-	id
-	name
-	package
-	description
-	dependencies {
-		... DependenciesFragment
-	}
-	valuesTemplate
-}
 fragment DependenciesFragment on Dependencies {
 	dependencies {
 		type
@@ -2611,6 +2612,7 @@ fragment DependenciesFragment on Dependencies {
 	}
 	providerWirings
 	outputs
+	providerVsn
 }
 fragment VersionFragment on Version {
 	id
@@ -2638,6 +2640,16 @@ fragment TerraformInstallationFragment on TerraformInstallation {
 	version {
 		... VersionFragment
 	}
+}
+fragment TerraformFragment on Terraform {
+	id
+	name
+	package
+	description
+	dependencies {
+		... DependenciesFragment
+	}
+	valuesTemplate
 }
 `
 
@@ -2685,6 +2697,7 @@ fragment DependenciesFragment on Dependencies {
 	}
 	providerWirings
 	outputs
+	providerVsn
 }
 `
 

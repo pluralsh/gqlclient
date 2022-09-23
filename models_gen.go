@@ -262,17 +262,21 @@ type ClusterInformationAttributes struct {
 }
 
 type Community struct {
-	Discord *string   `json:"discord"`
-	Slack   *string   `json:"slack"`
-	Twitter *string   `json:"twitter"`
-	Videos  []*string `json:"videos"`
+	Discord  *string   `json:"discord"`
+	GitURL   *string   `json:"gitUrl"`
+	Homepage *string   `json:"homepage"`
+	Slack    *string   `json:"slack"`
+	Twitter  *string   `json:"twitter"`
+	Videos   []*string `json:"videos"`
 }
 
 type CommunityAttributes struct {
-	Discord *string   `json:"discord,omitempty"`
-	Slack   *string   `json:"slack,omitempty"`
-	Twitter *string   `json:"twitter,omitempty"`
-	Videos  []*string `json:"videos,omitempty"`
+	Discord  *string   `json:"discord,omitempty"`
+	GitURL   *string   `json:"gitUrl,omitempty"`
+	Homepage *string   `json:"homepage,omitempty"`
+	Slack    *string   `json:"slack,omitempty"`
+	Twitter  *string   `json:"twitter,omitempty"`
+	Videos   []*string `json:"videos,omitempty"`
 }
 
 type ConsentRequest struct {
@@ -1335,6 +1339,7 @@ type Publisher struct {
 	Avatar           *string       `json:"avatar"`
 	BackgroundColor  *string       `json:"backgroundColor"`
 	BillingAccountID *string       `json:"billingAccountId"`
+	Community        *Community    `json:"community"`
 	Description      *string       `json:"description"`
 	ID               *string       `json:"id"`
 	InsertedAt       *string       `json:"insertedAt"`
@@ -1346,11 +1351,12 @@ type Publisher struct {
 }
 
 type PublisherAttributes struct {
-	Address     *AddressAttributes `json:"address,omitempty"`
-	Avatar      *string            `json:"avatar,omitempty"`
-	Description *string            `json:"description,omitempty"`
-	Name        *string            `json:"name,omitempty"`
-	Phone       *string            `json:"phone,omitempty"`
+	Address     *AddressAttributes   `json:"address,omitempty"`
+	Avatar      *string              `json:"avatar,omitempty"`
+	Community   *CommunityAttributes `json:"community,omitempty"`
+	Description *string              `json:"description,omitempty"`
+	Name        *string              `json:"name,omitempty"`
+	Phone       *string              `json:"phone,omitempty"`
 }
 
 type PublisherConnection struct {
@@ -1540,6 +1546,7 @@ type Repository struct {
 	Recipes       []*Recipe              `json:"recipes"`
 	Secrets       map[string]interface{} `json:"secrets"`
 	Tags          []*Tag                 `json:"tags"`
+	Trending      *bool                  `json:"trending"`
 	UpdatedAt     *string                `json:"updatedAt"`
 	Verified      *bool                  `json:"verified"`
 }
@@ -1562,6 +1569,7 @@ type RepositoryAttributes struct {
 	Readme                        *string                       `json:"readme,omitempty"`
 	Secrets                       *string                       `json:"secrets,omitempty"`
 	Tags                          []*TagAttributes              `json:"tags,omitempty"`
+	Trending                      *bool                         `json:"trending,omitempty"`
 	Verified                      *bool                         `json:"verified,omitempty"`
 }
 
@@ -1780,8 +1788,10 @@ type SpecificationAttributes struct {
 type Stack struct {
 	Bundles     []*Recipe          `json:"bundles"`
 	Collections []*StackCollection `json:"collections"`
+	Community   *Community         `json:"community"`
 	Creator     *User              `json:"creator"`
 	Description *string            `json:"description"`
+	DisplayName *string            `json:"displayName"`
 	Featured    *bool              `json:"featured"`
 	ID          string             `json:"id"`
 	InsertedAt  *string            `json:"insertedAt"`
@@ -1791,7 +1801,9 @@ type Stack struct {
 
 type StackAttributes struct {
 	Collections []*StackCollectionAttributes `json:"collections,omitempty"`
+	Community   *CommunityAttributes         `json:"community,omitempty"`
 	Description *string                      `json:"description,omitempty"`
+	DisplayName *string                      `json:"displayName,omitempty"`
 	Featured    *bool                        `json:"featured,omitempty"`
 	Name        string                       `json:"name"`
 }

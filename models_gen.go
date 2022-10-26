@@ -127,6 +127,14 @@ type AwsShellCredentialsAttributes struct {
 	SecretAccessKey string `json:"secretAccessKey"`
 }
 
+type AzureShellCredentialsAttributes struct {
+	ClientID       string `json:"clientId"`
+	ClientSecret   string `json:"clientSecret"`
+	StorageAccount string `json:"storageAccount"`
+	SubscriptionID string `json:"subscriptionId"`
+	TenantID       string `json:"tenantId"`
+}
+
 type BindingAttributes struct {
 	GroupID *string `json:"groupId,omitempty"`
 	ID      *string `json:"id,omitempty"`
@@ -571,6 +579,13 @@ type GeoMetric struct {
 	Country *string `json:"country"`
 }
 
+type GitConfiguration struct {
+	Branch *string `json:"branch"`
+	Name   *string `json:"name"`
+	Root   *string `json:"root"`
+	URL    *string `json:"url"`
+}
+
 type Group struct {
 	Description *string `json:"description"`
 	Global      *bool   `json:"global"`
@@ -1008,6 +1023,11 @@ type MetricValue struct {
 	Value *int64  `json:"value"`
 }
 
+type NetworkConfiguration struct {
+	PluralDNS *bool   `json:"pluralDns"`
+	Subdomain *string `json:"subdomain"`
+}
+
 type Notification struct {
 	Actor      User             `json:"actor"`
 	ID         string           `json:"id"`
@@ -1147,6 +1167,16 @@ type OidcStepResponse struct {
 	Consent    *ConsentRequest `json:"consent"`
 	Login      *LoginRequest   `json:"login"`
 	Repository *Repository     `json:"repository"`
+}
+
+type OnboardingChecklist struct {
+	Dismissed *bool                     `json:"dismissed"`
+	Status    *OnboardingChecklistState `json:"status"`
+}
+
+type OnboardingChecklistAttributes struct {
+	Dismissed *bool                     `json:"dismissed,omitempty"`
+	Status    *OnboardingChecklistState `json:"status,omitempty"`
 }
 
 type OuathConfiguration struct {
@@ -1759,9 +1789,16 @@ type ServiceLevelAttributes struct {
 	ResponseTime *int64 `json:"responseTime,omitempty"`
 }
 
+type ShellConfiguration struct {
+	ContextConfiguration map[string]interface{} `json:"contextConfiguration"`
+	Git                  *GitConfiguration      `json:"git"`
+	Workspace            *ShellWorkspace        `json:"workspace"`
+}
+
 type ShellCredentialsAttributes struct {
-	Aws *AwsShellCredentialsAttributes `json:"aws,omitempty"`
-	Gcp *GcpShellCredentialsAttributes `json:"gcp,omitempty"`
+	Aws   *AwsShellCredentialsAttributes   `json:"aws,omitempty"`
+	Azure *AzureShellCredentialsAttributes `json:"azure,omitempty"`
+	Gcp   *GcpShellCredentialsAttributes   `json:"gcp,omitempty"`
 }
 
 type ShellStatus struct {
@@ -1769,6 +1806,12 @@ type ShellStatus struct {
 	Initialized     *bool `json:"initialized"`
 	PodScheduled    *bool `json:"podScheduled"`
 	Ready           *bool `json:"ready"`
+}
+
+type ShellWorkspace struct {
+	BucketPrefix *string               `json:"bucketPrefix"`
+	Cluster      *string               `json:"cluster"`
+	Network      *NetworkConfiguration `json:"network"`
 }
 
 type SlimSubscription struct {
@@ -2061,6 +2104,7 @@ type User struct {
 	LoginMethod         *LoginMethod         `json:"loginMethod"`
 	Name                string               `json:"name"`
 	Onboarding          *OnboardingState     `json:"onboarding"`
+	OnboardingChecklist *OnboardingChecklist `json:"onboardingChecklist"`
 	Phone               *string              `json:"phone"`
 	Provider            *Provider            `json:"provider"`
 	Publisher           *Publisher           `json:"publisher"`
@@ -2070,14 +2114,15 @@ type User struct {
 }
 
 type UserAttributes struct {
-	Avatar      *string          `json:"avatar,omitempty"`
-	Confirm     *string          `json:"confirm,omitempty"`
-	Email       *string          `json:"email,omitempty"`
-	LoginMethod *LoginMethod     `json:"loginMethod,omitempty"`
-	Name        *string          `json:"name,omitempty"`
-	Onboarding  *OnboardingState `json:"onboarding,omitempty"`
-	Password    *string          `json:"password,omitempty"`
-	Roles       *RolesAttributes `json:"roles,omitempty"`
+	Avatar              *string                        `json:"avatar,omitempty"`
+	Confirm             *string                        `json:"confirm,omitempty"`
+	Email               *string                        `json:"email,omitempty"`
+	LoginMethod         *LoginMethod                   `json:"loginMethod,omitempty"`
+	Name                *string                        `json:"name,omitempty"`
+	Onboarding          *OnboardingState               `json:"onboarding,omitempty"`
+	OnboardingChecklist *OnboardingChecklistAttributes `json:"onboardingChecklist,omitempty"`
+	Password            *string                        `json:"password,omitempty"`
+	Roles               *RolesAttributes               `json:"roles,omitempty"`
 }
 
 type UserConnection struct {
@@ -3181,6 +3226,51 @@ func (e *OidcAuthMethod) UnmarshalGQL(v interface{}) error {
 }
 
 func (e OidcAuthMethod) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type OnboardingChecklistState string
+
+const (
+	OnboardingChecklistStateConfigured       OnboardingChecklistState = "CONFIGURED"
+	OnboardingChecklistStateConsoleInstalled OnboardingChecklistState = "CONSOLE_INSTALLED"
+	OnboardingChecklistStateFinished         OnboardingChecklistState = "FINISHED"
+	OnboardingChecklistStateNew              OnboardingChecklistState = "NEW"
+)
+
+var AllOnboardingChecklistState = []OnboardingChecklistState{
+	OnboardingChecklistStateConfigured,
+	OnboardingChecklistStateConsoleInstalled,
+	OnboardingChecklistStateFinished,
+	OnboardingChecklistStateNew,
+}
+
+func (e OnboardingChecklistState) IsValid() bool {
+	switch e {
+	case OnboardingChecklistStateConfigured, OnboardingChecklistStateConsoleInstalled, OnboardingChecklistStateFinished, OnboardingChecklistStateNew:
+		return true
+	}
+	return false
+}
+
+func (e OnboardingChecklistState) String() string {
+	return string(e)
+}
+
+func (e *OnboardingChecklistState) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = OnboardingChecklistState(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid OnboardingChecklistState", str)
+	}
+	return nil
+}
+
+func (e OnboardingChecklistState) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 

@@ -18,8 +18,8 @@ func ToStringArrayPtr(input []string) []*string {
 	}
 
 	res := make([]*string, len(input))
-	for i, v := range input {
-		res[i] = &v
+	for i := range input {
+		res[i] = &input[i]
 	}
 	return res
 }

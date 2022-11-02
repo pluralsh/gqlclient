@@ -30,7 +30,6 @@ containerize() {
       -u "$(id -u):$(id -g)" \
       --entrypoint="$cmd" \
       --rm \
-      -it \
       $image $@
 
     exit $?

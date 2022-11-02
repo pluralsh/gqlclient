@@ -1,0 +1,40 @@
+name: update-client
+
+on:
+  pull_request:
+    branches:
+      - main
+  #schedule:
+  #  - cron: '*/10 * * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Use docker
+        uses: docker-practice/actions-setup-docker@master
+
+      - name: Checkout repo content
+        uses: actions/checkout@v3 # checkout the repository content to github runner
+        with:
+          fetch-depth: 0
+          # token: ${{ secrets.WORKFLOW_GIT_ACCESS_TOKEN }}
+
+      - name: Run script file
+        run: |
+          set -x
+          docker version
+          chmod +x ./hack/gen-api-client.sh
+          ./hack/gen-api-client.sh
+        shell: bash
+
+      - name: Configure Git User
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+      - name: Commit changes
+        run: |
+          git checkout -b origin/main
+          git add .
+          git commit -m "Update client"
+          git push origin HEAD:main

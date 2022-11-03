@@ -37,3 +37,8 @@ jobs:
           default_author: user_info
           message: "Update GraphQL TS Schema"
           push: false
+      - name: get next version
+        id: semver-tag
+        uses: wakatime/semver-action@v1
+      - name: "Created tag"
+        run: echo "tag ${{ steps.semver-tag.outputs.semver_tag }}"

@@ -31,11 +31,9 @@ jobs:
           author_name: Plural Bot
           author_email: gh-bot@plural.sh
           commit: --signoff
-          # default_author: user_info
-          message: "Update GraphQL TS Schema"
+          message: "fix(gqlclient): Update GraphQL TS Schema"
           push: true
-      - id: next_version
-        uses: zwaldowski/semver-release-action@v3
-        with:
-          bump: patch
-          github_token: ${{ secrets.PLURAL_BOT_PAT }}
+      - name: Semantic Release
+        uses: cycjimmy/semantic-release-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.PLURAL_BOT_PAT }}

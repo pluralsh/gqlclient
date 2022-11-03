@@ -31,9 +31,9 @@ jobs:
           author_name: Plural Bot
           author_email: gh-bot@plural.sh
           commit: --signoff
-          default_author: user_info
+          # default_author: user_info
           message: "Update GraphQL TS Schema"
-          push: false
+          push: true
       - id: next_version
         uses: zwaldowski/semver-release-action@v3
         with:

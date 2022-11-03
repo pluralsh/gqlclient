@@ -6,7 +6,7 @@ on:
     branches:
       - main
   #schedule:
-  #  - cron: '*/10 * * * *'
+  #  - cron: '0 5 * * *'
 
 jobs:
   build:
@@ -37,8 +37,10 @@ jobs:
           default_author: user_info
           message: "Update GraphQL TS Schema"
           push: false
-      - name: get next version
-        id: semver-tag
-        uses: wakatime/semver-action@vlatest
-      - name: "Created tag"
-        run: echo "tag ${{ steps.semver-tag.outputs.semver_tag }}"
+      - id: next_version
+        uses: zwaldowski/semver-release-action@v3
+        with:
+          dry_run: true
+          bump: patch
+          github_token: ${{ secrets.PLURAL_BOT_PAT }}
+      - run: echo "${{ steps.next_version.outputs.version }}"

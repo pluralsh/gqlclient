@@ -1,0 +1,41 @@
+name: update-client
+
+on:
+  workflow_dispatch:
+  schedule:
+   - cron: '0 5 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Use docker
+        uses: docker-practice/actions-setup-docker@master
+
+      - name: Checkout repo content
+        uses: actions/checkout@v3 # checkout the repository content to github runner
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.PLURAL_BOT_PAT }}
+
+      - name: Run script file
+        run: |
+          set -x
+          docker version
+          chmod +x ./hack/gen-api-client.sh
+          ./hack/gen-api-client.sh
+        shell: bash
+      - name: 'Commit and push'
+        uses: EndBug/add-and-commit@v9 # You can change this to use a specific version.
+        with:
+          author_name: Plural Bot
+          author_email: gh-bot@plural.sh
+          commit: --signoff
+          default_author: user_info
+          message: "Update GraphQL TS Schema"
+          push: false
+      - id: next_version
+        uses: zwaldowski/semver-release-action@v3
+        with:
+          bump: patch
+          github_token: ${{ secrets.PLURAL_BOT_PAT }}

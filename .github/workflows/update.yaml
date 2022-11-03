@@ -39,6 +39,6 @@ jobs:
           push: false
       - name: get next version
         id: semver-tag
-        uses: wakatime/semver-action@v1
+        uses: wakatime/semver-action@vlatest
       - name: "Created tag"
         run: echo "tag ${{ steps.semver-tag.outputs.semver_tag }}"

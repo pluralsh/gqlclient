@@ -11,6 +11,12 @@ query ListRecipes($repo: String, $provider: Provider) {
     }
 }
 
+query ListAllRecipes($repo: String) {
+    recipes(repositoryName: $repo, first: 500) {
+        edges { node { ...RecipeFragment } }
+    }
+}
+
 mutation CreateRecipe($name: String!, $attributes: RecipeAttributes!) {
     createRecipe(repositoryName: $name, attributes: $attributes) {
         id

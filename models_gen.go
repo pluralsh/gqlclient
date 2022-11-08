@@ -542,6 +542,11 @@ type FileConnection struct {
 	PageInfo PageInfo    `json:"pageInfo"`
 }
 
+type FileContent struct {
+	Content string `json:"content"`
+	Path    string `json:"path"`
+}
+
 type FileEdge struct {
 	Cursor *string `json:"cursor"`
 	Node   *File   `json:"node"`
@@ -1555,6 +1560,7 @@ type Repository struct {
 	DarkIcon      *string                `json:"darkIcon"`
 	DefaultTag    *string                `json:"defaultTag"`
 	Description   *string                `json:"description"`
+	Docs          []*FileContent         `json:"docs"`
 	Documentation *string                `json:"documentation"`
 	Editable      *bool                  `json:"editable"`
 	GitURL        *string                `json:"gitUrl"`
@@ -1587,6 +1593,7 @@ type RepositoryAttributes struct {
 	DarkIcon                      *string                       `json:"darkIcon,omitempty"`
 	DefaultTag                    *string                       `json:"defaultTag,omitempty"`
 	Description                   *string                       `json:"description,omitempty"`
+	Docs                          *string                       `json:"docs,omitempty"`
 	Documentation                 *string                       `json:"documentation,omitempty"`
 	GitURL                        *string                       `json:"gitUrl,omitempty"`
 	Homepage                      *string                       `json:"homepage,omitempty"`

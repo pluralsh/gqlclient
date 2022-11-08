@@ -57,3 +57,7 @@ mutation DeleteEabCredential($cluster: String!, $provider: Provider!) {
 mutation CreateEvent($attrs: UserEventAttributes!) {
     createUserEvent(attributes: $attrs)
 }
+
+query GetHelp($prompt: String!) {
+    helpQuestion(prompt: $prompt)
+}

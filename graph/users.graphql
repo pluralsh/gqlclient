@@ -57,3 +57,24 @@ mutation DeleteEabCredential($cluster: String!, $provider: Provider!) {
 mutation CreateEvent($attrs: UserEventAttributes!) {
     createUserEvent(attributes: $attrs)
 }
+
+mutation CreateBackup($attrs: KeyBackupAttributes!) {
+    createKeyBackup(attributes: $attrs) { ...KeyBackupFragment }
+}
+
+query Backups($cursor: String) {
+    keyBackups(first: 50, after: $cursor) {
+        edges { node { ...KeyBackupFragment } }
+    }
+}
+
+query Backup($name: String!) {
+    keyBackup(name: $name) {
+        ...KeyBackupFragment
+        value
+    }
+}
+
+query GetHelp($prompt: String!) {
+    helpQuestion(prompt: $prompt)
+}

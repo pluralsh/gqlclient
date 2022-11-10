@@ -446,6 +446,7 @@ type DockerImage struct {
 	Grade            *ImageGrade       `json:"grade"`
 	ID               string            `json:"id"`
 	InsertedAt       *string           `json:"insertedAt"`
+	ScanCompletedAt  *string           `json:"scanCompletedAt"`
 	ScannedAt        *string           `json:"scannedAt"`
 	Tag              *string           `json:"tag"`
 	UpdatedAt        *string           `json:"updatedAt"`
@@ -948,6 +949,32 @@ type InvoiceItem struct {
 	Amount      int64   `json:"amount"`
 	Currency    string  `json:"currency"`
 	Description *string `json:"description"`
+}
+
+type KeyBackup struct {
+	ID           string    `json:"id"`
+	InsertedAt   *string   `json:"insertedAt"`
+	Name         string    `json:"name"`
+	Repositories []*string `json:"repositories"`
+	UpdatedAt    *string   `json:"updatedAt"`
+	User         User      `json:"user"`
+	Value        string    `json:"value"`
+}
+
+type KeyBackupAttributes struct {
+	Key          string    `json:"key"`
+	Name         string    `json:"name"`
+	Repositories []*string `json:"repositories,omitempty"`
+}
+
+type KeyBackupConnection struct {
+	Edges    []*KeyBackupEdge `json:"edges"`
+	PageInfo PageInfo         `json:"pageInfo"`
+}
+
+type KeyBackupEdge struct {
+	Cursor *string    `json:"cursor"`
+	Node   *KeyBackup `json:"node"`
 }
 
 type License struct {

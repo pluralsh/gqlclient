@@ -216,3 +216,9 @@ fragment StackFragment on Stack {
     description
     bundles { ...RecipeFragment }
 }
+
+fragment KeyBackupFragment on KeyBackup {
+    id
+    name
+    repositories
+}

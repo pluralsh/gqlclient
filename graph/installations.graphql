@@ -25,3 +25,7 @@ mutation UpsertOidcProvider($id: ID!, $attributes: OidcAttributes!) {
 mutation ResetInstallations(){
     resetInstallations
 }
+
+mutation DeleteInstallation($id: ID!) {
+    deleteInstallation(id: $id) { id }
+}

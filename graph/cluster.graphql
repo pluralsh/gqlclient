@@ -1,0 +1,3 @@
+mutation DestroyCluster($domain: String!, $name: String!, $provider: Provider!) {
+    destroyCluster(domain: $domain, name: $name, provider: $provider)
+}

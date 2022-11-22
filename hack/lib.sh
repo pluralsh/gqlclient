@@ -35,3 +35,21 @@ containerize() {
     exit $?
   fi
 }
+
+containerizeNode() {
+  local cmd="$1"
+  local image="${CONTAINERIZE_IMAGE:-node:19}"
+
+  if ! [ -f /.dockerenv ]; then
+    echodate "Running $cmd in a Docker container using $image..."
+
+    exec docker run \
+      -v "$PWD":/home/node/app \
+      -w /home/node/app \
+      --entrypoint="$cmd" \
+      --rm \
+      $image $@
+
+    exit $?
+  fi
+}

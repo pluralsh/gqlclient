@@ -1764,17 +1764,6 @@ type RolloutEdge struct {
 	Node   *Rollout `json:"node"`
 }
 
-type RootSubscriptionType struct {
-	IncidentDelta        *IncidentDelta        `json:"incidentDelta"`
-	IncidentMessageDelta *IncidentMessageDelta `json:"incidentMessageDelta"`
-	Notification         *Notification         `json:"notification"`
-	RolloutDelta         *RolloutDelta         `json:"rolloutDelta"`
-	TestDelta            *TestDelta            `json:"testDelta"`
-	TestLogs             *StepLogs             `json:"testLogs"`
-	Upgrade              *Upgrade              `json:"upgrade"`
-	UpgradeQueueDelta    *UpgradeQueueDelta    `json:"upgradeQueueDelta"`
-}
-
 type ScaffoldFile struct {
 	Content *string `json:"content"`
 	Path    *string `json:"path"`

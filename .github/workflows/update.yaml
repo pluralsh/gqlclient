@@ -23,6 +23,8 @@ jobs:
           set -x
           docker version
           chmod +x ./hack/gen-api-client.sh
+          chmod +x ./hack/gen-schema.sh
+          ./hack/gen-schema.sh
           ./hack/gen-api-client.sh
         shell: bash
       - name: 'Commit and push'

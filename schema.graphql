@@ -1,0 +1,2831 @@
+schema {
+  query: RootQueryType
+  mutation: RootMutationType
+  subscription: RootSubscriptionType
+}
+
+type Account {
+  backgroundColor: String
+  billingCustomerId: String
+  domainMappings: [DomainMapping]
+  icon: String
+  id: ID!
+  insertedAt: DateTime
+  name: String
+  rootUser: User
+  updatedAt: DateTime
+  workosConnectionId: String
+}
+
+input AccountAttributes {
+  domainMappings: [DomainMappingInput]
+  icon: UploadOrUrl
+  name: String
+}
+
+type ActionItem {
+  link: String!
+  type: ActionItemType!
+}
+
+input ActionItemAttributes {
+  link: String!
+  type: ActionItemType!
+}
+
+enum ActionItemType {
+  BLOG
+  ISSUE
+  PULL
+}
+
+type Address {
+  city: String
+  country: String
+  line1: String
+  line2: String
+  state: String
+  zip: String
+}
+
+input AddressAttributes {
+  city: String!
+  country: String!
+  line1: String!
+  line2: String!
+  state: String!
+  zip: String!
+}
+
+type ApplyLock {
+  id: ID!
+  insertedAt: DateTime
+  lock: String
+  owner: User
+  repository: Repository
+  updatedAt: DateTime
+}
+
+type Artifact {
+  arch: String
+  blob: String
+  filesize: Int
+  id: ID
+  insertedAt: DateTime
+  name: String
+  platform: ArtifactPlatform
+  readme: String
+  sha: String
+  type: ArtifactType
+  updatedAt: DateTime
+}
+
+input ArtifactAttributes {
+  arch: String
+  blob: UploadOrUrl
+  name: String!
+  platform: String!
+  readme: String!
+  type: String!
+}
+
+enum ArtifactPlatform {
+  ANDROID
+  FREEBSD
+  LINUX
+  MAC
+  OPENBSD
+  SOLARIS
+  WINDOWS
+}
+
+enum ArtifactType {
+  CLI
+  DESKTOP
+  MOBILE
+}
+
+type Audit {
+  action: String!
+  actor: User
+  city: String
+  country: String
+  group: Group
+  id: ID!
+  image: DockerImage
+  insertedAt: DateTime
+  integrationWebhook: IntegrationWebhook
+  ip: String
+  latitude: String
+  longitude: String
+  repository: Repository
+  role: Role
+  updatedAt: DateTime
+  user: User
+  version: Version
+}
+
+type AuditConnection {
+  edges: [AuditEdge]
+  pageInfo: PageInfo!
+}
+
+type AuditEdge {
+  cursor: String
+  node: Audit
+}
+
+type AuthorizationUrl {
+  provider: ScmProvider!
+  url: String!
+}
+
+input AwsShellCredentialsAttributes {
+  accessKeyId: String!
+  secretAccessKey: String!
+}
+
+input AzureShellCredentialsAttributes {
+  clientId: String!
+  clientSecret: String!
+  storageAccount: String!
+  subscriptionId: String!
+  tenantId: String!
+}
+
+input BindingAttributes {
+  groupId: ID
+  id: ID
+  userId: ID
+}
+
+type Card {
+  brand: String!
+  expMonth: Int!
+  expYear: Int!
+  id: ID!
+  last4: String!
+  name: String
+}
+
+type CardConnection {
+  edges: [CardEdge]
+  pageInfo: PageInfo!
+}
+
+type CardEdge {
+  cursor: String
+  node: Card
+}
+
+enum Category {
+  DATA
+  DATABASE
+  DEVOPS
+  MESSAGING
+  NETWORK
+  PRODUCTIVITY
+  SECURITY
+  STORAGE
+}
+
+type CategoryInfo {
+  category: Category
+  count: Int
+  tags(after: String, before: String, first: Int, last: Int, q: String): GroupedTagConnection
+}
+
+type ChangeInstructions {
+  instructions: String
+  script: String
+}
+
+type Chart {
+  dependencies: Dependencies
+  description: String
+  id: ID
+  insertedAt: DateTime
+  installation: ChartInstallation
+  latestVersion: String
+  name: String!
+  repository: Repository
+  tags: [VersionTag]
+  updatedAt: DateTime
+}
+
+input ChartAttributes {
+  tags: [VersionTagAttributes]
+}
+
+type ChartConnection {
+  edges: [ChartEdge]
+  pageInfo: PageInfo!
+}
+
+type ChartEdge {
+  cursor: String
+  node: Chart
+}
+
+type ChartInstallation {
+  chart: Chart
+  id: ID
+  insertedAt: DateTime
+  installation: Installation
+  updatedAt: DateTime
+  version: Version
+}
+
+input ChartInstallationAttributes {
+  chartId: ID
+  versionId: ID
+}
+
+type ChartInstallationConnection {
+  edges: [ChartInstallationEdge]
+  pageInfo: PageInfo!
+}
+
+type ChartInstallationEdge {
+  cursor: String
+  node: ChartInstallation
+}
+
+input ChartName {
+  chart: String
+  repo: String
+}
+
+type ClosureItem {
+  dep: Dependency
+  helm: Chart
+  terraform: Terraform
+}
+
+type CloudShell {
+  aesKey: String!
+  alive: Boolean!
+  cluster: String!
+  gitUrl: String!
+  id: ID!
+  insertedAt: DateTime
+  provider: Provider!
+  status: ShellStatus
+  subdomain: String!
+  updatedAt: DateTime
+}
+
+input CloudShellAttributes {
+  credentials: ShellCredentialsAttributes!
+  demoId: ID
+  provider: Provider
+  scm: ScmAttributes
+  workspace: WorkspaceAttributes!
+}
+
+type ClusterInformation {
+  gitCommit: String
+  id: ID!
+  insertedAt: DateTime
+  platform: String
+  updatedAt: DateTime
+  version: String
+}
+
+input ClusterInformationAttributes {
+  gitCommit: String
+  platform: String
+  version: String
+}
+
+type Community {
+  discord: String
+  gitUrl: String
+  homepage: String
+  slack: String
+  twitter: String
+  videos: [String]
+}
+
+input CommunityAttributes {
+  discord: String
+  gitUrl: String
+  homepage: String
+  slack: String
+  twitter: String
+  videos: [String]
+}
+
+type ConsentRequest {
+  requestedScope: [String]
+  skip: Boolean
+}
+
+type Crd {
+  blob: String
+  id: ID!
+  insertedAt: DateTime
+  name: String!
+  updatedAt: DateTime
+}
+
+input CrdAttributes {
+  blob: UploadOrUrl
+  name: String!
+}
+
+type Cvss {
+  attackComplexity: VulnGrade
+  attackVector: VulnVector
+  availability: VulnGrade
+  confidentiality: VulnGrade
+  integrity: VulnGrade
+  privilegesRequired: VulnGrade
+  userInteraction: VulnRequirement
+}
+
+enum Datatype {
+  BOOL
+  BUCKET
+  DOMAIN
+  FILE
+  FUNCTION
+  INT
+  PASSWORD
+  STRING
+}
+
+"""
+The `DateTime` scalar type represents a date and time in the UTC
+timezone. The DateTime appears in a JSON response as an ISO8601 formatted
+string, including UTC timezone ("Z"). The parsed date and time string will
+be converted to UTC if there is an offset.
+"""
+scalar DateTime
+
+type DeferredUpdate {
+  attempts: Int
+  chartInstallation: ChartInstallation
+  dequeueAt: DateTime
+  id: ID!
+  insertedAt: DateTime
+  terraformInstallation: TerraformInstallation
+  updatedAt: DateTime
+  version: Version
+}
+
+type DeferredUpdateConnection {
+  edges: [DeferredUpdateEdge]
+  pageInfo: PageInfo!
+}
+
+type DeferredUpdateEdge {
+  cursor: String
+  node: DeferredUpdate
+}
+
+enum Delta {
+  CREATE
+  DELETE
+  UPDATE
+}
+
+type DemoProject {
+  credentials: String
+  id: ID!
+  insertedAt: DateTime
+  projectId: String!
+  ready: Boolean
+  state: DemoProjectState
+  updatedAt: DateTime
+}
+
+enum DemoProjectState {
+  CREATED
+  ENABLED
+  READY
+}
+
+type Dependencies {
+  application: Boolean
+  breaking: Boolean
+  dependencies: [Dependency]
+  instructions: ChangeInstructions
+  outputs: Map
+  providerVsn: String
+  providerWirings: Map
+  providers: [Provider]
+  secrets: [String]
+  wait: Boolean
+  wirings: Wirings
+}
+
+type Dependency {
+  name: String
+  optional: Boolean
+  repo: String
+  type: DependencyType
+  version: String
+}
+
+enum DependencyType {
+  HELM
+  TERRAFORM
+}
+
+type DeviceLogin {
+  deviceToken: String!
+  loginUrl: String!
+}
+
+type DnsAccessPolicy {
+  bindings: [PolicyBinding]
+  id: ID!
+  insertedAt: DateTime
+  updatedAt: DateTime
+}
+
+input DnsAccessPolicyAttributes {
+  bindings: [BindingAttributes]
+  id: ID
+}
+
+type DnsDomain {
+  accessPolicy: DnsAccessPolicy
+  account: Account
+  creator: User
+  dnsRecords(after: String, before: String, first: Int, last: Int): DnsRecordConnection
+  id: ID!
+  insertedAt: DateTime
+  name: String!
+  updatedAt: DateTime
+}
+
+input DnsDomainAttributes {
+  accessPolicy: DnsAccessPolicyAttributes
+  name: String
+}
+
+type DnsDomainConnection {
+  edges: [DnsDomainEdge]
+  pageInfo: PageInfo!
+}
+
+type DnsDomainEdge {
+  cursor: String
+  node: DnsDomain
+}
+
+type DnsRecord {
+  cluster: String!
+  creator: User
+  domain: DnsDomain
+  id: ID!
+  insertedAt: DateTime
+  name: String!
+  provider: Provider!
+  records: [String]
+  type: DnsRecordType!
+  updatedAt: DateTime
+}
+
+input DnsRecordAttributes {
+  name: String!
+  records: [String]
+  type: DnsRecordType!
+}
+
+type DnsRecordConnection {
+  edges: [DnsRecordEdge]
+  pageInfo: PageInfo!
+}
+
+type DnsRecordEdge {
+  cursor: String
+  node: DnsRecord
+}
+
+enum DnsRecordType {
+  A
+  AAAA
+  CNAME
+  TXT
+}
+
+type DockerImage {
+  digest: String!
+  dockerRepository: DockerRepository
+  grade: ImageGrade
+  id: ID!
+  insertedAt: DateTime
+  scanCompletedAt: DateTime
+  scannedAt: DateTime
+  tag: String
+  updatedAt: DateTime
+  vulnerabilities: [Vulnerability]
+}
+
+type DockerImageConnection {
+  edges: [DockerImageEdge]
+  pageInfo: PageInfo!
+}
+
+type DockerImageEdge {
+  cursor: String
+  node: DockerImage
+}
+
+type DockerRepository {
+  id: ID!
+  insertedAt: DateTime
+  metrics(offset: String, precision: String, tag: String): [Metric]
+  name: String!
+  public: Boolean
+  repository: Repository
+  updatedAt: DateTime
+}
+
+input DockerRepositoryAttributes {
+  public: Boolean!
+}
+
+type DockerRepositoryConnection {
+  edges: [DockerRepositoryEdge]
+  pageInfo: PageInfo!
+}
+
+type DockerRepositoryEdge {
+  cursor: String
+  node: DockerRepository
+}
+
+type DomainMapping {
+  account: Account
+  domain: String!
+  enableSso: Boolean
+  id: ID!
+  insertedAt: DateTime
+  updatedAt: DateTime
+}
+
+input DomainMappingInput {
+  domain: String
+  enableSso: Boolean
+  id: ID
+}
+
+type EabCredential {
+  cluster: String!
+  hmacKey: String!
+  id: ID!
+  insertedAt: DateTime
+  keyId: String!
+  provider: Provider!
+  updatedAt: DateTime
+}
+
+input EntityAttributes {
+  endIndex: Int
+  startIndex: Int
+  text: String
+  type: MessageEntityType!
+  userId: ID
+}
+
+type File {
+  blob: String!
+  contentType: String
+  filename: String
+  filesize: Int
+  height: Int
+  id: ID!
+  insertedAt: DateTime
+  mediaType: MediaType
+  message: IncidentMessage!
+  updatedAt: DateTime
+  width: Int
+}
+
+input FileAttributes {
+  blob: UploadOrUrl
+}
+
+type FileConnection {
+  edges: [FileEdge]
+  pageInfo: PageInfo!
+}
+
+type FileContent {
+  content: String!
+  path: String!
+}
+
+type FileEdge {
+  cursor: String
+  node: File
+}
+
+type Follower {
+  id: ID!
+  incident: Incident
+  insertedAt: DateTime
+  preferences: NotificationPreferences
+  updatedAt: DateTime
+  user: User!
+}
+
+input FollowerAttributes {
+  preferences: NotificationPreferencesAttributes
+}
+
+type FollowerConnection {
+  edges: [FollowerEdge]
+  pageInfo: PageInfo!
+}
+
+type FollowerEdge {
+  cursor: String
+  node: Follower
+}
+
+input GcpShellCredentialsAttributes {
+  applicationCredentials: String!
+}
+
+type GeoMetric {
+  count: Int
+  country: String
+}
+
+type GitConfiguration {
+  branch: String
+  name: String
+  root: String
+  url: String
+}
+
+type Group {
+  description: String
+  global: Boolean
+  id: ID!
+  insertedAt: DateTime
+  name: String!
+  updatedAt: DateTime
+}
+
+input GroupAttributes {
+  description: String
+  global: Boolean
+  name: String!
+}
+
+type GroupConnection {
+  edges: [GroupEdge]
+  pageInfo: PageInfo!
+}
+
+type GroupEdge {
+  cursor: String
+  node: Group
+}
+
+type GroupedTag {
+  count: Int!
+  tag: String!
+}
+
+type GroupedTagConnection {
+  edges: [GroupedTagEdge]
+  pageInfo: PageInfo!
+}
+
+type GroupedTagEdge {
+  cursor: String
+  node: GroupedTag
+}
+
+type GroupMember {
+  group: Group
+  id: ID!
+  insertedAt: DateTime
+  updatedAt: DateTime
+  user: User
+}
+
+type GroupMemberConnection {
+  edges: [GroupMemberEdge]
+  pageInfo: PageInfo!
+}
+
+type GroupMemberEdge {
+  cursor: String
+  node: GroupMember
+}
+
+type ImageDependency {
+  id: ID!
+  image: DockerImage!
+  insertedAt: DateTime
+  updatedAt: DateTime
+  version: Version!
+}
+
+enum ImageGrade {
+  A
+  B
+  C
+  D
+  F
+}
+
+type ImageLayer {
+  diffId: String
+  digest: String
+}
+
+type ImpersonationPolicy {
+  bindings: [ImpersonationPolicyBinding]
+  id: ID!
+  insertedAt: DateTime
+  updatedAt: DateTime
+}
+
+input ImpersonationPolicyAttributes {
+  bindings: [ImpersonationPolicyBindingAttributes]
+  id: ID
+}
+
+type ImpersonationPolicyBinding {
+  group: Group
+  id: ID!
+  insertedAt: DateTime
+  updatedAt: DateTime
+  user: User
+}
+
+input ImpersonationPolicyBindingAttributes {
+  groupId: ID
+  id: ID
+  userId: ID
+}
+
+type Incident {
+  clusterInformation: ClusterInformation
+  creator: User!
+  description: String
+  files(after: String, before: String, first: Int, last: Int): FileConnection
+  follower: Follower
+  followers(after: String, before: String, first: Int, last: Int): FollowerConnection
+  history(after: String, before: String, first: Int, last: Int): IncidentHistoryConnection
+  id: ID!
+  insertedAt: DateTime
+  messages(after: String, before: String, first: Int, last: Int): IncidentMessageConnection
+  nextResponseAt: DateTime
+  notificationCount: Int
+  owner: User
+  postmortem: Postmortem
+  repository: Repository!
+  severity: Int!
+  status: IncidentStatus!
+  subscription: SlimSubscription
+  tags: [Tag]
+  title: String!
+  updatedAt: DateTime
+}
+
+enum IncidentAction {
+  ACCEPT
+  COMPLETE
+  CREATE
+  EDIT
+  SEVERITY
+  STATUS
+}
+
+input IncidentAttributes {
+  clusterInformation: ClusterInformationAttributes
+  description: String
+  severity: Int
+  status: IncidentStatus
+  tags: [TagAttributes]
+  title: String
+}
+
+type IncidentChange {
+  key: String!
+  next: String
+  prev: String
+}
+
+type IncidentConnection {
+  edges: [IncidentEdge]
+  pageInfo: PageInfo!
+}
+
+type IncidentDelta {
+  delta: Delta
+  payload: Incident
+}
+
+type IncidentEdge {
+  cursor: String
+  node: Incident
+}
+
+input IncidentFilter {
+  statuses: [IncidentStatus]
+  type: IncidentFilterType!
+  value: String
+}
+
+enum IncidentFilterType {
+  FOLLOWING
+  NOTIFICATIONS
+  STATUS
+  TAG
+}
+
+type IncidentHistory {
+  action: IncidentAction!
+  actor: User!
+  changes: [IncidentChange]
+  id: ID!
+  incident: Incident!
+  insertedAt: DateTime
+  updatedAt: DateTime
+}
+
+type IncidentHistoryConnection {
+  edges: [IncidentHistoryEdge]
+  pageInfo: PageInfo!
+}
+
+type IncidentHistoryEdge {
+  cursor: String
+  node: IncidentHistory
+}
+
+type IncidentMessage {
+  creator: User!
+  entities: [MessageEntity]
+  file: File
+  id: ID!
+  incident: Incident!
+  insertedAt: DateTime
+  reactions: [Reaction]
+  text: String!
+  updatedAt: DateTime
+}
+
+input IncidentMessageAttributes {
+  entities: [EntityAttributes]
+  file: FileAttributes
+  text: String!
+}
+
+type IncidentMessageConnection {
+  edges: [IncidentMessageEdge]
+  pageInfo: PageInfo!
+}
+
+type IncidentMessageDelta {
+  delta: Delta
+  payload: IncidentMessage
+}
+
+type IncidentMessageEdge {
+  cursor: String
+  node: IncidentMessage
+}
+
+enum IncidentSort {
+  INSERTED_AT
+  SEVERITY
+  STATUS
+  TITLE
+}
+
+enum IncidentStatus {
+  COMPLETE
+  IN_PROGRESS
+  OPEN
+  RESOLVED
+}
+
+type Installation {
+  acmeKeyId: String
+  acmeSecret: String
+  autoUpgrade: Boolean
+  context: Map
+  id: ID!
+  insertedAt: DateTime
+  license: String
+  licenseKey: String
+  oidcProvider: OidcProvider
+  repository: Repository
+  subscription: RepositorySubscription
+  trackTag: String!
+  updatedAt: DateTime
+  user: User
+}
+
+input InstallationAttributes {
+  autoUpgrade: Boolean
+  context: Yaml
+  trackTag: String
+}
+
+type InstallationConnection {
+  edges: [InstallationEdge]
+  pageInfo: PageInfo!
+}
+
+type InstallationEdge {
+  cursor: String
+  node: Installation
+}
+
+type Integration {
+  description: String
+  icon: String
+  id: ID!
+  insertedAt: DateTime
+  name: String!
+  publisher: Publisher
+  repository: Repository
+  sourceUrl: String
+  spec: Map
+  tags: [Tag]
+  type: String
+  updatedAt: DateTime
+}
+
+input IntegrationAttributes {
+  description: String
+  icon: UploadOrUrl
+  name: String!
+  sourceUrl: String
+  spec: Yaml
+  tags: [TagAttributes]
+  type: String
+}
+
+type IntegrationConnection {
+  edges: [IntegrationEdge]
+  pageInfo: PageInfo!
+}
+
+type IntegrationEdge {
+  cursor: String
+  node: Integration
+}
+
+type IntegrationWebhook {
+  account: Account
+  actions: [String]
+  id: ID!
+  insertedAt: DateTime
+  logs(after: String, before: String, first: Int, last: Int): WebhookLogConnection
+  name: String!
+  secret: String!
+  updatedAt: DateTime
+  url: String!
+}
+
+input IntegrationWebhookAttributes {
+  actions: [String]
+  name: String!
+  url: String!
+}
+
+type IntegrationWebhookConnection {
+  edges: [IntegrationWebhookEdge]
+  pageInfo: PageInfo!
+}
+
+type IntegrationWebhookEdge {
+  cursor: String
+  node: IntegrationWebhook
+}
+
+type Invite {
+  account: Account
+  email: String
+  existing: Boolean!
+  expiresAt: DateTime
+  id: ID!
+  insertedAt: DateTime
+  secureId: String
+  updatedAt: DateTime
+  user: User
+}
+
+input InviteAttributes {
+  email: String
+}
+
+type InviteConnection {
+  edges: [InviteEdge]
+  pageInfo: PageInfo!
+}
+
+type InviteEdge {
+  cursor: String
+  node: Invite
+}
+
+type Invoice {
+  amountDue: Int!
+  amountPaid: Int!
+  createdAt: DateTime
+  currency: String!
+  hostedInvoiceUrl: String
+  lines: [InvoiceItem]
+  number: String!
+  status: String
+}
+
+type InvoiceConnection {
+  edges: [InvoiceEdge]
+  pageInfo: PageInfo!
+}
+
+type InvoiceEdge {
+  cursor: String
+  node: Invoice
+}
+
+type InvoiceItem {
+  amount: Int!
+  currency: String!
+  description: String
+}
+
+type KeyBackup {
+  id: ID!
+  insertedAt: DateTime
+  name: String!
+  repositories: [String]
+  updatedAt: DateTime
+  user: User!
+  value: String!
+}
+
+input KeyBackupAttributes {
+  key: String!
+  name: String!
+  repositories: [String]
+}
+
+type KeyBackupConnection {
+  edges: [KeyBackupEdge]
+  pageInfo: PageInfo!
+}
+
+type KeyBackupEdge {
+  cursor: String
+  node: KeyBackup
+}
+
+type License {
+  name: String
+  url: String
+}
+
+type Limit {
+  dimension: String!
+  quantity: Int!
+}
+
+input LimitAttributes {
+  dimension: String!
+  quantity: Int!
+}
+
+type LineItem {
+  cost: Int!
+  dimension: String!
+  name: String!
+  period: String
+  type: PlanType
+}
+
+input LineItemAttributes {
+  cost: Int!
+  dimension: String!
+  name: String!
+  period: String!
+  type: PlanType
+}
+
+input LockAttributes {
+  lock: String!
+}
+
+enum LoginMethod {
+  GITHUB
+  GOOGLE
+  PASSWORD
+  PASSWORDLESS
+  SSO
+}
+
+type LoginMethodResponse {
+  authorizeUrl: String
+  loginMethod: LoginMethod!
+  token: String
+}
+
+type LoginRequest {
+  requestedScope: [String]
+  subject: String
+}
+
+scalar Map
+
+enum MediaType {
+  AUDIO
+  IMAGE
+  OTHER
+  PDF
+  VIDEO
+}
+
+input MeetingAttributes {
+  incidentId: ID
+  topic: String!
+}
+
+type MessageEntity {
+  endIndex: Int
+  id: ID!
+  insertedAt: DateTime
+  startIndex: Int
+  text: String
+  type: MessageEntityType!
+  updatedAt: DateTime
+  user: User
+}
+
+enum MessageEntityType {
+  EMOJI
+  MENTION
+}
+
+type Metric {
+  name: String!
+  tags: [MetricTag]
+  values: [MetricValue]
+}
+
+type MetricTag {
+  name: String!
+  value: String!
+}
+
+type MetricValue {
+  time: DateTime
+  value: Int
+}
+
+type NetworkConfiguration {
+  pluralDns: Boolean
+  subdomain: String
+}
+
+type Notification {
+  actor: User!
+  id: ID!
+  incident: Incident
+  insertedAt: DateTime
+  message: IncidentMessage
+  msg: String
+  repository: Repository
+  type: NotificationType!
+  updatedAt: DateTime
+  user: User!
+}
+
+type NotificationConnection {
+  edges: [NotificationEdge]
+  pageInfo: PageInfo!
+}
+
+type NotificationEdge {
+  cursor: String
+  node: Notification
+}
+
+type NotificationPreferences {
+  incidentUpdate: Boolean
+  mention: Boolean
+  message: Boolean
+}
+
+input NotificationPreferencesAttributes {
+  incidentUpdate: Boolean!
+  mention: Boolean!
+  message: Boolean!
+}
+
+enum NotificationType {
+  INCIDENT_UPDATE
+  LOCKED
+  MENTION
+  MESSAGE
+}
+
+input OauthAttributes {
+  code: String
+  redirectUri: String
+  service: OauthService
+}
+
+type OauthInfo {
+  authorizeUrl: String!
+  provider: OauthProvider!
+}
+
+type OauthIntegration {
+  account: Account
+  id: ID!
+  insertedAt: DateTime
+  service: OauthService!
+  updatedAt: DateTime
+}
+
+enum OauthProvider {
+  GITHUB
+  GITLAB
+  GOOGLE
+}
+
+type OauthResponse {
+  redirectTo: String!
+}
+
+enum OauthService {
+  ZOOM
+}
+
+type OauthSettings {
+  authMethod: OidcAuthMethod!
+  uriFormat: String!
+}
+
+input OauthSettingsAttributes {
+  authMethod: OidcAuthMethod!
+  uriFormat: String!
+}
+
+input OidcAttributes {
+  authMethod: OidcAuthMethod!
+  bindings: [BindingAttributes]
+  redirectUris: [String]
+}
+
+enum OidcAuthMethod {
+  BASIC
+  POST
+}
+
+type OidcLogin {
+  city: String
+  country: String
+  id: ID!
+  insertedAt: DateTime
+  ip: String
+  latitude: String
+  longitude: String
+  owner: User
+  repository: Repository
+  updatedAt: DateTime
+  user: User
+}
+
+type OidcLoginConnection {
+  edges: [OidcLoginEdge]
+  pageInfo: PageInfo!
+}
+
+type OidcLoginEdge {
+  cursor: String
+  node: OidcLogin
+}
+
+type OidcProvider {
+  authMethod: OidcAuthMethod!
+  bindings: [OidcProviderBinding]
+  clientId: String!
+  clientSecret: String!
+  configuration: OuathConfiguration
+  consent: ConsentRequest
+  id: ID!
+  insertedAt: DateTime
+  redirectUris: [String]
+  updatedAt: DateTime
+}
+
+type OidcProviderBinding {
+  group: Group
+  id: ID!
+  insertedAt: DateTime
+  updatedAt: DateTime
+  user: User
+}
+
+type OidcSettings {
+  authMethod: OidcAuthMethod!
+  domainKey: String
+  subdomain: Boolean
+  uriFormat: String
+  uriFormats: [String]
+}
+
+input OidcSettingsAttributes {
+  authMethod: OidcAuthMethod!
+  domainKey: String
+  subdomain: Boolean
+  uriFormat: String
+  uriFormats: [String]
+}
+
+type OidcStepResponse {
+  consent: ConsentRequest
+  login: LoginRequest
+  repository: Repository
+}
+
+type OnboardingChecklist {
+  dismissed: Boolean
+  status: OnboardingChecklistState
+}
+
+input OnboardingChecklistAttributes {
+  dismissed: Boolean
+  status: OnboardingChecklistState
+}
+
+enum OnboardingChecklistState {
+  CONFIGURED
+  CONSOLE_INSTALLED
+  FINISHED
+  NEW
+}
+
+enum OnboardingState {
+  ACTIVE
+  INSTALLED
+  NEW
+  ONBOARDED
+}
+
+enum Operation {
+  EQ
+  GT
+  GTE
+  LT
+  LTE
+  NOT
+  PREFIX
+  SUFFIX
+}
+
+enum Order {
+  ASC
+  DESC
+}
+
+type OuathConfiguration {
+  authorizationEndpoint: String
+  issuer: String
+  jwksUri: String
+  tokenEndpoint: String
+  userinfoEndpoint: String
+}
+
+type PackageScan {
+  errors: [ScanError]
+  grade: ImageGrade
+  id: ID!
+  insertedAt: DateTime
+  updatedAt: DateTime
+  violations: [ScanViolation]
+}
+
+type PageInfo {
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
+
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: String
+}
+
+enum Permission {
+  BILLING
+  INSTALL
+  INTEGRATIONS
+  PUBLISH
+  SUPPORT
+  USERS
+}
+
+type PersistedToken {
+  audits(after: String, before: String, first: Int, last: Int): PersistedTokenAuditConnection
+  id: ID
+  insertedAt: DateTime
+  metrics: [GeoMetric]
+  token: String
+  updatedAt: DateTime
+}
+
+type PersistedTokenAudit {
+  city: String
+  count: Int
+  country: String
+  id: ID
+  insertedAt: DateTime
+  ip: String
+  latitude: String
+  longitude: String
+  timestamp: DateTime
+  updatedAt: DateTime
+}
+
+type PersistedTokenAuditConnection {
+  edges: [PersistedTokenAuditEdge]
+  pageInfo: PageInfo!
+}
+
+type PersistedTokenAuditEdge {
+  cursor: String
+  node: PersistedTokenAudit
+}
+
+type PersistedTokenConnection {
+  edges: [PersistedTokenEdge]
+  pageInfo: PageInfo!
+}
+
+type PersistedTokenEdge {
+  cursor: String
+  node: PersistedToken
+}
+
+type Plan {
+  cost: Int!
+  default: Boolean
+  id: ID!
+  insertedAt: DateTime
+  lineItems: PlanLineItems
+  metadata: PlanMetadata
+  name: String!
+  period: String
+  serviceLevels: [ServiceLevel]
+  updatedAt: DateTime
+  visible: Boolean!
+}
+
+input PlanAttributes {
+  cost: Int!
+  default: Boolean
+  lineItems: PlanLineItemAttributes
+  metadata: PlanMetadataAttributes
+  name: String!
+  period: String!
+  serviceLevels: [ServiceLevelAttributes]
+}
+
+type PlanFeature {
+  description: String!
+  name: String!
+}
+
+input PlanFeatureAttributes {
+  description: String!
+  name: String!
+}
+
+input PlanLineItemAttributes {
+  included: [LimitAttributes]
+  items: [LineItemAttributes]
+}
+
+type PlanLineItems {
+  included: [Limit]
+  items: [LineItem]
+}
+
+type PlanMetadata {
+  features: [PlanFeature]
+  freeform: Map
+}
+
+input PlanMetadataAttributes {
+  features: [PlanFeatureAttributes]
+  freeform: Yaml
+}
+
+enum PlanType {
+  LICENSED
+  METERED
+}
+
+type PlatformMetrics {
+  clusters: Int
+  publishers: Int
+  repositories: Int
+  rollouts: Int
+}
+
+type PluralConfiguration {
+  gitCommit: String
+  registry: String
+  stripeConnectId: String
+  stripePublishableKey: String
+}
+
+type PolicyBinding {
+  group: Group
+  id: ID!
+  insertedAt: DateTime
+  updatedAt: DateTime
+  user: User
+}
+
+type Postmortem {
+  actionItems: [ActionItem]
+  content: String!
+  creator: User!
+  id: ID!
+  insertedAt: DateTime
+  updatedAt: DateTime
+}
+
+input PostmortemAttributes {
+  actionItems: [ActionItemAttributes]
+  content: String!
+}
+
+enum Provider {
+  AWS
+  AZURE
+  CUSTOM
+  EQUINIX
+  GCP
+  KIND
+  KUBERNETES
+}
+
+type PublicKey {
+  content: String!
+  digest: String!
+  id: ID!
+  insertedAt: DateTime
+  name: String!
+  updatedAt: DateTime
+  user: User!
+}
+
+input PublicKeyAttributes {
+  content: String!
+  name: String!
+}
+
+type PublicKeyConnection {
+  edges: [PublicKeyEdge]
+  pageInfo: PageInfo!
+}
+
+type PublicKeyEdge {
+  cursor: String
+  node: PublicKey
+}
+
+type Publisher {
+  address: Address
+  avatar: String
+  backgroundColor: String
+  billingAccountId: String
+  community: Community
+  description: String
+  id: ID
+  insertedAt: DateTime
+  name: String!
+  owner: User
+  phone: String
+  repositories: [Repository]
+  updatedAt: DateTime
+}
+
+input PublisherAttributes {
+  address: AddressAttributes
+  avatar: UploadOrUrl
+  community: CommunityAttributes
+  description: String
+  name: String
+  phone: String
+}
+
+type PublisherConnection {
+  edges: [PublisherEdge]
+  pageInfo: PageInfo!
+}
+
+type PublisherEdge {
+  cursor: String
+  node: Publisher
+}
+
+type Reaction {
+  creator: User!
+  insertedAt: DateTime
+  message: IncidentMessage!
+  name: String!
+  updatedAt: DateTime
+}
+
+type Recipe {
+  description: String
+  id: ID!
+  insertedAt: DateTime
+  name: String!
+  oidcSettings: OidcSettings
+  private: Boolean
+  provider: Provider
+  recipeDependencies: [Recipe]
+  recipeSections: [RecipeSection]
+  repository: Repository
+  restricted: Boolean
+  tests: [RecipeTest]
+  updatedAt: DateTime
+}
+
+input RecipeAttributes {
+  dependencies: [RecipeReference]
+  description: String
+  name: String!
+  oidcSettings: OidcSettingsAttributes
+  private: Boolean
+  provider: Provider
+  restricted: Boolean
+  sections: [RecipeSectionAttributes]
+  tests: [RecipeTestAttributes]
+}
+
+type RecipeCondition {
+  field: String!
+  operation: Operation!
+  value: String
+}
+
+input RecipeConditionAttributes {
+  field: String!
+  operation: Operation!
+  value: String
+}
+
+type RecipeConfiguration {
+  args: [String]
+  condition: RecipeCondition
+  default: String
+  documentation: String
+  functionName: String
+  longform: String
+  name: String
+  optional: Boolean
+  placeholder: String
+  type: Datatype
+  validation: RecipeValidation
+}
+
+input RecipeConfigurationAttributes {
+  condition: RecipeConditionAttributes
+  default: String
+  documentation: String
+  functionName: String
+  longform: String
+  name: String!
+  optional: Boolean
+  placeholder: String
+  type: Datatype!
+  validation: RecipeValidationAttributes
+}
+
+type RecipeConnection {
+  edges: [RecipeEdge]
+  pageInfo: PageInfo!
+}
+
+type RecipeEdge {
+  cursor: String
+  node: Recipe
+}
+
+type RecipeItem {
+  chart: Chart
+  configuration: [RecipeConfiguration]
+  id: ID
+  insertedAt: DateTime
+  recipeSection: RecipeSection
+  terraform: Terraform
+  updatedAt: DateTime
+}
+
+input RecipeItemAttributes {
+  configuration: [RecipeConfigurationAttributes]
+  name: String!
+  type: RecipeItemType!
+}
+
+enum RecipeItemType {
+  HELM
+  TERRAFORM
+}
+
+input RecipeReference {
+  name: String!
+  repo: String!
+}
+
+type RecipeSection {
+  configuration: [RecipeConfiguration]
+  id: ID
+  index: Int
+  insertedAt: DateTime
+  recipe: Recipe
+  recipeItems: [RecipeItem]
+  repository: Repository
+  updatedAt: DateTime
+}
+
+input RecipeSectionAttributes {
+  configuration: [RecipeConfigurationAttributes]
+  items: [RecipeItemAttributes]
+  name: String!
+}
+
+type RecipeTest {
+  args: [TestArgument]
+  message: String
+  name: String!
+  type: TestType!
+}
+
+input RecipeTestAttributes {
+  args: [TestArgumentAttributes]
+  message: String
+  name: String!
+  type: TestType!
+}
+
+type RecipeValidation {
+  message: String!
+  regex: String
+  type: ValidationType!
+}
+
+input RecipeValidationAttributes {
+  message: String!
+  regex: String
+  type: ValidationType!
+}
+
+type Repository {
+  artifacts: [Artifact]
+  category: Category
+  community: Community
+  darkIcon: String
+  defaultTag: String
+  description: String
+  docs: [FileContent]
+  documentation: String
+  editable: Boolean
+  gitUrl: String
+  homepage: String
+  icon: String
+  id: ID!
+  insertedAt: DateTime
+  installation: Installation
+  license: License
+  mainBranch: String
+  name: String!
+  notes: String
+  oauthSettings: OauthSettings
+  plans: [Plan]
+  private: Boolean
+  publicKey: String
+  publisher: Publisher
+  readme: String
+  recipes: [Recipe]
+  secrets: Map
+  tags: [Tag]
+  trending: Boolean
+  updatedAt: DateTime
+  verified: Boolean
+}
+
+input RepositoryAttributes {
+  category: Category
+  community: CommunityAttributes
+  darkIcon: UploadOrUrl
+  defaultTag: String
+  description: String
+  docs: UploadOrUrl
+  documentation: String
+  gitUrl: String
+  homepage: String
+  icon: UploadOrUrl
+  integrationResourceDefinition: ResourceDefinitionAttributes
+  name: String
+  notes: String
+  oauthSettings: OauthSettingsAttributes
+  private: Boolean
+  readme: String
+  secrets: Yaml
+  tags: [TagAttributes]
+  trending: Boolean
+  verified: Boolean
+}
+
+type RepositoryConnection {
+  edges: [RepositoryEdge]
+  pageInfo: PageInfo!
+}
+
+type RepositoryEdge {
+  cursor: String
+  node: Repository
+}
+
+type RepositorySubscription {
+  customerId: String
+  externalId: String
+  id: ID!
+  installation: Installation
+  invoices(after: String, before: String, first: Int, last: Int): InvoiceConnection
+  lineItems: SubscriptionLineItems
+  plan: Plan
+}
+
+type RepositorySubscriptionConnection {
+  edges: [RepositorySubscriptionEdge]
+  pageInfo: PageInfo!
+}
+
+type RepositorySubscriptionEdge {
+  cursor: String
+  node: RepositorySubscription
+}
+
+type ResetToken {
+  email: String!
+  externalId: ID!
+  id: ID!
+  insertedAt: DateTime
+  type: ResetTokenType!
+  updatedAt: DateTime
+  user: User!
+}
+
+input ResetTokenAttributes {
+  email: String
+  type: ResetTokenType!
+}
+
+input ResetTokenRealization {
+  password: String
+}
+
+enum ResetTokenType {
+  EMAIL
+  PASSWORD
+}
+
+input ResourceDefinitionAttributes {
+  name: String!
+  spec: [SpecificationAttributes]
+}
+
+type Role {
+  account: Account
+  description: String
+  id: ID!
+  insertedAt: DateTime
+  name: String!
+  permissions: [Permission]
+  repositories: [String]
+  roleBindings: [RoleBinding]
+  updatedAt: DateTime
+}
+
+input RoleAttributes {
+  description: String
+  name: String
+  permissions: [Permission]
+  repositories: [String]
+  roleBindings: [BindingAttributes]
+}
+
+type RoleBinding {
+  group: Group
+  id: ID!
+  insertedAt: DateTime
+  updatedAt: DateTime
+  user: User
+}
+
+type RoleConnection {
+  edges: [RoleEdge]
+  pageInfo: PageInfo!
+}
+
+type RoleEdge {
+  cursor: String
+  node: Role
+}
+
+type Roles {
+  admin: Boolean
+}
+
+input RolesAttributes {
+  admin: Boolean
+}
+
+type Rollout {
+  count: Int
+  cursor: ID
+  event: String
+  heartbeat: DateTime
+  id: ID!
+  insertedAt: DateTime
+  repository: Repository
+  status: RolloutStatus!
+  updatedAt: DateTime
+}
+
+type RolloutConnection {
+  edges: [RolloutEdge]
+  pageInfo: PageInfo!
+}
+
+type RolloutDelta {
+  delta: Delta
+  payload: Rollout
+}
+
+type RolloutEdge {
+  cursor: String
+  node: Rollout
+}
+
+enum RolloutStatus {
+  FINISHED
+  QUEUED
+  RUNNING
+}
+
+type RootMutationType {
+  acceptIncident(id: ID!): Incident
+  acceptLogin(challenge: String!): OauthResponse
+  acquireLock(repository: String!): ApplyLock
+  completeIncident(id: ID!, postmortem: PostmortemAttributes!): Incident
+  createArtifact(attributes: ArtifactAttributes!, repositoryId: ID, repositoryName: String): Artifact
+  createCard(source: String!): Account
+  createCrd(attributes: CrdAttributes!, chartId: ID, chartName: ChartName): Crd
+  createDemoProject: DemoProject
+  createDnsRecord(attributes: DnsRecordAttributes!, cluster: String!, provider: Provider!): DnsRecord
+  createDomain(attributes: DnsDomainAttributes!): DnsDomain
+  createGroup(attributes: GroupAttributes!): Group
+  createGroupMember(groupId: ID!, userId: ID!): GroupMember
+  createIncident(attributes: IncidentAttributes!, repository: String, repositoryId: ID): Incident
+  createInstallation(repositoryId: ID!): Installation
+  createIntegration(attributes: IntegrationAttributes!, repositoryName: String!): Integration
+  createIntegrationWebhook(attributes: IntegrationWebhookAttributes!): IntegrationWebhook
+  createInvite(attributes: InviteAttributes!): Invite
+  createKeyBackup(attributes: KeyBackupAttributes!): KeyBackup
+  createMessage(attributes: IncidentMessageAttributes!, incidentId: ID!): IncidentMessage
+  createOauthIntegration(attributes: OauthAttributes!): OauthIntegration
+  createOidcProvider(attributes: OidcAttributes!, installationId: ID!): OidcProvider
+  createPlan(attributes: PlanAttributes!, repositoryId: ID!): Plan
+  createPublicKey(attributes: PublicKeyAttributes!): PublicKey
+  createPublisher(attributes: PublisherAttributes!): Publisher
+  createQueue(attributes: UpgradeQueueAttributes!): UpgradeQueue
+  createReaction(messageId: ID!, name: String!): IncidentMessage
+  createRecipe(attributes: RecipeAttributes!, repositoryId: String, repositoryName: String): Recipe
+  createRepository(attributes: RepositoryAttributes!, id: ID): Repository
+  createResetToken(attributes: ResetTokenAttributes!): Boolean
+  createRole(attributes: RoleAttributes!): Role
+  createServiceAccount(attributes: ServiceAccountAttributes!): User
+  createShell(attributes: CloudShellAttributes!): CloudShell
+  createStack(attributes: StackAttributes!): Stack
+  createSubscription(attributes: SubscriptionAttributes, installationId: ID!, planId: ID!): RepositorySubscription
+  createTerraform(attributes: TerraformAttributes!, repositoryId: ID!): Terraform
+  createTest(attributes: TestAttributes!, name: String, repositoryId: ID): Test
+  createToken: PersistedToken
+  createUserEvent(attributes: UserEventAttributes!): Boolean
+  createWebhook(attributes: WebhookAttributes!): Webhook
+  createZoom(attributes: MeetingAttributes!): ZoomMeeting
+  deleteCard(id: ID!): Account
+  deleteChartInstallation(id: ID!): ChartInstallation
+  deleteDemoProject: DemoProject
+  deleteDnsRecord(name: String!, type: DnsRecordType!): DnsRecord
+  deleteDomain(id: ID!): DnsDomain
+  deleteEabKey(cluster: String, id: ID, provider: Provider): EabCredential
+  deleteGroup(groupId: ID!): Group
+  deleteGroupMember(groupId: ID!, userId: ID!): GroupMember
+  deleteIncident(id: ID!): Incident
+  deleteInstallation(id: ID!): Installation
+  deleteIntegrationWebhook(id: ID!): IntegrationWebhook
+  deleteInvite(id: ID, secureId: String): Invite
+  deleteMessage(id: ID!): IncidentMessage
+  deletePublicKey(id: ID!): PublicKey
+  deleteReaction(messageId: ID!, name: String!): IncidentMessage
+  deleteRecipe(id: ID!): Recipe
+  deleteRepository(repositoryId: ID!): Repository
+  deleteRole(id: ID!): Role
+  deleteShell: CloudShell
+  deleteStack(name: String!): Stack
+  deleteTerraform(id: ID!): Terraform
+  deleteToken(id: ID!): PersistedToken
+  deleteUser(id: ID!): User
+  destroyCluster(domain: String!, name: String!, provider: Provider!): Boolean
+  deviceLogin: DeviceLogin
+  externalToken: String
+  followIncident(attributes: FollowerAttributes!, id: ID!): Follower
+  impersonateServiceAccount(email: String, id: ID): User
+  installBundle(context: Map!, name: String!, oidc: Boolean!, repo: String!): [Installation]
+  installChart(attributes: ChartInstallationAttributes!, installationId: ID!): ChartInstallation
+  installRecipe(context: Map!, recipeId: ID!): [Installation]
+  installTerraform(attributes: TerraformInstallationAttributes!, installationId: ID!): TerraformInstallation
+  linkPublisher(token: String!): Publisher
+  login(deviceToken: String, email: String!, password: String!): User
+  loginToken(deviceToken: String, token: String!): User
+  oauthCallback(code: String!, deviceToken: String, host: String, provider: OauthProvider!): User
+  oauthConsent(challenge: String!, scopes: [String]): OauthResponse
+  passwordlessLogin(token: String!): User
+  pingWebhook(id: ID!, message: String, repo: String!): WebhookResponse
+  provisionDomain(name: String!): DnsDomain
+  publishLogs(id: ID!, logs: String!): TestStep
+  quickStack(provider: Provider!, repositoryIds: [ID]): Stack
+  readNotifications(incidentId: ID): Int
+  realizeInvite(id: String!): User
+  realizeResetToken(attributes: ResetTokenRealization!, id: ID!): Boolean
+  rebootShell: CloudShell
+  releaseLock(attributes: LockAttributes!, repository: String!): ApplyLock
+  resetInstallations: Int
+  restartShell: Boolean
+  signup(account: AccountAttributes, attributes: UserAttributes!, deviceToken: String, inviteId: String): User
+  ssoCallback(code: String!, deviceToken: String): User
+  stopShell: Boolean
+  transferDemoProject(organizationId: String!): DemoProject
+  unfollowIncident(id: ID!): Follower
+  uninstallTerraform(id: ID!): TerraformInstallation
+  unlockRepository(name: String!): Int
+  updateAccount(attributes: AccountAttributes!): Account
+  updateChart(attributes: ChartAttributes!, id: ID!): Chart
+  updateChartInstallation(attributes: ChartInstallationAttributes!, chartInstallationId: ID!): ChartInstallation
+  updateDockerRepository(attributes: DockerRepositoryAttributes!, id: ID!): DockerRepository
+  updateDomain(attributes: DnsDomainAttributes!, id: ID!): DnsDomain
+  updateGroup(attributes: GroupAttributes!, groupId: ID!): Group
+  updateIncident(attributes: IncidentAttributes!, id: ID!): Incident
+  updateInstallation(attributes: InstallationAttributes!, id: ID!): Installation
+  updateIntegrationWebhook(attributes: IntegrationWebhookAttributes!, id: ID!): IntegrationWebhook
+  updateLineItem(attributes: LimitAttributes!, subscriptionId: ID!): RepositorySubscription
+  updateMessage(attributes: IncidentMessageAttributes!, id: ID!): IncidentMessage
+  updateOidcProvider(attributes: OidcAttributes!, installationId: ID!): OidcProvider
+  updatePlan(planId: ID!, subscriptionId: ID!): RepositorySubscription
+  updatePlanAttributes(attributes: UpdatablePlanAttributes!, id: ID!): Plan
+  updatePublisher(attributes: PublisherAttributes!): Publisher
+  updateRepository(attributes: RepositoryAttributes!, repositoryId: ID, repositoryName: String): Repository
+  updateRole(attributes: RoleAttributes!, id: ID!): Role
+  updateServiceAccount(attributes: ServiceAccountAttributes!, id: ID!): User
+  updateShellConfiguration(context: Map!): Boolean
+  updateStep(attributes: TestStepAttributes!, id: ID!): TestStep
+  updateTerraform(attributes: TerraformAttributes!, id: ID!): Terraform
+  updateTest(attributes: TestAttributes!, id: ID!): Test
+  updateUser(attributes: UserAttributes!, id: ID): User
+  updateVersion(attributes: VersionAttributes!, id: ID, spec: VersionSpec): Version
+  uploadTerraform(attributes: TerraformAttributes!, name: String!, repositoryName: String!): Terraform
+  upsertOidcProvider(attributes: OidcAttributes!, installationId: ID!): OidcProvider
+  upsertRepository(attributes: RepositoryAttributes!, name: String!, publisher: String!): Repository
+}
+
+type RootQueryType {
+  auditMetrics: [GeoMetric]
+  audits(after: String, before: String, first: Int, last: Int): AuditConnection
+  categories: [CategoryInfo]
+  category(name: Category!): CategoryInfo
+  chart(id: ID!): Chart
+  chartInstallations(after: String, before: String, first: Int, last: Int, repositoryId: ID!): ChartInstallationConnection
+  charts(after: String, before: String, first: Int, last: Int, repositoryId: ID!): ChartConnection
+  closure(id: ID!, type: DependencyType!): [ClosureItem]
+  configuration: PluralConfiguration
+  deferredUpdates(after: String, before: String, chartInstallationId: ID, first: Int, last: Int, terraformInstallationId: ID): DeferredUpdateConnection
+  demoProject(id: ID): DemoProject
+  dnsDomain(id: ID!): DnsDomain
+  dnsDomains(after: String, before: String, first: Int, last: Int): DnsDomainConnection
+  dnsRecords(after: String, before: String, cluster: String, domainId: ID, first: Int, last: Int, provider: Provider): DnsRecordConnection
+  dockerImage(id: ID!): DockerImage
+  dockerImages(after: String, before: String, dockerRepositoryId: ID!, first: Int, last: Int, q: String): DockerImageConnection
+  dockerRepositories(after: String, before: String, first: Int, last: Int, repositoryId: ID!): DockerRepositoryConnection
+  eabCredential(cluster: String!, provider: Provider!): EabCredential
+  eabCredentials: [EabCredential]
+  groupMembers(after: String, before: String, first: Int, groupId: ID!, last: Int): GroupMemberConnection
+  groups(after: String, before: String, first: Int, last: Int, q: String): GroupConnection
+  helpQuestion(prompt: String!): String
+  incident(id: ID!): Incident
+  incidents(after: String, before: String, filters: [IncidentFilter], first: Int, last: Int, order: Order, q: String, repositoryId: ID, sort: IncidentSort, supports: Boolean): IncidentConnection
+  installation(id: ID, name: String): Installation
+  installations(after: String, before: String, first: Int, last: Int): InstallationConnection
+  integrationWebhook(id: ID!): IntegrationWebhook
+  integrationWebhooks(after: String, before: String, first: Int, last: Int): IntegrationWebhookConnection
+  integrations(after: String, before: String, first: Int, last: Int, repositoryId: ID, repositoryName: String, tag: String, type: String): IntegrationConnection
+  invite(id: String!): Invite
+  invites(after: String, before: String, first: Int, last: Int): InviteConnection
+  keyBackup(name: String!): KeyBackup
+  keyBackups(after: String, before: String, first: Int, last: Int): KeyBackupConnection
+  loginMethod(email: String!, host: String): LoginMethodResponse
+  loginMetrics: [GeoMetric]
+  me: User
+  notifications(after: String, before: String, cli: Boolean, first: Int, incidentId: ID, last: Int): NotificationConnection
+  oauthConsent(challenge: String!): Repository
+  oauthIntegrations: [OauthIntegration]
+  oauthLogin(challenge: String!): Repository
+  oauthUrls(host: String): [OauthInfo]
+  oidcConsent(challenge: String!): OidcStepResponse
+  oidcLogin(challenge: String!): OidcStepResponse
+  oidcLogins(after: String, before: String, first: Int, last: Int): OidcLoginConnection
+  platformMetrics: PlatformMetrics
+  publicKeys(after: String, before: String, emails: [String], first: Int, last: Int): PublicKeyConnection
+  publisher(id: ID): Publisher
+  publishers(accountId: ID, after: String, before: String, first: Int, last: Int, publishable: Boolean): PublisherConnection
+  recipe(id: ID, name: String, repo: String): Recipe
+  recipes(after: String, before: String, first: Int, last: Int, provider: Provider, repositoryId: ID, repositoryName: String): RecipeConnection
+  repositories(after: String, before: String, categories: [Category], category: Category, first: Int, installed: Boolean, last: Int, publisherId: ID, publishers: [ID], q: String, supports: Boolean, tag: String, tags: [String]): RepositoryConnection
+  repository(id: ID, name: String): Repository
+  repositorySubscription(id: ID!): RepositorySubscription
+  resetToken(id: ID!): ResetToken
+  role(id: ID!): Role
+  roles(after: String, before: String, first: Int, last: Int, q: String, userId: ID): RoleConnection
+  rollouts(after: String, before: String, first: Int, last: Int, repositoryId: ID!): RolloutConnection
+  scaffold(application: String!, category: Category!, ingress: Boolean, postgres: Boolean, publisher: String!): [ScaffoldFile]
+  scmAuthorization: [AuthorizationUrl]
+  scmToken(code: String!, provider: ScmProvider!): String
+  searchRepositories(after: String, before: String, first: Int, last: Int, query: String!): RepositoryConnection
+  searchUsers(after: String, before: String, first: Int, incidentId: ID!, last: Int, q: String!): UserConnection
+  shell: CloudShell
+  shellConfiguration: ShellConfiguration
+  stack(name: String!, provider: Provider!): Stack
+  stacks(after: String, before: String, featured: Boolean, first: Int, last: Int): StackConnection
+  subscriptions(after: String, before: String, first: Int, last: Int): RepositorySubscriptionConnection
+  tags(after: String, before: String, first: Int, id: ID, last: Int, q: String, type: TagGroup!): GroupedTagConnection
+  terraform(after: String, before: String, first: Int, last: Int, repositoryId: ID!): TerraformConnection
+  terraformInstallations(after: String, before: String, first: Int, last: Int, repositoryId: ID!): TerraformInstallationConnection
+  terraformModule(id: ID!): Terraform
+  terraformProvider(name: Provider!, vsn: String): TerraformProvider
+  terraformProviders: [Provider]
+  test(id: ID!): Test
+  testLogs(id: ID!, step: ID!): String
+  tests(after: String, before: String, first: Int, last: Int, repositoryId: ID, versionId: ID): TestConnection
+  token(id: ID!): PersistedToken
+  tokens(after: String, before: String, first: Int, last: Int): PersistedTokenConnection
+  upgradeQueue(id: ID): UpgradeQueue
+  upgradeQueues: [UpgradeQueue]
+  users(after: String, all: Boolean, before: String, first: Int, last: Int, q: String, serviceAccount: Boolean): UserConnection
+  versions(after: String, before: String, chartId: ID, first: Int, last: Int, terraformId: ID): VersionConnection
+  webhooks(after: String, before: String, first: Int, last: Int): WebhookConnection
+}
+
+type RootSubscriptionType {
+  incidentDelta(incidentId: ID, repositoryId: ID): IncidentDelta
+  incidentMessageDelta(incidentId: ID): IncidentMessageDelta
+  notification: Notification
+  rolloutDelta(repositoryId: ID!): RolloutDelta
+  testDelta(repositoryId: ID!): TestDelta
+  testLogs(testId: ID!): StepLogs
+  upgrade(id: ID): Upgrade
+  upgradeQueueDelta: UpgradeQueueDelta
+}
+
+type ScaffoldFile {
+  content: String
+  path: String
+}
+
+type ScanError {
+  message: String
+}
+
+type ScanViolation {
+  category: String
+  description: String
+  file: String
+  insertedAt: DateTime
+  line: Int
+  resourceName: String
+  resourceType: String
+  ruleId: String
+  ruleName: String
+  severity: VulnGrade
+  updatedAt: DateTime
+}
+
+input ScmAttributes {
+  name: String!
+  org: String
+  provider: ScmProvider
+  token: String!
+}
+
+enum ScmProvider {
+  GITHUB
+  GITLAB
+}
+
+input ServiceAccountAttributes {
+  email: String
+  impersonationPolicy: ImpersonationPolicyAttributes
+  name: String
+}
+
+type ServiceLevel {
+  maxSeverity: Int
+  minSeverity: Int
+  responseTime: Int
+}
+
+input ServiceLevelAttributes {
+  maxSeverity: Int
+  minSeverity: Int
+  responseTime: Int
+}
+
+type ShellConfiguration {
+  contextConfiguration: Map
+  git: GitConfiguration
+  workspace: ShellWorkspace
+}
+
+input ShellCredentialsAttributes {
+  aws: AwsShellCredentialsAttributes
+  azure: AzureShellCredentialsAttributes
+  gcp: GcpShellCredentialsAttributes
+}
+
+type ShellStatus {
+  containersReady: Boolean
+  initialized: Boolean
+  podScheduled: Boolean
+  ready: Boolean
+}
+
+type ShellWorkspace {
+  bucketPrefix: String
+  cluster: String
+  network: NetworkConfiguration
+}
+
+type SlimSubscription {
+  id: ID!
+  lineItems: SubscriptionLineItems
+  plan: Plan
+}
+
+enum SpecDatatype {
+  BOOL
+  FLOAT
+  INT
+  LIST
+  OBJECT
+  STRING
+}
+
+input SpecificationAttributes {
+  inner: SpecDatatype
+  name: String!
+  required: Boolean
+  spec: [SpecificationAttributes]
+  type: SpecDatatype!
+}
+
+type Stack {
+  bundles: [Recipe]
+  collections: [StackCollection]
+  community: Community
+  creator: User
+  description: String
+  displayName: String
+  featured: Boolean
+  id: ID!
+  insertedAt: DateTime
+  name: String!
+  updatedAt: DateTime
+}
+
+input StackAttributes {
+  collections: [StackCollectionAttributes]
+  community: CommunityAttributes
+  description: String
+  displayName: String
+  featured: Boolean
+  name: String!
+}
+
+type StackCollection {
+  bundles: [StackRecipe]
+  id: ID!
+  insertedAt: DateTime
+  provider: Provider!
+  updatedAt: DateTime
+}
+
+input StackCollectionAttributes {
+  bundles: [RecipeReference]
+  provider: Provider!
+}
+
+type StackConnection {
+  edges: [StackEdge]
+  pageInfo: PageInfo!
+}
+
+type StackEdge {
+  cursor: String
+  node: Stack
+}
+
+type StackRecipe {
+  id: ID!
+  insertedAt: DateTime
+  recipe: Recipe!
+  updatedAt: DateTime
+}
+
+type StepLogs {
+  logs: [String]
+  step: TestStep
+}
+
+input SubscriptionAttributes {
+  lineItems: SubscriptionLineItemAttributes
+}
+
+input SubscriptionLineItemAttributes {
+  items: [LimitAttributes]
+}
+
+type SubscriptionLineItems {
+  items: [Limit]
+}
+
+type Tag {
+  id: ID!
+  tag: String!
+}
+
+input TagAttributes {
+  tag: String!
+}
+
+enum TagGroup {
+  INTEGRATIONS
+  REPOSITORIES
+}
+
+type Terraform {
+  dependencies: Dependencies
+  description: String
+  editable: Boolean
+  id: ID
+  insertedAt: DateTime
+  installation: TerraformInstallation
+  latestVersion: String
+  name: String
+  package: String
+  readme: String
+  repository: Repository
+  updatedAt: DateTime
+  valuesTemplate: String
+}
+
+input TerraformAttributes {
+  dependencies: Yaml
+  description: String
+  name: String
+  package: UploadOrUrl
+  version: String
+}
+
+type TerraformConnection {
+  edges: [TerraformEdge]
+  pageInfo: PageInfo!
+}
+
+type TerraformEdge {
+  cursor: String
+  node: Terraform
+}
+
+type TerraformInstallation {
+  id: ID
+  insertedAt: DateTime
+  installation: Installation
+  terraform: Terraform
+  updatedAt: DateTime
+  version: Version
+}
+
+input TerraformInstallationAttributes {
+  terraformId: ID
+  versionId: ID
+}
+
+type TerraformInstallationConnection {
+  edges: [TerraformInstallationEdge]
+  pageInfo: PageInfo!
+}
+
+type TerraformInstallationEdge {
+  cursor: String
+  node: TerraformInstallation
+}
+
+type TerraformProvider {
+  content: String
+  name: Provider
+}
+
+type Test {
+  creator: User
+  id: ID!
+  insertedAt: DateTime
+  name: String
+  promoteTag: String!
+  repository: Repository
+  sourceTag: String!
+  status: TestStatus!
+  steps: [TestStep]
+  updatedAt: DateTime
+}
+
+type TestArgument {
+  key: String!
+  name: String!
+  repo: String!
+}
+
+input TestArgumentAttributes {
+  key: String!
+  name: String!
+  repo: String!
+}
+
+input TestAttributes {
+  name: String
+  promoteTag: String
+  status: TestStatus
+  steps: [TestStepAttributes]
+}
+
+type TestConnection {
+  edges: [TestEdge]
+  pageInfo: PageInfo!
+}
+
+type TestDelta {
+  delta: Delta
+  payload: Test
+}
+
+type TestEdge {
+  cursor: String
+  node: Test
+}
+
+enum TestStatus {
+  FAILED
+  QUEUED
+  RUNNING
+  SUCCEEDED
+}
+
+type TestStep {
+  description: String!
+  hasLogs: Boolean
+  id: ID!
+  insertedAt: DateTime
+  name: String!
+  status: TestStatus!
+  updatedAt: DateTime
+}
+
+input TestStepAttributes {
+  description: String
+  id: ID
+  logs: UploadOrUrl
+  name: String
+  status: TestStatus
+}
+
+enum TestType {
+  GIT
+}
+
+input UpdatablePlanAttributes {
+  default: Boolean
+  serviceLevels: [ServiceLevelAttributes]
+}
+
+type Upgrade {
+  id: ID!
+  insertedAt: DateTime
+  message: String
+  repository: Repository
+  type: UpgradeType
+  updatedAt: DateTime
+}
+
+type UpgradeConnection {
+  edges: [UpgradeEdge]
+  pageInfo: PageInfo!
+}
+
+type UpgradeEdge {
+  cursor: String
+  node: Upgrade
+}
+
+type UpgradeQueue {
+  acked: ID
+  domain: String
+  git: String
+  id: ID!
+  insertedAt: DateTime
+  name: String
+  pingedAt: DateTime
+  provider: Provider
+  updatedAt: DateTime
+  upgrades(after: String, before: String, first: Int, last: Int): UpgradeConnection
+  user: User!
+}
+
+input UpgradeQueueAttributes {
+  domain: String
+  git: String
+  name: String!
+  provider: Provider
+}
+
+type UpgradeQueueDelta {
+  delta: Delta
+  payload: UpgradeQueue
+}
+
+enum UpgradeType {
+  APPROVAL
+  BOUNCE
+  DEPLOY
+}
+
+scalar UploadOrUrl
+
+type User {
+  account: Account
+  address: Address
+  avatar: String
+  backgroundColor: String
+  boundRoles: [Role]
+  cards(after: String, before: String, first: Int, last: Int): CardConnection
+  defaultQueueId: ID
+  email: String!
+  emailConfirmBy: DateTime
+  emailConfirmed: Boolean
+  hasInstallations: Boolean
+  id: ID!
+  impersonationPolicy: ImpersonationPolicy
+  insertedAt: DateTime
+  jwt: String
+  loginMethod: LoginMethod
+  name: String!
+  onboarding: OnboardingState
+  onboardingChecklist: OnboardingChecklist
+  phone: String
+  provider: Provider
+  publisher: Publisher
+  roles: Roles
+  serviceAccount: Boolean
+  updatedAt: DateTime
+}
+
+input UserAttributes {
+  avatar: UploadOrUrl
+  confirm: String
+  email: String
+  loginMethod: LoginMethod
+  name: String
+  onboarding: OnboardingState
+  onboardingChecklist: OnboardingChecklistAttributes
+  password: String
+  roles: RolesAttributes
+}
+
+type UserConnection {
+  edges: [UserEdge]
+  pageInfo: PageInfo!
+}
+
+type UserEdge {
+  cursor: String
+  node: User
+}
+
+input UserEventAttributes {
+  data: String
+  event: String!
+  status: UserEventStatus
+}
+
+enum UserEventStatus {
+  ERROR
+  OK
+}
+
+enum ValidationType {
+  REGEX
+}
+
+type Version {
+  chart: Chart
+  crds: [Crd]
+  dependencies: Dependencies
+  helm: Map
+  id: ID!
+  imageDependencies: [ImageDependency]
+  insertedAt: DateTime
+  package: String
+  readme: String
+  scan: PackageScan
+  tags: [VersionTag]
+  terraform: Terraform
+  updatedAt: DateTime
+  valuesTemplate: String
+  version: String!
+}
+
+input VersionAttributes {
+  tags: [VersionTagAttributes]
+}
+
+type VersionConnection {
+  edges: [VersionEdge]
+  pageInfo: PageInfo!
+}
+
+type VersionEdge {
+  cursor: String
+  node: Version
+}
+
+input VersionSpec {
+  chart: String
+  repository: String
+  terraform: String
+  version: String
+}
+
+type VersionTag {
+  chart: Chart
+  id: ID!
+  insertedAt: DateTime
+  tag: String!
+  updatedAt: DateTime
+  version: Version
+}
+
+input VersionTagAttributes {
+  tag: String!
+  versionId: ID
+}
+
+type Vulnerability {
+  cvss: Cvss
+  description: String
+  fixedVersion: String
+  id: ID!
+  insertedAt: DateTime
+  installedVersion: String
+  layer: ImageLayer
+  package: String
+  score: Float
+  severity: VulnGrade
+  source: String
+  title: String
+  updatedAt: DateTime
+  url: String
+  vulnerabilityId: String
+}
+
+enum VulnGrade {
+  CRITICAL
+  HIGH
+  LOW
+  MEDIUM
+  NONE
+}
+
+enum VulnRequirement {
+  NONE
+  REQUIRED
+}
+
+enum VulnVector {
+  ADJACENT
+  LOCAL
+  NETWORK
+  PHYSICAL
+}
+
+type Webhook {
+  id: ID
+  insertedAt: DateTime
+  secret: String
+  updatedAt: DateTime
+  url: String
+  user: User
+}
+
+input WebhookAttributes {
+  url: String!
+}
+
+type WebhookConnection {
+  edges: [WebhookEdge]
+  pageInfo: PageInfo!
+}
+
+type WebhookEdge {
+  cursor: String
+  node: Webhook
+}
+
+type WebhookLog {
+  id: ID!
+  insertedAt: DateTime
+  payload: Map
+  response: String
+  state: WebhookLogState!
+  status: Int
+  updatedAt: DateTime
+  webhook: IntegrationWebhook
+}
+
+type WebhookLogConnection {
+  edges: [WebhookLogEdge]
+  pageInfo: PageInfo!
+}
+
+type WebhookLogEdge {
+  cursor: String
+  node: WebhookLog
+}
+
+enum WebhookLogState {
+  DELIVERED
+  FAILED
+  SENDING
+}
+
+type WebhookResponse {
+  body: String
+  headers: Map
+  statusCode: Int!
+}
+
+type Wirings {
+  helm: Map
+  terraform: Map
+}
+
+input WorkspaceAttributes {
+  bucketPrefix: String!
+  cluster: String!
+  project: String
+  region: String!
+  subdomain: String!
+}
+
+scalar Yaml
+
+type ZoomMeeting {
+  joinUrl: String!
+  password: String
+}
+

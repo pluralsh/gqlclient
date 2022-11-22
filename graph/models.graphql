@@ -32,7 +32,11 @@ fragment DependenciesFragment on Dependencies {
         type
         name
         repo
+        optional
+        version
     }
+    breaking
+    instructions { instructions script }
     wait
     application
     providers

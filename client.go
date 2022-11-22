@@ -999,19 +999,6 @@ const GetChartInstallationsDocument = `query GetChartInstallations ($id: ID!) {
 		}
 	}
 }
-fragment VersionFragment on Version {
-	id
-	readme
-	version
-	valuesTemplate
-	package
-	crds {
-		... CrdFragment
-	}
-	dependencies {
-		... DependenciesFragment
-	}
-}
 fragment CrdFragment on Crd {
 	id
 	name
@@ -1052,6 +1039,19 @@ fragment DependenciesFragment on Dependencies {
 	providerWirings
 	outputs
 	providerVsn
+}
+fragment VersionFragment on Version {
+	id
+	readme
+	version
+	valuesTemplate
+	package
+	crds {
+		... CrdFragment
+	}
+	dependencies {
+		... DependenciesFragment
+	}
 }
 `
 
@@ -1084,6 +1084,37 @@ const GetPackageInstallationsDocument = `query GetPackageInstallations ($id: ID!
 		}
 	}
 }
+fragment TerraformInstallationFragment on TerraformInstallation {
+	id
+	terraform {
+		... TerraformFragment
+	}
+	version {
+		... VersionFragment
+	}
+}
+fragment TerraformFragment on Terraform {
+	id
+	name
+	package
+	description
+	dependencies {
+		... DependenciesFragment
+	}
+	valuesTemplate
+}
+fragment ChartInstallationFragment on ChartInstallation {
+	id
+	chart {
+		... ChartFragment
+		dependencies {
+			... DependenciesFragment
+		}
+	}
+	version {
+		... VersionFragment
+	}
+}
 fragment ChartFragment on Chart {
 	id
 	name
@@ -1125,37 +1156,6 @@ fragment CrdFragment on Crd {
 	id
 	name
 	blob
-}
-fragment TerraformInstallationFragment on TerraformInstallation {
-	id
-	terraform {
-		... TerraformFragment
-	}
-	version {
-		... VersionFragment
-	}
-}
-fragment TerraformFragment on Terraform {
-	id
-	name
-	package
-	description
-	dependencies {
-		... DependenciesFragment
-	}
-	valuesTemplate
-}
-fragment ChartInstallationFragment on ChartInstallation {
-	id
-	chart {
-		... ChartFragment
-		dependencies {
-			... DependenciesFragment
-		}
-	}
-	version {
-		... VersionFragment
-	}
 }
 `
 
@@ -1346,6 +1346,19 @@ const GetInstallationDocument = `query GetInstallation ($name: String) {
 		... InstallationFragment
 	}
 }
+fragment InstallationFragment on Installation {
+	id
+	context
+	licenseKey
+	acmeKeyId
+	acmeSecret
+	repository {
+		... RepositoryFragment
+	}
+	oidcProvider {
+		... OIDCProvider
+	}
+}
 fragment RepositoryFragment on Repository {
 	id
 	name
@@ -1381,19 +1394,6 @@ fragment OIDCProvider on OidcProvider {
 		tokenEndpoint
 		jwksUri
 		userinfoEndpoint
-	}
-}
-fragment InstallationFragment on Installation {
-	id
-	context
-	licenseKey
-	acmeKeyId
-	acmeSecret
-	repository {
-		... RepositoryFragment
-	}
-	oidcProvider {
-		... OIDCProvider
 	}
 }
 `
@@ -1618,6 +1618,34 @@ const GetRecipeDocument = `query GetRecipe ($repo: String, $name: String) {
 		}
 	}
 }
+fragment TerraformFragment on Terraform {
+	id
+	name
+	package
+	description
+	dependencies {
+		... DependenciesFragment
+	}
+	valuesTemplate
+}
+fragment DependenciesFragment on Dependencies {
+	dependencies {
+		type
+		name
+		repo
+	}
+	wait
+	application
+	providers
+	secrets
+	wirings {
+		terraform
+		helm
+	}
+	providerWirings
+	outputs
+	providerVsn
+}
 fragment RecipeConfigurationFragment on RecipeConfiguration {
 	name
 	type
@@ -1711,34 +1739,6 @@ fragment ChartFragment on Chart {
 	name
 	description
 	latestVersion
-}
-fragment TerraformFragment on Terraform {
-	id
-	name
-	package
-	description
-	dependencies {
-		... DependenciesFragment
-	}
-	valuesTemplate
-}
-fragment DependenciesFragment on Dependencies {
-	dependencies {
-		type
-		name
-		repo
-	}
-	wait
-	application
-	providers
-	secrets
-	wirings {
-		terraform
-		helm
-	}
-	providerWirings
-	outputs
-	providerVsn
 }
 `
 
@@ -1765,34 +1765,6 @@ const ListRecipesDocument = `query ListRecipes ($repo: String, $provider: Provid
 		}
 	}
 }
-fragment TerraformFragment on Terraform {
-	id
-	name
-	package
-	description
-	dependencies {
-		... DependenciesFragment
-	}
-	valuesTemplate
-}
-fragment DependenciesFragment on Dependencies {
-	dependencies {
-		type
-		name
-		repo
-	}
-	wait
-	application
-	providers
-	secrets
-	wirings {
-		terraform
-		helm
-	}
-	providerWirings
-	outputs
-	providerVsn
-}
 fragment RecipeConfigurationFragment on RecipeConfiguration {
 	name
 	type
@@ -1886,6 +1858,34 @@ fragment ChartFragment on Chart {
 	name
 	description
 	latestVersion
+}
+fragment TerraformFragment on Terraform {
+	id
+	name
+	package
+	description
+	dependencies {
+		... DependenciesFragment
+	}
+	valuesTemplate
+}
+fragment DependenciesFragment on Dependencies {
+	dependencies {
+		type
+		name
+		repo
+	}
+	wait
+	application
+	providers
+	secrets
+	wirings {
+		terraform
+		helm
+	}
+	providerWirings
+	outputs
+	providerVsn
 }
 `
 
@@ -1912,6 +1912,12 @@ const ListAllRecipesDocument = `query ListAllRecipes ($repo: String) {
 		}
 	}
 }
+fragment ChartFragment on Chart {
+	id
+	name
+	description
+	latestVersion
+}
 fragment TerraformFragment on Terraform {
 	id
 	name
@@ -2027,12 +2033,6 @@ fragment RecipeItemFragment on RecipeItem {
 	configuration {
 		... RecipeConfigurationFragment
 	}
-}
-fragment ChartFragment on Chart {
-	id
-	name
-	description
-	latestVersion
 }
 `
 
@@ -2115,6 +2115,37 @@ const GetStackDocument = `query GetStack ($name: String!, $provider: Provider!) 
 		... StackFragment
 	}
 }
+fragment StackFragment on Stack {
+	id
+	name
+	featured
+	description
+	bundles {
+		... RecipeFragment
+	}
+}
+fragment RecipeSectionFragment on RecipeSection {
+	index
+	repository {
+		... RepositoryFragment
+	}
+	recipeItems {
+		... RecipeItemFragment
+	}
+	configuration {
+		... RecipeConfigurationFragment
+	}
+}
+fragment TerraformFragment on Terraform {
+	id
+	name
+	package
+	description
+	dependencies {
+		... DependenciesFragment
+	}
+	valuesTemplate
+}
 fragment DependenciesFragment on Dependencies {
 	dependencies {
 		type
@@ -2152,16 +2183,35 @@ fragment RecipeConfigurationFragment on RecipeConfiguration {
 		message
 	}
 }
-fragment RecipeSectionFragment on RecipeSection {
-	index
+fragment RecipeFragment on Recipe {
+	id
+	name
+	description
+	restricted
+	provider
+	tests {
+		type
+		name
+		message
+		args {
+			name
+			repo
+			key
+		}
+	}
 	repository {
-		... RepositoryFragment
+		id
+		name
 	}
-	recipeItems {
-		... RecipeItemFragment
+	oidcSettings {
+		uriFormat
+		uriFormats
+		authMethod
+		domainKey
+		subdomain
 	}
-	configuration {
-		... RecipeConfigurationFragment
+	recipeSections {
+		... RecipeSectionFragment
 	}
 }
 fragment RepositoryFragment on Repository {
@@ -2196,23 +2246,29 @@ fragment ChartFragment on Chart {
 	description
 	latestVersion
 }
-fragment TerraformFragment on Terraform {
-	id
-	name
-	package
-	description
-	dependencies {
-		... DependenciesFragment
+`
+
+func (c *Client) GetStack(ctx context.Context, name string, provider Provider, httpRequestOptions ...client.HTTPRequestOption) (*GetStack, error) {
+	vars := map[string]interface{}{
+		"name":     name,
+		"provider": provider,
 	}
-	valuesTemplate
+
+	var res GetStack
+	if err := c.Client.Post(ctx, "GetStack", GetStackDocument, &res, vars, httpRequestOptions...); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
 }
-fragment StackFragment on Stack {
-	id
-	name
-	featured
-	description
-	bundles {
-		... RecipeFragment
+
+const ListStacksDocument = `query ListStacks ($featured: Boolean, $cursor: String) {
+	stacks(first: 100, after: $cursor, featured: $featured) {
+		edges {
+			node {
+				... StackFragment
+			}
+		}
 	}
 }
 fragment RecipeFragment on Recipe {
@@ -2244,31 +2300,6 @@ fragment RecipeFragment on Recipe {
 	}
 	recipeSections {
 		... RecipeSectionFragment
-	}
-}
-`
-
-func (c *Client) GetStack(ctx context.Context, name string, provider Provider, httpRequestOptions ...client.HTTPRequestOption) (*GetStack, error) {
-	vars := map[string]interface{}{
-		"name":     name,
-		"provider": provider,
-	}
-
-	var res GetStack
-	if err := c.Client.Post(ctx, "GetStack", GetStackDocument, &res, vars, httpRequestOptions...); err != nil {
-		return nil, err
-	}
-
-	return &res, nil
-}
-
-const ListStacksDocument = `query ListStacks ($featured: Boolean, $cursor: String) {
-	stacks(first: 100, after: $cursor, featured: $featured) {
-		edges {
-			node {
-				... StackFragment
-			}
-		}
 	}
 }
 fragment RecipeSectionFragment on RecipeSection {
@@ -2335,37 +2366,6 @@ fragment StackFragment on Stack {
 	description
 	bundles {
 		... RecipeFragment
-	}
-}
-fragment RecipeFragment on Recipe {
-	id
-	name
-	description
-	restricted
-	provider
-	tests {
-		type
-		name
-		message
-		args {
-			name
-			repo
-			key
-		}
-	}
-	repository {
-		id
-		name
-	}
-	oidcSettings {
-		uriFormat
-		uriFormats
-		authMethod
-		domainKey
-		subdomain
-	}
-	recipeSections {
-		... RecipeSectionFragment
 	}
 }
 fragment ChartFragment on Chart {
@@ -2780,6 +2780,16 @@ const GetTerraformDocument = `query GetTerraform ($id: ID!) {
 		}
 	}
 }
+fragment TerraformFragment on Terraform {
+	id
+	name
+	package
+	description
+	dependencies {
+		... DependenciesFragment
+	}
+	valuesTemplate
+}
 fragment DependenciesFragment on Dependencies {
 	dependencies {
 		type
@@ -2797,16 +2807,6 @@ fragment DependenciesFragment on Dependencies {
 	providerWirings
 	outputs
 	providerVsn
-}
-fragment TerraformFragment on Terraform {
-	id
-	name
-	package
-	description
-	dependencies {
-		... DependenciesFragment
-	}
-	valuesTemplate
 }
 `
 

@@ -952,13 +952,14 @@ type InvoiceItem struct {
 }
 
 type KeyBackup struct {
-	ID           string    `json:"id"`
-	InsertedAt   *string   `json:"insertedAt"`
-	Name         string    `json:"name"`
-	Repositories []*string `json:"repositories"`
-	UpdatedAt    *string   `json:"updatedAt"`
-	User         User      `json:"user"`
-	Value        string    `json:"value"`
+	Digest       string   `json:"digest"`
+	ID           string   `json:"id"`
+	InsertedAt   *string  `json:"insertedAt"`
+	Name         string   `json:"name"`
+	Repositories []string `json:"repositories"`
+	UpdatedAt    *string  `json:"updatedAt"`
+	User         User     `json:"user"`
+	Value        string   `json:"value"`
 }
 
 type KeyBackupAttributes struct {

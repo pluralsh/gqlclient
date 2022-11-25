@@ -224,5 +224,7 @@ fragment StackFragment on Stack {
 fragment KeyBackupFragment on KeyBackup {
     id
     name
+    digest
     repositories
+    insertedAt
 }

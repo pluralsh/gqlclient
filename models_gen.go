@@ -9,16 +9,17 @@ import (
 )
 
 type Account struct {
-	BackgroundColor    *string          `json:"backgroundColor"`
-	BillingCustomerID  *string          `json:"billingCustomerId"`
-	DomainMappings     []*DomainMapping `json:"domainMappings"`
-	Icon               *string          `json:"icon"`
-	ID                 string           `json:"id"`
-	InsertedAt         *string          `json:"insertedAt"`
-	Name               *string          `json:"name"`
-	RootUser           *User            `json:"rootUser"`
-	UpdatedAt          *string          `json:"updatedAt"`
-	WorkosConnectionID *string          `json:"workosConnectionId"`
+	BackgroundColor    *string               `json:"backgroundColor"`
+	BillingCustomerID  *string               `json:"billingCustomerId"`
+	DomainMappings     []*DomainMapping      `json:"domainMappings"`
+	Icon               *string               `json:"icon"`
+	ID                 string                `json:"id"`
+	InsertedAt         *string               `json:"insertedAt"`
+	Name               *string               `json:"name"`
+	RootUser           *User                 `json:"rootUser"`
+	Subscription       *PlatformSubscription `json:"subscription"`
+	UpdatedAt          *string               `json:"updatedAt"`
+	WorkosConnectionID *string               `json:"workosConnectionId"`
 }
 
 type AccountAttributes struct {
@@ -1316,6 +1317,10 @@ type PlanFeatureAttributes struct {
 	Name        string `json:"name"`
 }
 
+type PlanFeatures struct {
+	Vpn *bool `json:"vpn"`
+}
+
 type PlanLineItemAttributes struct {
 	Included []*LimitAttributes    `json:"included,omitempty"`
 	Items    []*LineItemAttributes `json:"items,omitempty"`
@@ -1341,6 +1346,48 @@ type PlatformMetrics struct {
 	Publishers   *int64 `json:"publishers"`
 	Repositories *int64 `json:"repositories"`
 	Rollouts     *int64 `json:"rollouts"`
+}
+
+type PlatformPlan struct {
+	Cost       int64               `json:"cost"`
+	Features   *PlanFeatures       `json:"features"`
+	ID         string              `json:"id"`
+	InsertedAt *string             `json:"insertedAt"`
+	LineItems  []*PlatformPlanItem `json:"lineItems"`
+	Name       string              `json:"name"`
+	Period     PaymentPeriod       `json:"period"`
+	UpdatedAt  *string             `json:"updatedAt"`
+	Visible    bool                `json:"visible"`
+}
+
+type PlatformPlanItem struct {
+	Cost       int64             `json:"cost"`
+	Dimension  LineItemDimension `json:"dimension"`
+	ExternalID *string           `json:"externalId"`
+	Name       string            `json:"name"`
+	Period     PaymentPeriod     `json:"period"`
+}
+
+type PlatformPlanLineItemAttributes struct {
+	Dimension LineItemDimension `json:"dimension"`
+	Quantity  int64             `json:"quantity"`
+}
+
+type PlatformSubscription struct {
+	ExternalID *string                          `json:"externalId"`
+	ID         string                           `json:"id"`
+	LineItems  []*PlatformSubscriptionLineItems `json:"lineItems"`
+	Plan       *PlatformPlan                    `json:"plan"`
+}
+
+type PlatformSubscriptionAttributes struct {
+	LineItems []*PlatformPlanLineItemAttributes `json:"lineItems,omitempty"`
+}
+
+type PlatformSubscriptionLineItems struct {
+	Dimension  LineItemDimension `json:"dimension"`
+	ExternalID *string           `json:"externalId"`
+	Quantity   int64             `json:"quantity"`
 }
 
 type PluralConfiguration struct {
@@ -2015,6 +2062,7 @@ type Test struct {
 	SourceTag  string      `json:"sourceTag"`
 	Status     TestStatus  `json:"status"`
 	Steps      []*TestStep `json:"steps"`
+	Tags       []string    `json:"tags"`
 	UpdatedAt  *string     `json:"updatedAt"`
 }
 
@@ -2035,6 +2083,7 @@ type TestAttributes struct {
 	PromoteTag *string               `json:"promoteTag,omitempty"`
 	Status     *TestStatus           `json:"status,omitempty"`
 	Steps      []*TestStepAttributes `json:"steps,omitempty"`
+	Tags       []*string             `json:"tags,omitempty"`
 }
 
 type TestConnection struct {
@@ -2961,6 +3010,45 @@ func (e IncidentStatus) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
+type LineItemDimension string
+
+const (
+	LineItemDimensionUser LineItemDimension = "USER"
+)
+
+var AllLineItemDimension = []LineItemDimension{
+	LineItemDimensionUser,
+}
+
+func (e LineItemDimension) IsValid() bool {
+	switch e {
+	case LineItemDimensionUser:
+		return true
+	}
+	return false
+}
+
+func (e LineItemDimension) String() string {
+	return string(e)
+}
+
+func (e *LineItemDimension) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = LineItemDimension(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid LineItemDimension", str)
+	}
+	return nil
+}
+
+func (e LineItemDimension) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
 type LoginMethod string
 
 const (
@@ -3445,6 +3533,47 @@ func (e *Order) UnmarshalGQL(v interface{}) error {
 }
 
 func (e Order) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type PaymentPeriod string
+
+const (
+	PaymentPeriodMonthly PaymentPeriod = "MONTHLY"
+	PaymentPeriodYearly  PaymentPeriod = "YEARLY"
+)
+
+var AllPaymentPeriod = []PaymentPeriod{
+	PaymentPeriodMonthly,
+	PaymentPeriodYearly,
+}
+
+func (e PaymentPeriod) IsValid() bool {
+	switch e {
+	case PaymentPeriodMonthly, PaymentPeriodYearly:
+		return true
+	}
+	return false
+}
+
+func (e PaymentPeriod) String() string {
+	return string(e)
+}
+
+func (e *PaymentPeriod) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = PaymentPeriod(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid PaymentPeriod", str)
+	}
+	return nil
+}
+
+func (e PaymentPeriod) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 

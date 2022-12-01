@@ -49,6 +49,7 @@ type RootQueryType struct {
 	Integrations           *IntegrationConnection            "json:\"integrations\" graphql:\"integrations\""
 	Invite                 *Invite                           "json:\"invite\" graphql:\"invite\""
 	Invites                *InviteConnection                 "json:\"invites\" graphql:\"invites\""
+	Invoices               *InvoiceConnection                "json:\"invoices\" graphql:\"invoices\""
 	KeyBackup              *KeyBackup                        "json:\"keyBackup\" graphql:\"keyBackup\""
 	KeyBackups             *KeyBackupConnection              "json:\"keyBackups\" graphql:\"keyBackups\""
 	LoginMethod            *LoginMethodResponse              "json:\"loginMethod\" graphql:\"loginMethod\""
@@ -63,6 +64,8 @@ type RootQueryType struct {
 	OidcLogin              *OidcStepResponse                 "json:\"oidcLogin\" graphql:\"oidcLogin\""
 	OidcLogins             *OidcLoginConnection              "json:\"oidcLogins\" graphql:\"oidcLogins\""
 	PlatformMetrics        *PlatformMetrics                  "json:\"platformMetrics\" graphql:\"platformMetrics\""
+	PlatformPlans          []*PlatformPlan                   "json:\"platformPlans\" graphql:\"platformPlans\""
+	PlatformSubscription   *PlatformSubscription             "json:\"platformSubscription\" graphql:\"platformSubscription\""
 	PublicKeys             *PublicKeyConnection              "json:\"publicKeys\" graphql:\"publicKeys\""
 	Publisher              *Publisher                        "json:\"publisher\" graphql:\"publisher\""
 	Publishers             *PublisherConnection              "json:\"publishers\" graphql:\"publishers\""
@@ -103,129 +106,134 @@ type RootQueryType struct {
 	Webhooks               *WebhookConnection                "json:\"webhooks\" graphql:\"webhooks\""
 }
 type RootMutationType struct {
-	AcceptIncident            *Incident               "json:\"acceptIncident\" graphql:\"acceptIncident\""
-	AcceptLogin               *OauthResponse          "json:\"acceptLogin\" graphql:\"acceptLogin\""
-	AcquireLock               *ApplyLock              "json:\"acquireLock\" graphql:\"acquireLock\""
-	CompleteIncident          *Incident               "json:\"completeIncident\" graphql:\"completeIncident\""
-	CreateArtifact            *Artifact               "json:\"createArtifact\" graphql:\"createArtifact\""
-	CreateCard                *Account                "json:\"createCard\" graphql:\"createCard\""
-	CreateCrd                 *Crd                    "json:\"createCrd\" graphql:\"createCrd\""
-	CreateDemoProject         *DemoProject            "json:\"createDemoProject\" graphql:\"createDemoProject\""
-	CreateDNSRecord           *DNSRecord              "json:\"createDnsRecord\" graphql:\"createDnsRecord\""
-	CreateDomain              *DNSDomain              "json:\"createDomain\" graphql:\"createDomain\""
-	CreateGroup               *Group                  "json:\"createGroup\" graphql:\"createGroup\""
-	CreateGroupMember         *GroupMember            "json:\"createGroupMember\" graphql:\"createGroupMember\""
-	CreateIncident            *Incident               "json:\"createIncident\" graphql:\"createIncident\""
-	CreateInstallation        *Installation           "json:\"createInstallation\" graphql:\"createInstallation\""
-	CreateIntegration         *Integration            "json:\"createIntegration\" graphql:\"createIntegration\""
-	CreateIntegrationWebhook  *IntegrationWebhook     "json:\"createIntegrationWebhook\" graphql:\"createIntegrationWebhook\""
-	CreateInvite              *Invite                 "json:\"createInvite\" graphql:\"createInvite\""
-	CreateKeyBackup           *KeyBackup              "json:\"createKeyBackup\" graphql:\"createKeyBackup\""
-	CreateMessage             *IncidentMessage        "json:\"createMessage\" graphql:\"createMessage\""
-	CreateOauthIntegration    *OauthIntegration       "json:\"createOauthIntegration\" graphql:\"createOauthIntegration\""
-	CreateOidcProvider        *OidcProvider           "json:\"createOidcProvider\" graphql:\"createOidcProvider\""
-	CreatePlan                *Plan                   "json:\"createPlan\" graphql:\"createPlan\""
-	CreatePublicKey           *PublicKey              "json:\"createPublicKey\" graphql:\"createPublicKey\""
-	CreatePublisher           *Publisher              "json:\"createPublisher\" graphql:\"createPublisher\""
-	CreateQueue               *UpgradeQueue           "json:\"createQueue\" graphql:\"createQueue\""
-	CreateReaction            *IncidentMessage        "json:\"createReaction\" graphql:\"createReaction\""
-	CreateRecipe              *Recipe                 "json:\"createRecipe\" graphql:\"createRecipe\""
-	CreateRepository          *Repository             "json:\"createRepository\" graphql:\"createRepository\""
-	CreateResetToken          *bool                   "json:\"createResetToken\" graphql:\"createResetToken\""
-	CreateRole                *Role                   "json:\"createRole\" graphql:\"createRole\""
-	CreateServiceAccount      *User                   "json:\"createServiceAccount\" graphql:\"createServiceAccount\""
-	CreateShell               *CloudShell             "json:\"createShell\" graphql:\"createShell\""
-	CreateStack               *Stack                  "json:\"createStack\" graphql:\"createStack\""
-	CreateSubscription        *RepositorySubscription "json:\"createSubscription\" graphql:\"createSubscription\""
-	CreateTerraform           *Terraform              "json:\"createTerraform\" graphql:\"createTerraform\""
-	CreateTest                *Test                   "json:\"createTest\" graphql:\"createTest\""
-	CreateToken               *PersistedToken         "json:\"createToken\" graphql:\"createToken\""
-	CreateUserEvent           *bool                   "json:\"createUserEvent\" graphql:\"createUserEvent\""
-	CreateWebhook             *Webhook                "json:\"createWebhook\" graphql:\"createWebhook\""
-	CreateZoom                *ZoomMeeting            "json:\"createZoom\" graphql:\"createZoom\""
-	DeleteCard                *Account                "json:\"deleteCard\" graphql:\"deleteCard\""
-	DeleteChartInstallation   *ChartInstallation      "json:\"deleteChartInstallation\" graphql:\"deleteChartInstallation\""
-	DeleteDemoProject         *DemoProject            "json:\"deleteDemoProject\" graphql:\"deleteDemoProject\""
-	DeleteDNSRecord           *DNSRecord              "json:\"deleteDnsRecord\" graphql:\"deleteDnsRecord\""
-	DeleteDomain              *DNSDomain              "json:\"deleteDomain\" graphql:\"deleteDomain\""
-	DeleteEabKey              *EabCredential          "json:\"deleteEabKey\" graphql:\"deleteEabKey\""
-	DeleteGroup               *Group                  "json:\"deleteGroup\" graphql:\"deleteGroup\""
-	DeleteGroupMember         *GroupMember            "json:\"deleteGroupMember\" graphql:\"deleteGroupMember\""
-	DeleteIncident            *Incident               "json:\"deleteIncident\" graphql:\"deleteIncident\""
-	DeleteInstallation        *Installation           "json:\"deleteInstallation\" graphql:\"deleteInstallation\""
-	DeleteIntegrationWebhook  *IntegrationWebhook     "json:\"deleteIntegrationWebhook\" graphql:\"deleteIntegrationWebhook\""
-	DeleteInvite              *Invite                 "json:\"deleteInvite\" graphql:\"deleteInvite\""
-	DeleteMessage             *IncidentMessage        "json:\"deleteMessage\" graphql:\"deleteMessage\""
-	DeletePublicKey           *PublicKey              "json:\"deletePublicKey\" graphql:\"deletePublicKey\""
-	DeleteReaction            *IncidentMessage        "json:\"deleteReaction\" graphql:\"deleteReaction\""
-	DeleteRecipe              *Recipe                 "json:\"deleteRecipe\" graphql:\"deleteRecipe\""
-	DeleteRepository          *Repository             "json:\"deleteRepository\" graphql:\"deleteRepository\""
-	DeleteRole                *Role                   "json:\"deleteRole\" graphql:\"deleteRole\""
-	DeleteShell               *CloudShell             "json:\"deleteShell\" graphql:\"deleteShell\""
-	DeleteStack               *Stack                  "json:\"deleteStack\" graphql:\"deleteStack\""
-	DeleteTerraform           *Terraform              "json:\"deleteTerraform\" graphql:\"deleteTerraform\""
-	DeleteToken               *PersistedToken         "json:\"deleteToken\" graphql:\"deleteToken\""
-	DeleteUser                *User                   "json:\"deleteUser\" graphql:\"deleteUser\""
-	DestroyCluster            *bool                   "json:\"destroyCluster\" graphql:\"destroyCluster\""
-	DeviceLogin               *DeviceLogin            "json:\"deviceLogin\" graphql:\"deviceLogin\""
-	ExternalToken             *string                 "json:\"externalToken\" graphql:\"externalToken\""
-	FollowIncident            *Follower               "json:\"followIncident\" graphql:\"followIncident\""
-	ImpersonateServiceAccount *User                   "json:\"impersonateServiceAccount\" graphql:\"impersonateServiceAccount\""
-	InstallBundle             []*Installation         "json:\"installBundle\" graphql:\"installBundle\""
-	InstallChart              *ChartInstallation      "json:\"installChart\" graphql:\"installChart\""
-	InstallRecipe             []*Installation         "json:\"installRecipe\" graphql:\"installRecipe\""
-	InstallTerraform          *TerraformInstallation  "json:\"installTerraform\" graphql:\"installTerraform\""
-	LinkPublisher             *Publisher              "json:\"linkPublisher\" graphql:\"linkPublisher\""
-	Login                     *User                   "json:\"login\" graphql:\"login\""
-	LoginToken                *User                   "json:\"loginToken\" graphql:\"loginToken\""
-	OauthCallback             *User                   "json:\"oauthCallback\" graphql:\"oauthCallback\""
-	OauthConsent              *OauthResponse          "json:\"oauthConsent\" graphql:\"oauthConsent\""
-	PasswordlessLogin         *User                   "json:\"passwordlessLogin\" graphql:\"passwordlessLogin\""
-	PingWebhook               *WebhookResponse        "json:\"pingWebhook\" graphql:\"pingWebhook\""
-	ProvisionDomain           *DNSDomain              "json:\"provisionDomain\" graphql:\"provisionDomain\""
-	PublishLogs               *TestStep               "json:\"publishLogs\" graphql:\"publishLogs\""
-	QuickStack                *Stack                  "json:\"quickStack\" graphql:\"quickStack\""
-	ReadNotifications         *int64                  "json:\"readNotifications\" graphql:\"readNotifications\""
-	RealizeInvite             *User                   "json:\"realizeInvite\" graphql:\"realizeInvite\""
-	RealizeResetToken         *bool                   "json:\"realizeResetToken\" graphql:\"realizeResetToken\""
-	RebootShell               *CloudShell             "json:\"rebootShell\" graphql:\"rebootShell\""
-	ReleaseLock               *ApplyLock              "json:\"releaseLock\" graphql:\"releaseLock\""
-	ResetInstallations        *int64                  "json:\"resetInstallations\" graphql:\"resetInstallations\""
-	RestartShell              *bool                   "json:\"restartShell\" graphql:\"restartShell\""
-	Signup                    *User                   "json:\"signup\" graphql:\"signup\""
-	SsoCallback               *User                   "json:\"ssoCallback\" graphql:\"ssoCallback\""
-	StopShell                 *bool                   "json:\"stopShell\" graphql:\"stopShell\""
-	TransferDemoProject       *DemoProject            "json:\"transferDemoProject\" graphql:\"transferDemoProject\""
-	UnfollowIncident          *Follower               "json:\"unfollowIncident\" graphql:\"unfollowIncident\""
-	UninstallTerraform        *TerraformInstallation  "json:\"uninstallTerraform\" graphql:\"uninstallTerraform\""
-	UnlockRepository          *int64                  "json:\"unlockRepository\" graphql:\"unlockRepository\""
-	UpdateAccount             *Account                "json:\"updateAccount\" graphql:\"updateAccount\""
-	UpdateChart               *Chart                  "json:\"updateChart\" graphql:\"updateChart\""
-	UpdateChartInstallation   *ChartInstallation      "json:\"updateChartInstallation\" graphql:\"updateChartInstallation\""
-	UpdateDockerRepository    *DockerRepository       "json:\"updateDockerRepository\" graphql:\"updateDockerRepository\""
-	UpdateDomain              *DNSDomain              "json:\"updateDomain\" graphql:\"updateDomain\""
-	UpdateGroup               *Group                  "json:\"updateGroup\" graphql:\"updateGroup\""
-	UpdateIncident            *Incident               "json:\"updateIncident\" graphql:\"updateIncident\""
-	UpdateInstallation        *Installation           "json:\"updateInstallation\" graphql:\"updateInstallation\""
-	UpdateIntegrationWebhook  *IntegrationWebhook     "json:\"updateIntegrationWebhook\" graphql:\"updateIntegrationWebhook\""
-	UpdateLineItem            *RepositorySubscription "json:\"updateLineItem\" graphql:\"updateLineItem\""
-	UpdateMessage             *IncidentMessage        "json:\"updateMessage\" graphql:\"updateMessage\""
-	UpdateOidcProvider        *OidcProvider           "json:\"updateOidcProvider\" graphql:\"updateOidcProvider\""
-	UpdatePlan                *RepositorySubscription "json:\"updatePlan\" graphql:\"updatePlan\""
-	UpdatePlanAttributes      *Plan                   "json:\"updatePlanAttributes\" graphql:\"updatePlanAttributes\""
-	UpdatePublisher           *Publisher              "json:\"updatePublisher\" graphql:\"updatePublisher\""
-	UpdateRepository          *Repository             "json:\"updateRepository\" graphql:\"updateRepository\""
-	UpdateRole                *Role                   "json:\"updateRole\" graphql:\"updateRole\""
-	UpdateServiceAccount      *User                   "json:\"updateServiceAccount\" graphql:\"updateServiceAccount\""
-	UpdateShellConfiguration  *bool                   "json:\"updateShellConfiguration\" graphql:\"updateShellConfiguration\""
-	UpdateStep                *TestStep               "json:\"updateStep\" graphql:\"updateStep\""
-	UpdateTerraform           *Terraform              "json:\"updateTerraform\" graphql:\"updateTerraform\""
-	UpdateTest                *Test                   "json:\"updateTest\" graphql:\"updateTest\""
-	UpdateUser                *User                   "json:\"updateUser\" graphql:\"updateUser\""
-	UpdateVersion             *Version                "json:\"updateVersion\" graphql:\"updateVersion\""
-	UploadTerraform           *Terraform              "json:\"uploadTerraform\" graphql:\"uploadTerraform\""
-	UpsertOidcProvider        *OidcProvider           "json:\"upsertOidcProvider\" graphql:\"upsertOidcProvider\""
-	UpsertRepository          *Repository             "json:\"upsertRepository\" graphql:\"upsertRepository\""
+	AcceptIncident             *Incident               "json:\"acceptIncident\" graphql:\"acceptIncident\""
+	AcceptLogin                *OauthResponse          "json:\"acceptLogin\" graphql:\"acceptLogin\""
+	AcquireLock                *ApplyLock              "json:\"acquireLock\" graphql:\"acquireLock\""
+	CancelPlatformSubscription *PlatformSubscription   "json:\"cancelPlatformSubscription\" graphql:\"cancelPlatformSubscription\""
+	CompleteIncident           *Incident               "json:\"completeIncident\" graphql:\"completeIncident\""
+	CreateArtifact             *Artifact               "json:\"createArtifact\" graphql:\"createArtifact\""
+	CreateCard                 *Account                "json:\"createCard\" graphql:\"createCard\""
+	CreateCrd                  *Crd                    "json:\"createCrd\" graphql:\"createCrd\""
+	CreateDemoProject          *DemoProject            "json:\"createDemoProject\" graphql:\"createDemoProject\""
+	CreateDNSRecord            *DNSRecord              "json:\"createDnsRecord\" graphql:\"createDnsRecord\""
+	CreateDomain               *DNSDomain              "json:\"createDomain\" graphql:\"createDomain\""
+	CreateGroup                *Group                  "json:\"createGroup\" graphql:\"createGroup\""
+	CreateGroupMember          *GroupMember            "json:\"createGroupMember\" graphql:\"createGroupMember\""
+	CreateIncident             *Incident               "json:\"createIncident\" graphql:\"createIncident\""
+	CreateInstallation         *Installation           "json:\"createInstallation\" graphql:\"createInstallation\""
+	CreateIntegration          *Integration            "json:\"createIntegration\" graphql:\"createIntegration\""
+	CreateIntegrationWebhook   *IntegrationWebhook     "json:\"createIntegrationWebhook\" graphql:\"createIntegrationWebhook\""
+	CreateInvite               *Invite                 "json:\"createInvite\" graphql:\"createInvite\""
+	CreateKeyBackup            *KeyBackup              "json:\"createKeyBackup\" graphql:\"createKeyBackup\""
+	CreateMessage              *IncidentMessage        "json:\"createMessage\" graphql:\"createMessage\""
+	CreateOauthIntegration     *OauthIntegration       "json:\"createOauthIntegration\" graphql:\"createOauthIntegration\""
+	CreateOidcProvider         *OidcProvider           "json:\"createOidcProvider\" graphql:\"createOidcProvider\""
+	CreatePlan                 *Plan                   "json:\"createPlan\" graphql:\"createPlan\""
+	CreatePlatformSubscription *PlatformSubscription   "json:\"createPlatformSubscription\" graphql:\"createPlatformSubscription\""
+	CreatePublicKey            *PublicKey              "json:\"createPublicKey\" graphql:\"createPublicKey\""
+	CreatePublisher            *Publisher              "json:\"createPublisher\" graphql:\"createPublisher\""
+	CreateQueue                *UpgradeQueue           "json:\"createQueue\" graphql:\"createQueue\""
+	CreateReaction             *IncidentMessage        "json:\"createReaction\" graphql:\"createReaction\""
+	CreateRecipe               *Recipe                 "json:\"createRecipe\" graphql:\"createRecipe\""
+	CreateRepository           *Repository             "json:\"createRepository\" graphql:\"createRepository\""
+	CreateResetToken           *bool                   "json:\"createResetToken\" graphql:\"createResetToken\""
+	CreateRole                 *Role                   "json:\"createRole\" graphql:\"createRole\""
+	CreateServiceAccount       *User                   "json:\"createServiceAccount\" graphql:\"createServiceAccount\""
+	CreateShell                *CloudShell             "json:\"createShell\" graphql:\"createShell\""
+	CreateStack                *Stack                  "json:\"createStack\" graphql:\"createStack\""
+	CreateSubscription         *RepositorySubscription "json:\"createSubscription\" graphql:\"createSubscription\""
+	CreateTerraform            *Terraform              "json:\"createTerraform\" graphql:\"createTerraform\""
+	CreateTest                 *Test                   "json:\"createTest\" graphql:\"createTest\""
+	CreateToken                *PersistedToken         "json:\"createToken\" graphql:\"createToken\""
+	CreateUserEvent            *bool                   "json:\"createUserEvent\" graphql:\"createUserEvent\""
+	CreateWebhook              *Webhook                "json:\"createWebhook\" graphql:\"createWebhook\""
+	CreateZoom                 *ZoomMeeting            "json:\"createZoom\" graphql:\"createZoom\""
+	DeleteCard                 *Account                "json:\"deleteCard\" graphql:\"deleteCard\""
+	DeleteChartInstallation    *ChartInstallation      "json:\"deleteChartInstallation\" graphql:\"deleteChartInstallation\""
+	DeleteDemoProject          *DemoProject            "json:\"deleteDemoProject\" graphql:\"deleteDemoProject\""
+	DeleteDNSRecord            *DNSRecord              "json:\"deleteDnsRecord\" graphql:\"deleteDnsRecord\""
+	DeleteDomain               *DNSDomain              "json:\"deleteDomain\" graphql:\"deleteDomain\""
+	DeleteEabKey               *EabCredential          "json:\"deleteEabKey\" graphql:\"deleteEabKey\""
+	DeleteGroup                *Group                  "json:\"deleteGroup\" graphql:\"deleteGroup\""
+	DeleteGroupMember          *GroupMember            "json:\"deleteGroupMember\" graphql:\"deleteGroupMember\""
+	DeleteIncident             *Incident               "json:\"deleteIncident\" graphql:\"deleteIncident\""
+	DeleteInstallation         *Installation           "json:\"deleteInstallation\" graphql:\"deleteInstallation\""
+	DeleteIntegrationWebhook   *IntegrationWebhook     "json:\"deleteIntegrationWebhook\" graphql:\"deleteIntegrationWebhook\""
+	DeleteInvite               *Invite                 "json:\"deleteInvite\" graphql:\"deleteInvite\""
+	DeleteKeyBackup            *KeyBackup              "json:\"deleteKeyBackup\" graphql:\"deleteKeyBackup\""
+	DeleteMessage              *IncidentMessage        "json:\"deleteMessage\" graphql:\"deleteMessage\""
+	DeletePublicKey            *PublicKey              "json:\"deletePublicKey\" graphql:\"deletePublicKey\""
+	DeleteReaction             *IncidentMessage        "json:\"deleteReaction\" graphql:\"deleteReaction\""
+	DeleteRecipe               *Recipe                 "json:\"deleteRecipe\" graphql:\"deleteRecipe\""
+	DeleteRepository           *Repository             "json:\"deleteRepository\" graphql:\"deleteRepository\""
+	DeleteRole                 *Role                   "json:\"deleteRole\" graphql:\"deleteRole\""
+	DeleteShell                *CloudShell             "json:\"deleteShell\" graphql:\"deleteShell\""
+	DeleteStack                *Stack                  "json:\"deleteStack\" graphql:\"deleteStack\""
+	DeleteTerraform            *Terraform              "json:\"deleteTerraform\" graphql:\"deleteTerraform\""
+	DeleteToken                *PersistedToken         "json:\"deleteToken\" graphql:\"deleteToken\""
+	DeleteUser                 *User                   "json:\"deleteUser\" graphql:\"deleteUser\""
+	DestroyCluster             *bool                   "json:\"destroyCluster\" graphql:\"destroyCluster\""
+	DeviceLogin                *DeviceLogin            "json:\"deviceLogin\" graphql:\"deviceLogin\""
+	ExternalToken              *string                 "json:\"externalToken\" graphql:\"externalToken\""
+	FollowIncident             *Follower               "json:\"followIncident\" graphql:\"followIncident\""
+	ImpersonateServiceAccount  *User                   "json:\"impersonateServiceAccount\" graphql:\"impersonateServiceAccount\""
+	InstallBundle              []*Installation         "json:\"installBundle\" graphql:\"installBundle\""
+	InstallChart               *ChartInstallation      "json:\"installChart\" graphql:\"installChart\""
+	InstallRecipe              []*Installation         "json:\"installRecipe\" graphql:\"installRecipe\""
+	InstallTerraform           *TerraformInstallation  "json:\"installTerraform\" graphql:\"installTerraform\""
+	LinkPublisher              *Publisher              "json:\"linkPublisher\" graphql:\"linkPublisher\""
+	Login                      *User                   "json:\"login\" graphql:\"login\""
+	LoginToken                 *User                   "json:\"loginToken\" graphql:\"loginToken\""
+	OauthCallback              *User                   "json:\"oauthCallback\" graphql:\"oauthCallback\""
+	OauthConsent               *OauthResponse          "json:\"oauthConsent\" graphql:\"oauthConsent\""
+	PasswordlessLogin          *User                   "json:\"passwordlessLogin\" graphql:\"passwordlessLogin\""
+	PingWebhook                *WebhookResponse        "json:\"pingWebhook\" graphql:\"pingWebhook\""
+	ProvisionDomain            *DNSDomain              "json:\"provisionDomain\" graphql:\"provisionDomain\""
+	PublishLogs                *TestStep               "json:\"publishLogs\" graphql:\"publishLogs\""
+	QuickStack                 *Stack                  "json:\"quickStack\" graphql:\"quickStack\""
+	ReadNotifications          *int64                  "json:\"readNotifications\" graphql:\"readNotifications\""
+	RealizeInvite              *User                   "json:\"realizeInvite\" graphql:\"realizeInvite\""
+	RealizeResetToken          *bool                   "json:\"realizeResetToken\" graphql:\"realizeResetToken\""
+	RebootShell                *CloudShell             "json:\"rebootShell\" graphql:\"rebootShell\""
+	ReleaseLock                *ApplyLock              "json:\"releaseLock\" graphql:\"releaseLock\""
+	ResetInstallations         *int64                  "json:\"resetInstallations\" graphql:\"resetInstallations\""
+	RestartShell               *bool                   "json:\"restartShell\" graphql:\"restartShell\""
+	SetupShell                 *CloudShell             "json:\"setupShell\" graphql:\"setupShell\""
+	Signup                     *User                   "json:\"signup\" graphql:\"signup\""
+	SsoCallback                *User                   "json:\"ssoCallback\" graphql:\"ssoCallback\""
+	StopShell                  *bool                   "json:\"stopShell\" graphql:\"stopShell\""
+	TransferDemoProject        *DemoProject            "json:\"transferDemoProject\" graphql:\"transferDemoProject\""
+	UnfollowIncident           *Follower               "json:\"unfollowIncident\" graphql:\"unfollowIncident\""
+	UninstallTerraform         *TerraformInstallation  "json:\"uninstallTerraform\" graphql:\"uninstallTerraform\""
+	UnlockRepository           *int64                  "json:\"unlockRepository\" graphql:\"unlockRepository\""
+	UpdateAccount              *Account                "json:\"updateAccount\" graphql:\"updateAccount\""
+	UpdateChart                *Chart                  "json:\"updateChart\" graphql:\"updateChart\""
+	UpdateChartInstallation    *ChartInstallation      "json:\"updateChartInstallation\" graphql:\"updateChartInstallation\""
+	UpdateDockerRepository     *DockerRepository       "json:\"updateDockerRepository\" graphql:\"updateDockerRepository\""
+	UpdateDomain               *DNSDomain              "json:\"updateDomain\" graphql:\"updateDomain\""
+	UpdateGroup                *Group                  "json:\"updateGroup\" graphql:\"updateGroup\""
+	UpdateIncident             *Incident               "json:\"updateIncident\" graphql:\"updateIncident\""
+	UpdateInstallation         *Installation           "json:\"updateInstallation\" graphql:\"updateInstallation\""
+	UpdateIntegrationWebhook   *IntegrationWebhook     "json:\"updateIntegrationWebhook\" graphql:\"updateIntegrationWebhook\""
+	UpdateLineItem             *RepositorySubscription "json:\"updateLineItem\" graphql:\"updateLineItem\""
+	UpdateMessage              *IncidentMessage        "json:\"updateMessage\" graphql:\"updateMessage\""
+	UpdateOidcProvider         *OidcProvider           "json:\"updateOidcProvider\" graphql:\"updateOidcProvider\""
+	UpdatePlan                 *RepositorySubscription "json:\"updatePlan\" graphql:\"updatePlan\""
+	UpdatePlanAttributes       *Plan                   "json:\"updatePlanAttributes\" graphql:\"updatePlanAttributes\""
+	UpdatePlatformPlan         *PlatformSubscription   "json:\"updatePlatformPlan\" graphql:\"updatePlatformPlan\""
+	UpdatePublisher            *Publisher              "json:\"updatePublisher\" graphql:\"updatePublisher\""
+	UpdateRepository           *Repository             "json:\"updateRepository\" graphql:\"updateRepository\""
+	UpdateRole                 *Role                   "json:\"updateRole\" graphql:\"updateRole\""
+	UpdateServiceAccount       *User                   "json:\"updateServiceAccount\" graphql:\"updateServiceAccount\""
+	UpdateShellConfiguration   *bool                   "json:\"updateShellConfiguration\" graphql:\"updateShellConfiguration\""
+	UpdateStep                 *TestStep               "json:\"updateStep\" graphql:\"updateStep\""
+	UpdateTerraform            *Terraform              "json:\"updateTerraform\" graphql:\"updateTerraform\""
+	UpdateTest                 *Test                   "json:\"updateTest\" graphql:\"updateTest\""
+	UpdateUser                 *User                   "json:\"updateUser\" graphql:\"updateUser\""
+	UpdateVersion              *Version                "json:\"updateVersion\" graphql:\"updateVersion\""
+	UploadTerraform            *Terraform              "json:\"uploadTerraform\" graphql:\"uploadTerraform\""
+	UpsertOidcProvider         *OidcProvider           "json:\"upsertOidcProvider\" graphql:\"upsertOidcProvider\""
+	UpsertRepository           *Repository             "json:\"upsertRepository\" graphql:\"upsertRepository\""
 }
 type DNSRecordFragment struct {
 	Type    DNSRecordType "json:\"type\" graphql:\"type\""
@@ -950,6 +958,24 @@ const GetVersionsDocument = `query GetVersions ($id: ID!) {
 		}
 	}
 }
+fragment VersionFragment on Version {
+	id
+	readme
+	version
+	valuesTemplate
+	package
+	crds {
+		... CrdFragment
+	}
+	dependencies {
+		... DependenciesFragment
+	}
+}
+fragment CrdFragment on Crd {
+	id
+	name
+	blob
+}
 fragment DependenciesFragment on Dependencies {
 	dependencies {
 		type
@@ -974,24 +1000,6 @@ fragment DependenciesFragment on Dependencies {
 	providerWirings
 	outputs
 	providerVsn
-}
-fragment VersionFragment on Version {
-	id
-	readme
-	version
-	valuesTemplate
-	package
-	crds {
-		... CrdFragment
-	}
-	dependencies {
-		... DependenciesFragment
-	}
-}
-fragment CrdFragment on Crd {
-	id
-	name
-	blob
 }
 `
 
@@ -1017,6 +1025,24 @@ const GetChartInstallationsDocument = `query GetChartInstallations ($id: ID!) {
 		}
 	}
 }
+fragment ChartInstallationFragment on ChartInstallation {
+	id
+	chart {
+		... ChartFragment
+		dependencies {
+			... DependenciesFragment
+		}
+	}
+	version {
+		... VersionFragment
+	}
+}
+fragment ChartFragment on Chart {
+	id
+	name
+	description
+	latestVersion
+}
 fragment DependenciesFragment on Dependencies {
 	dependencies {
 		type
@@ -1059,24 +1085,6 @@ fragment CrdFragment on Crd {
 	id
 	name
 	blob
-}
-fragment ChartInstallationFragment on ChartInstallation {
-	id
-	chart {
-		... ChartFragment
-		dependencies {
-			... DependenciesFragment
-		}
-	}
-	version {
-		... VersionFragment
-	}
-}
-fragment ChartFragment on Chart {
-	id
-	name
-	description
-	latestVersion
 }
 `
 
@@ -1107,6 +1115,50 @@ const GetPackageInstallationsDocument = `query GetPackageInstallations ($id: ID!
 				... TerraformInstallationFragment
 			}
 		}
+	}
+}
+fragment ChartFragment on Chart {
+	id
+	name
+	description
+	latestVersion
+}
+fragment DependenciesFragment on Dependencies {
+	dependencies {
+		type
+		name
+		repo
+		optional
+		version
+	}
+	breaking
+	instructions {
+		instructions
+		script
+	}
+	wait
+	application
+	providers
+	secrets
+	wirings {
+		terraform
+		helm
+	}
+	providerWirings
+	outputs
+	providerVsn
+}
+fragment VersionFragment on Version {
+	id
+	readme
+	version
+	valuesTemplate
+	package
+	crds {
+		... CrdFragment
+	}
+	dependencies {
+		... DependenciesFragment
 	}
 }
 fragment CrdFragment on Crd {
@@ -1143,50 +1195,6 @@ fragment ChartInstallationFragment on ChartInstallation {
 	}
 	version {
 		... VersionFragment
-	}
-}
-fragment ChartFragment on Chart {
-	id
-	name
-	description
-	latestVersion
-}
-fragment DependenciesFragment on Dependencies {
-	dependencies {
-		type
-		name
-		repo
-		optional
-		version
-	}
-	breaking
-	instructions {
-		instructions
-		script
-	}
-	wait
-	application
-	providers
-	secrets
-	wirings {
-		terraform
-		helm
-	}
-	providerWirings
-	outputs
-	providerVsn
-}
-fragment VersionFragment on Version {
-	id
-	readme
-	version
-	valuesTemplate
-	package
-	crds {
-		... CrdFragment
-	}
-	dependencies {
-		... DependenciesFragment
 	}
 }
 `
@@ -1650,22 +1658,6 @@ const GetRecipeDocument = `query GetRecipe ($repo: String, $name: String) {
 		}
 	}
 }
-fragment ChartFragment on Chart {
-	id
-	name
-	description
-	latestVersion
-}
-fragment TerraformFragment on Terraform {
-	id
-	name
-	package
-	description
-	dependencies {
-		... DependenciesFragment
-	}
-	valuesTemplate
-}
 fragment DependenciesFragment on Dependencies {
 	dependencies {
 		type
@@ -1778,6 +1770,22 @@ fragment RecipeItemFragment on RecipeItem {
 	configuration {
 		... RecipeConfigurationFragment
 	}
+}
+fragment ChartFragment on Chart {
+	id
+	name
+	description
+	latestVersion
+}
+fragment TerraformFragment on Terraform {
+	id
+	name
+	package
+	description
+	dependencies {
+		... DependenciesFragment
+	}
+	valuesTemplate
 }
 `
 
@@ -1804,47 +1812,6 @@ const ListRecipesDocument = `query ListRecipes ($repo: String, $provider: Provid
 		}
 	}
 }
-fragment ChartFragment on Chart {
-	id
-	name
-	description
-	latestVersion
-}
-fragment TerraformFragment on Terraform {
-	id
-	name
-	package
-	description
-	dependencies {
-		... DependenciesFragment
-	}
-	valuesTemplate
-}
-fragment DependenciesFragment on Dependencies {
-	dependencies {
-		type
-		name
-		repo
-		optional
-		version
-	}
-	breaking
-	instructions {
-		instructions
-		script
-	}
-	wait
-	application
-	providers
-	secrets
-	wirings {
-		terraform
-		helm
-	}
-	providerWirings
-	outputs
-	providerVsn
-}
 fragment RecipeConfigurationFragment on RecipeConfiguration {
 	name
 	type
@@ -1932,6 +1899,47 @@ fragment RecipeItemFragment on RecipeItem {
 	configuration {
 		... RecipeConfigurationFragment
 	}
+}
+fragment ChartFragment on Chart {
+	id
+	name
+	description
+	latestVersion
+}
+fragment TerraformFragment on Terraform {
+	id
+	name
+	package
+	description
+	dependencies {
+		... DependenciesFragment
+	}
+	valuesTemplate
+}
+fragment DependenciesFragment on Dependencies {
+	dependencies {
+		type
+		name
+		repo
+		optional
+		version
+	}
+	breaking
+	instructions {
+		instructions
+		script
+	}
+	wait
+	application
+	providers
+	secrets
+	wirings {
+		terraform
+		helm
+	}
+	providerWirings
+	outputs
+	providerVsn
 }
 `
 
@@ -1958,6 +1966,66 @@ const ListAllRecipesDocument = `query ListAllRecipes ($repo: String) {
 		}
 	}
 }
+fragment ChartFragment on Chart {
+	id
+	name
+	description
+	latestVersion
+}
+fragment TerraformFragment on Terraform {
+	id
+	name
+	package
+	description
+	dependencies {
+		... DependenciesFragment
+	}
+	valuesTemplate
+}
+fragment DependenciesFragment on Dependencies {
+	dependencies {
+		type
+		name
+		repo
+		optional
+		version
+	}
+	breaking
+	instructions {
+		instructions
+		script
+	}
+	wait
+	application
+	providers
+	secrets
+	wirings {
+		terraform
+		helm
+	}
+	providerWirings
+	outputs
+	providerVsn
+}
+fragment RecipeConfigurationFragment on RecipeConfiguration {
+	name
+	type
+	default
+	documentation
+	optional
+	placeholder
+	functionName
+	condition {
+		field
+		operation
+		value
+	}
+	validation {
+		type
+		regex
+		message
+	}
+}
 fragment RecipeFragment on Recipe {
 	id
 	name
@@ -2025,66 +2093,6 @@ fragment RecipeItemFragment on RecipeItem {
 	}
 	configuration {
 		... RecipeConfigurationFragment
-	}
-}
-fragment ChartFragment on Chart {
-	id
-	name
-	description
-	latestVersion
-}
-fragment TerraformFragment on Terraform {
-	id
-	name
-	package
-	description
-	dependencies {
-		... DependenciesFragment
-	}
-	valuesTemplate
-}
-fragment DependenciesFragment on Dependencies {
-	dependencies {
-		type
-		name
-		repo
-		optional
-		version
-	}
-	breaking
-	instructions {
-		instructions
-		script
-	}
-	wait
-	application
-	providers
-	secrets
-	wirings {
-		terraform
-		helm
-	}
-	providerWirings
-	outputs
-	providerVsn
-}
-fragment RecipeConfigurationFragment on RecipeConfiguration {
-	name
-	type
-	default
-	documentation
-	optional
-	placeholder
-	functionName
-	condition {
-		field
-		operation
-		value
-	}
-	validation {
-		type
-		regex
-		message
 	}
 }
 `
@@ -2168,6 +2176,71 @@ const GetStackDocument = `query GetStack ($name: String!, $provider: Provider!) 
 		... StackFragment
 	}
 }
+fragment DependenciesFragment on Dependencies {
+	dependencies {
+		type
+		name
+		repo
+		optional
+		version
+	}
+	breaking
+	instructions {
+		instructions
+		script
+	}
+	wait
+	application
+	providers
+	secrets
+	wirings {
+		terraform
+		helm
+	}
+	providerWirings
+	outputs
+	providerVsn
+}
+fragment StackFragment on Stack {
+	id
+	name
+	featured
+	description
+	bundles {
+		... RecipeFragment
+	}
+}
+fragment RecipeFragment on Recipe {
+	id
+	name
+	description
+	restricted
+	provider
+	tests {
+		type
+		name
+		message
+		args {
+			name
+			repo
+			key
+		}
+	}
+	repository {
+		id
+		name
+	}
+	oidcSettings {
+		uriFormat
+		uriFormats
+		authMethod
+		domainKey
+		subdomain
+	}
+	recipeSections {
+		... RecipeSectionFragment
+	}
+}
 fragment RecipeSectionFragment on RecipeSection {
 	index
 	repository {
@@ -2178,15 +2251,6 @@ fragment RecipeSectionFragment on RecipeSection {
 	}
 	configuration {
 		... RecipeConfigurationFragment
-	}
-}
-fragment StackFragment on Stack {
-	id
-	name
-	featured
-	description
-	bundles {
-		... RecipeFragment
 	}
 }
 fragment RepositoryFragment on Repository {
@@ -2231,31 +2295,6 @@ fragment TerraformFragment on Terraform {
 	}
 	valuesTemplate
 }
-fragment DependenciesFragment on Dependencies {
-	dependencies {
-		type
-		name
-		repo
-		optional
-		version
-	}
-	breaking
-	instructions {
-		instructions
-		script
-	}
-	wait
-	application
-	providers
-	secrets
-	wirings {
-		terraform
-		helm
-	}
-	providerWirings
-	outputs
-	providerVsn
-}
 fragment RecipeConfigurationFragment on RecipeConfiguration {
 	name
 	type
@@ -2273,37 +2312,6 @@ fragment RecipeConfigurationFragment on RecipeConfiguration {
 		type
 		regex
 		message
-	}
-}
-fragment RecipeFragment on Recipe {
-	id
-	name
-	description
-	restricted
-	provider
-	tests {
-		type
-		name
-		message
-		args {
-			name
-			repo
-			key
-		}
-	}
-	repository {
-		id
-		name
-	}
-	oidcSettings {
-		uriFormat
-		uriFormats
-		authMethod
-		domainKey
-		subdomain
-	}
-	recipeSections {
-		... RecipeSectionFragment
 	}
 }
 `
@@ -2331,6 +2339,67 @@ const ListStacksDocument = `query ListStacks ($featured: Boolean, $cursor: Strin
 		}
 	}
 }
+fragment RecipeItemFragment on RecipeItem {
+	id
+	chart {
+		... ChartFragment
+	}
+	terraform {
+		... TerraformFragment
+	}
+	configuration {
+		... RecipeConfigurationFragment
+	}
+}
+fragment TerraformFragment on Terraform {
+	id
+	name
+	package
+	description
+	dependencies {
+		... DependenciesFragment
+	}
+	valuesTemplate
+}
+fragment RecipeConfigurationFragment on RecipeConfiguration {
+	name
+	type
+	default
+	documentation
+	optional
+	placeholder
+	functionName
+	condition {
+		field
+		operation
+		value
+	}
+	validation {
+		type
+		regex
+		message
+	}
+}
+fragment RepositoryFragment on Repository {
+	id
+	name
+	notes
+	icon
+	darkIcon
+	description
+	publisher {
+		name
+	}
+	recipes {
+		name
+	}
+}
+fragment ChartFragment on Chart {
+	id
+	name
+	description
+	latestVersion
+}
 fragment DependenciesFragment on Dependencies {
 	dependencies {
 		type
@@ -2356,25 +2425,6 @@ fragment DependenciesFragment on Dependencies {
 	outputs
 	providerVsn
 }
-fragment RecipeConfigurationFragment on RecipeConfiguration {
-	name
-	type
-	default
-	documentation
-	optional
-	placeholder
-	functionName
-	condition {
-		field
-		operation
-		value
-	}
-	validation {
-		type
-		regex
-		message
-	}
-}
 fragment StackFragment on Stack {
 	id
 	name
@@ -2383,36 +2433,6 @@ fragment StackFragment on Stack {
 	bundles {
 		... RecipeFragment
 	}
-}
-fragment RepositoryFragment on Repository {
-	id
-	name
-	notes
-	icon
-	darkIcon
-	description
-	publisher {
-		name
-	}
-	recipes {
-		name
-	}
-}
-fragment TerraformFragment on Terraform {
-	id
-	name
-	package
-	description
-	dependencies {
-		... DependenciesFragment
-	}
-	valuesTemplate
-}
-fragment ChartFragment on Chart {
-	id
-	name
-	description
-	latestVersion
 }
 fragment RecipeFragment on Recipe {
 	id
@@ -2452,18 +2472,6 @@ fragment RecipeSectionFragment on RecipeSection {
 	}
 	recipeItems {
 		... RecipeItemFragment
-	}
-	configuration {
-		... RecipeConfigurationFragment
-	}
-}
-fragment RecipeItemFragment on RecipeItem {
-	id
-	chart {
-		... ChartFragment
-	}
-	terraform {
-		... TerraformFragment
 	}
 	configuration {
 		... RecipeConfigurationFragment
@@ -2847,6 +2855,16 @@ const GetTerraformDocument = `query GetTerraform ($id: ID!) {
 		}
 	}
 }
+fragment TerraformFragment on Terraform {
+	id
+	name
+	package
+	description
+	dependencies {
+		... DependenciesFragment
+	}
+	valuesTemplate
+}
 fragment DependenciesFragment on Dependencies {
 	dependencies {
 		type
@@ -2872,16 +2890,6 @@ fragment DependenciesFragment on Dependencies {
 	outputs
 	providerVsn
 }
-fragment TerraformFragment on Terraform {
-	id
-	name
-	package
-	description
-	dependencies {
-		... DependenciesFragment
-	}
-	valuesTemplate
-}
 `
 
 func (c *Client) GetTerraform(ctx context.Context, id string, httpRequestOptions ...client.HTTPRequestOption) (*GetTerraform, error) {
@@ -2904,15 +2912,6 @@ const GetTerraformInstallationsDocument = `query GetTerraformInstallations ($id:
 				... TerraformInstallationFragment
 			}
 		}
-	}
-}
-fragment TerraformInstallationFragment on TerraformInstallation {
-	id
-	terraform {
-		... TerraformFragment
-	}
-	version {
-		... VersionFragment
 	}
 }
 fragment TerraformFragment on Terraform {
@@ -2968,6 +2967,15 @@ fragment CrdFragment on Crd {
 	name
 	blob
 }
+fragment TerraformInstallationFragment on TerraformInstallation {
+	id
+	terraform {
+		... TerraformFragment
+	}
+	version {
+		... VersionFragment
+	}
+}
 `
 
 func (c *Client) GetTerraformInstallations(ctx context.Context, id string, httpRequestOptions ...client.HTTPRequestOption) (*GetTerraformInstallations, error) {
@@ -2987,16 +2995,6 @@ const UploadTerraformDocument = `mutation UploadTerraform ($repoName: String!, $
 	uploadTerraform(repositoryName: $repoName, name: $name, attributes: {name:$name,package:$uploadOrUrl}) {
 		... TerraformFragment
 	}
-}
-fragment TerraformFragment on Terraform {
-	id
-	name
-	package
-	description
-	dependencies {
-		... DependenciesFragment
-	}
-	valuesTemplate
 }
 fragment DependenciesFragment on Dependencies {
 	dependencies {
@@ -3022,6 +3020,16 @@ fragment DependenciesFragment on Dependencies {
 	providerWirings
 	outputs
 	providerVsn
+}
+fragment TerraformFragment on Terraform {
+	id
+	name
+	package
+	description
+	dependencies {
+		... DependenciesFragment
+	}
+	valuesTemplate
 }
 `
 

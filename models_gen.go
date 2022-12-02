@@ -2225,6 +2225,7 @@ type UserEventAttributes struct {
 	Status *UserEventStatus `json:"status,omitempty"`
 }
 
+// The version of a package.
 type Version struct {
 	Chart             *Chart                 `json:"chart"`
 	Crds              []*Crd                 `json:"crds"`
@@ -2237,10 +2238,12 @@ type Version struct {
 	Readme            *string                `json:"readme"`
 	Scan              *PackageScan           `json:"scan"`
 	Tags              []*VersionTag          `json:"tags"`
-	Terraform         *Terraform             `json:"terraform"`
-	UpdatedAt         *string                `json:"updatedAt"`
-	ValuesTemplate    *string                `json:"valuesTemplate"`
-	Version           string                 `json:"version"`
+	// The template engine used to render the valuesTemplate.
+	TemplateType   *TemplateType `json:"templateType"`
+	Terraform      *Terraform    `json:"terraform"`
+	UpdatedAt      *string       `json:"updatedAt"`
+	ValuesTemplate *string       `json:"valuesTemplate"`
+	Version        string        `json:"version"`
 }
 
 type VersionAttributes struct {
@@ -3971,6 +3974,48 @@ func (e *TagGroup) UnmarshalGQL(v interface{}) error {
 }
 
 func (e TagGroup) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+// Template engines that can be used at build time.
+type TemplateType string
+
+const (
+	TemplateTypeGotemplate TemplateType = "GOTEMPLATE"
+	TemplateTypeLua        TemplateType = "LUA"
+)
+
+var AllTemplateType = []TemplateType{
+	TemplateTypeGotemplate,
+	TemplateTypeLua,
+}
+
+func (e TemplateType) IsValid() bool {
+	switch e {
+	case TemplateTypeGotemplate, TemplateTypeLua:
+		return true
+	}
+	return false
+}
+
+func (e TemplateType) String() string {
+	return string(e)
+}
+
+func (e *TemplateType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = TemplateType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid TemplateType", str)
+	}
+	return nil
+}
+
+func (e TemplateType) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 

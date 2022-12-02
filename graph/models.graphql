@@ -132,6 +132,7 @@ fragment VersionFragment on Version {
     readme
     version
     valuesTemplate
+    templateType
     package
     crds { ...CrdFragment }
     dependencies { ...DependenciesFragment }

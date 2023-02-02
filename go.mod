@@ -1,6 +1,6 @@
 module github.com/pluralsh/gqlclient
 
-go 1.18
+go 1.20
 
 require (
 	github.com/Yamashou/gqlgenc v0.11.0

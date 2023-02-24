@@ -9,9 +9,14 @@ import (
 )
 
 type Account struct {
+	AvailableFeatures  *PlanFeatures         `json:"availableFeatures"`
 	BackgroundColor    *string               `json:"backgroundColor"`
+	BillingAddress     *Address              `json:"billingAddress"`
 	BillingCustomerID  *string               `json:"billingCustomerId"`
+	ClusterCount       *string               `json:"clusterCount"`
+	DelinquentAt       *string               `json:"delinquentAt"`
 	DomainMappings     []*DomainMapping      `json:"domainMappings"`
+	GrandfatheredUntil *string               `json:"grandfatheredUntil"`
 	Icon               *string               `json:"icon"`
 	ID                 string                `json:"id"`
 	InsertedAt         *string               `json:"insertedAt"`
@@ -19,10 +24,12 @@ type Account struct {
 	RootUser           *User                 `json:"rootUser"`
 	Subscription       *PlatformSubscription `json:"subscription"`
 	UpdatedAt          *string               `json:"updatedAt"`
+	UserCount          *string               `json:"userCount"`
 	WorkosConnectionID *string               `json:"workosConnectionId"`
 }
 
 type AccountAttributes struct {
+	BillingAddress *AddressAttributes    `json:"billingAddress,omitempty"`
 	DomainMappings []*DomainMappingInput `json:"domainMappings,omitempty"`
 	Icon           *string               `json:"icon,omitempty"`
 	Name           *string               `json:"name,omitempty"`
@@ -43,17 +50,19 @@ type Address struct {
 	Country *string `json:"country"`
 	Line1   *string `json:"line1"`
 	Line2   *string `json:"line2"`
+	Name    *string `json:"name"`
 	State   *string `json:"state"`
 	Zip     *string `json:"zip"`
 }
 
 type AddressAttributes struct {
-	City    string `json:"city"`
-	Country string `json:"country"`
-	Line1   string `json:"line1"`
-	Line2   string `json:"line2"`
-	State   string `json:"state"`
-	Zip     string `json:"zip"`
+	City    string  `json:"city"`
+	Country string  `json:"country"`
+	Line1   string  `json:"line1"`
+	Line2   string  `json:"line2"`
+	Name    *string `json:"name,omitempty"`
+	State   string  `json:"state"`
+	Zip     string  `json:"zip"`
 }
 
 type ApplyLock struct {
@@ -241,7 +250,9 @@ type CloudShell struct {
 	GitURL     string       `json:"gitUrl"`
 	ID         string       `json:"id"`
 	InsertedAt *string      `json:"insertedAt"`
+	Missing    []*string    `json:"missing"`
 	Provider   Provider     `json:"provider"`
+	Region     string       `json:"region"`
 	Status     *ShellStatus `json:"status"`
 	Subdomain  string       `json:"subdomain"`
 	UpdatedAt  *string      `json:"updatedAt"`
@@ -253,6 +264,60 @@ type CloudShellAttributes struct {
 	Provider    *Provider                  `json:"provider,omitempty"`
 	Scm         *ScmAttributes             `json:"scm,omitempty"`
 	Workspace   WorkspaceAttributes        `json:"workspace"`
+}
+
+// A Kubernetes cluster that can be used to deploy applications on with Plural.
+type Cluster struct {
+	// The account that the cluster belongs to.
+	Account *Account `json:"account"`
+	// The URL of the console running on the cluster.
+	ConsoleURL *string `json:"consoleUrl"`
+	// The domain name used for applications deployed on the cluster.
+	Domain *string `json:"domain"`
+	// The git repository URL for the cluster.
+	GitURL *string `json:"gitUrl"`
+	// The ID of the cluster.
+	ID         string  `json:"id"`
+	InsertedAt *string `json:"insertedAt"`
+	// The name of the cluster.
+	Name string `json:"name"`
+	// The user that owns the cluster.
+	Owner *User `json:"owner"`
+	// The last time the cluster was pinged.
+	PingedAt *string `json:"pingedAt"`
+	// The cluster's cloud provider.
+	Provider Provider `json:"provider"`
+	// The upgrade queue for applications running on the cluster.
+	Queue *UpgradeQueue `json:"queue"`
+	// The source of the cluster.
+	Source    *Source `json:"source"`
+	UpdatedAt *string `json:"updatedAt"`
+}
+
+// Input for creating or updating a cluster.
+type ClusterAttributes struct {
+	// The URL of the console running on the cluster.
+	ConsoleURL *string `json:"consoleUrl,omitempty"`
+	// The domain name used for applications deployed on the cluster.
+	Domain *string `json:"domain,omitempty"`
+	// The git repository URL for the cluster.
+	GitURL *string `json:"gitUrl,omitempty"`
+	// The name of the cluster.
+	Name string `json:"name"`
+	// The cluster's cloud provider.
+	Provider Provider `json:"provider"`
+	// The source of the cluster.
+	Source *Source `json:"source,omitempty"`
+}
+
+type ClusterConnection struct {
+	Edges    []*ClusterEdge `json:"edges"`
+	PageInfo PageInfo       `json:"pageInfo"`
+}
+
+type ClusterEdge struct {
+	Cursor *string  `json:"cursor"`
+	Node   *Cluster `json:"node"`
 }
 
 type ClusterInformation struct {
@@ -279,18 +344,31 @@ type Community struct {
 	Videos   []*string `json:"videos"`
 }
 
+// Input for creating or updating the community links of an application.
 type CommunityAttributes struct {
-	Discord  *string   `json:"discord,omitempty"`
-	GitURL   *string   `json:"gitUrl,omitempty"`
-	Homepage *string   `json:"homepage,omitempty"`
-	Slack    *string   `json:"slack,omitempty"`
-	Twitter  *string   `json:"twitter,omitempty"`
-	Videos   []*string `json:"videos,omitempty"`
+	// The application's Discord server.
+	Discord *string `json:"discord,omitempty"`
+	// The application's git URL.
+	GitURL *string `json:"gitUrl,omitempty"`
+	// The application's homepage.
+	Homepage *string `json:"homepage,omitempty"`
+	// The application's Slack channel.
+	Slack *string `json:"slack,omitempty"`
+	// The application's Twitter account.
+	Twitter *string `json:"twitter,omitempty"`
+	// The videos of the application.
+	Videos []*string `json:"videos,omitempty"`
 }
 
 type ConsentRequest struct {
 	RequestedScope []*string `json:"requestedScope"`
 	Skip           *bool     `json:"skip"`
+}
+
+type ContextAttributes struct {
+	Buckets       []*string              `json:"buckets,omitempty"`
+	Configuration map[string]interface{} `json:"configuration"`
+	Domains       []*string              `json:"domains,omitempty"`
 }
 
 type Crd struct {
@@ -350,6 +428,7 @@ type DemoProject struct {
 type Dependencies struct {
 	Application     *bool                  `json:"application"`
 	Breaking        *bool                  `json:"breaking"`
+	CliVsn          *string                `json:"cliVsn"`
 	Dependencies    []*Dependency          `json:"dependencies"`
 	Instructions    *ChangeInstructions    `json:"instructions"`
 	Outputs         map[string]interface{} `json:"outputs"`
@@ -803,27 +882,41 @@ type IncidentMessageEdge struct {
 	Node   *IncidentMessage `json:"node"`
 }
 
+// An installation of an application.
 type Installation struct {
-	AcmeKeyID    *string                 `json:"acmeKeyId"`
-	AcmeSecret   *string                 `json:"acmeSecret"`
-	AutoUpgrade  *bool                   `json:"autoUpgrade"`
-	Context      map[string]interface{}  `json:"context"`
-	ID           string                  `json:"id"`
-	InsertedAt   *string                 `json:"insertedAt"`
-	License      *string                 `json:"license"`
-	LicenseKey   *string                 `json:"licenseKey"`
-	OidcProvider *OidcProvider           `json:"oidcProvider"`
-	Repository   *Repository             `json:"repository"`
+	AcmeKeyID  *string `json:"acmeKeyId"`
+	AcmeSecret *string `json:"acmeSecret"`
+	// Whether the application should auto upgrade.
+	AutoUpgrade *bool `json:"autoUpgrade"`
+	// A YAML object of context.
+	Context map[string]interface{} `json:"context"`
+	// The installation's ID.
+	ID         string  `json:"id"`
+	InsertedAt *string `json:"insertedAt"`
+	License    *string `json:"license"`
+	// The license key for the application.
+	LicenseKey *string `json:"licenseKey"`
+	// The OIDC provider for the application.
+	OidcProvider *OidcProvider `json:"oidcProvider"`
+	// The application that was installed.
+	Repository *Repository `json:"repository"`
+	// The subscription for the application.
 	Subscription *RepositorySubscription `json:"subscription"`
-	TrackTag     string                  `json:"trackTag"`
-	UpdatedAt    *string                 `json:"updatedAt"`
-	User         *User                   `json:"user"`
+	// The tag to track for auto upgrades.
+	TrackTag  string  `json:"trackTag"`
+	UpdatedAt *string `json:"updatedAt"`
+	// The user that installed the application.
+	User *User `json:"user"`
 }
 
+// Input for creating or updating the tag attributes of an application installation.
 type InstallationAttributes struct {
-	AutoUpgrade *bool   `json:"autoUpgrade,omitempty"`
-	Context     *string `json:"context,omitempty"`
-	TrackTag    *string `json:"trackTag,omitempty"`
+	// Whether the application should auto upgrade.
+	AutoUpgrade *bool `json:"autoUpgrade,omitempty"`
+	// A YAML object of context.
+	Context *string `json:"context,omitempty"`
+	// The tag to track for auto upgrades.
+	TrackTag *string `json:"trackTag,omitempty"`
 }
 
 type InstallationConnection struct {
@@ -1125,15 +1218,22 @@ type OauthSettings struct {
 	URIFormat  string         `json:"uriFormat"`
 }
 
+// Input for the application's OAuth settings.
 type OauthSettingsAttributes struct {
+	// The authentication method for the OAuth provider.
 	AuthMethod OidcAuthMethod `json:"authMethod"`
-	URIFormat  string         `json:"uriFormat"`
+	// The URI format for the OAuth provider.
+	URIFormat string `json:"uriFormat"`
 }
 
+// Input for creating or updating the OIDC attributes of an application installation.
 type OidcAttributes struct {
-	AuthMethod   OidcAuthMethod       `json:"authMethod"`
-	Bindings     []*BindingAttributes `json:"bindings,omitempty"`
-	RedirectUris []*string            `json:"redirectUris,omitempty"`
+	// The authentication method for the OIDC provider.
+	AuthMethod OidcAuthMethod `json:"authMethod"`
+	// The users or groups that can login through the OIDC provider.
+	Bindings []*BindingAttributes `json:"bindings,omitempty"`
+	// The redirect URIs for the OIDC provider.
+	RedirectUris []*string `json:"redirectUris,omitempty"`
 }
 
 type OidcLogin struct {
@@ -1318,7 +1418,9 @@ type PlanFeatureAttributes struct {
 }
 
 type PlanFeatures struct {
-	Vpn *bool `json:"vpn"`
+	Audit          *bool `json:"audit"`
+	UserManagement *bool `json:"userManagement"`
+	Vpn            *bool `json:"vpn"`
 }
 
 type PlanLineItemAttributes struct {
@@ -1350,6 +1452,7 @@ type PlatformMetrics struct {
 
 type PlatformPlan struct {
 	Cost       int64               `json:"cost"`
+	Enterprise *bool               `json:"enterprise"`
 	Features   *PlanFeatures       `json:"features"`
 	ID         string              `json:"id"`
 	InsertedAt *string             `json:"insertedAt"`
@@ -1368,20 +1471,11 @@ type PlatformPlanItem struct {
 	Period     PaymentPeriod     `json:"period"`
 }
 
-type PlatformPlanLineItemAttributes struct {
-	Dimension LineItemDimension `json:"dimension"`
-	Quantity  int64             `json:"quantity"`
-}
-
 type PlatformSubscription struct {
 	ExternalID *string                          `json:"externalId"`
 	ID         string                           `json:"id"`
 	LineItems  []*PlatformSubscriptionLineItems `json:"lineItems"`
 	Plan       *PlatformPlan                    `json:"plan"`
-}
-
-type PlatformSubscriptionAttributes struct {
-	LineItems []*PlatformPlanLineItemAttributes `json:"lineItems,omitempty"`
 }
 
 type PlatformSubscriptionLineItems struct {
@@ -1492,6 +1586,7 @@ type Recipe struct {
 	ID                 string           `json:"id"`
 	InsertedAt         *string          `json:"insertedAt"`
 	Name               string           `json:"name"`
+	OidcEnabled        *bool            `json:"oidcEnabled"`
 	OidcSettings       *OidcSettings    `json:"oidcSettings"`
 	Private            *bool            `json:"private"`
 	Provider           *Provider        `json:"provider"`
@@ -1628,61 +1723,110 @@ type RecipeValidationAttributes struct {
 	Type    ValidationType `json:"type"`
 }
 
+// Attributes of an application.
 type Repository struct {
-	Artifacts     []*Artifact            `json:"artifacts"`
-	Category      *Category              `json:"category"`
-	Community     *Community             `json:"community"`
-	DarkIcon      *string                `json:"darkIcon"`
-	DefaultTag    *string                `json:"defaultTag"`
-	Description   *string                `json:"description"`
-	Docs          []*FileContent         `json:"docs"`
-	Documentation *string                `json:"documentation"`
-	Editable      *bool                  `json:"editable"`
-	GitURL        *string                `json:"gitUrl"`
-	Homepage      *string                `json:"homepage"`
-	Icon          *string                `json:"icon"`
-	ID            string                 `json:"id"`
-	InsertedAt    *string                `json:"insertedAt"`
-	Installation  *Installation          `json:"installation"`
-	License       *License               `json:"license"`
-	MainBranch    *string                `json:"mainBranch"`
-	Name          string                 `json:"name"`
-	Notes         *string                `json:"notes"`
-	OauthSettings *OauthSettings         `json:"oauthSettings"`
-	Plans         []*Plan                `json:"plans"`
-	Private       *bool                  `json:"private"`
-	PublicKey     *string                `json:"publicKey"`
-	Publisher     *Publisher             `json:"publisher"`
-	Readme        *string                `json:"readme"`
-	Recipes       []*Recipe              `json:"recipes"`
-	Secrets       map[string]interface{} `json:"secrets"`
-	Tags          []*Tag                 `json:"tags"`
-	Trending      *bool                  `json:"trending"`
-	UpdatedAt     *string                `json:"updatedAt"`
-	Verified      *bool                  `json:"verified"`
+	// The artifacts of the application.
+	Artifacts []*Artifact `json:"artifacts"`
+	// The category of the application.
+	Category *Category `json:"category"`
+	// The community links of the application.
+	Community *Community `json:"community"`
+	DarkIcon  *string    `json:"darkIcon"`
+	// The default tag to deploy.
+	DefaultTag *string `json:"defaultTag"`
+	// The description of the application.
+	Description *string `json:"description"`
+	// The documentation of the application.
+	Docs []*FileContent `json:"docs"`
+	// The documentation of the application.
+	Documentation *string `json:"documentation"`
+	// If the application can be edited by the current user.
+	Editable *bool `json:"editable"`
+	// The git URL of the application.
+	GitURL *string `json:"gitUrl"`
+	// The homepage of the application.
+	Homepage *string `json:"homepage"`
+	Icon     *string `json:"icon"`
+	// The application's ID.
+	ID         string  `json:"id"`
+	InsertedAt *string `json:"insertedAt"`
+	// The installation of the application by a user.
+	Installation *Installation `json:"installation"`
+	// The license of the application.
+	License *License `json:"license"`
+	// The main branch of the application.
+	MainBranch *string `json:"mainBranch"`
+	// The name of the application.
+	Name string `json:"name"`
+	// Notes about the application rendered after deploying and displayed to the user.
+	Notes *string `json:"notes"`
+	// The OAuth settings for the application.
+	OauthSettings *OauthSettings `json:"oauthSettings"`
+	// The available plans for the application.
+	Plans []*Plan `json:"plans"`
+	// Whether the application is private.
+	Private *bool `json:"private"`
+	// The application's public key.
+	PublicKey *string `json:"publicKey"`
+	// The application publisher.
+	Publisher *Publisher `json:"publisher"`
+	// The README of the application.
+	Readme *string `json:"readme"`
+	// The recipes used to install the application.
+	Recipes []*Recipe `json:"recipes"`
+	// A map of secrets of the application.
+	Secrets map[string]interface{} `json:"secrets"`
+	// The tags of the application.
+	Tags []*Tag `json:"tags"`
+	// Whether the application is trending.
+	Trending  *bool   `json:"trending"`
+	UpdatedAt *string `json:"updatedAt"`
+	// Whether the application is verified.
+	Verified *bool `json:"verified"`
 }
 
+// Input for creating or updating an application's attributes.
 type RepositoryAttributes struct {
-	Category                      *Category                     `json:"category,omitempty"`
-	Community                     *CommunityAttributes          `json:"community,omitempty"`
-	DarkIcon                      *string                       `json:"darkIcon,omitempty"`
-	DefaultTag                    *string                       `json:"defaultTag,omitempty"`
-	Description                   *string                       `json:"description,omitempty"`
-	Docs                          *string                       `json:"docs,omitempty"`
-	Documentation                 *string                       `json:"documentation,omitempty"`
-	GitURL                        *string                       `json:"gitUrl,omitempty"`
-	Homepage                      *string                       `json:"homepage,omitempty"`
-	Icon                          *string                       `json:"icon,omitempty"`
+	// The category of the application.
+	Category *Category `json:"category,omitempty"`
+	// The application's community links.
+	Community *CommunityAttributes `json:"community,omitempty"`
+	// The application's dark icon.
+	DarkIcon *string `json:"darkIcon,omitempty"`
+	// The default tag to use when deploying the application.
+	DefaultTag *string `json:"defaultTag,omitempty"`
+	// A short description of the application.
+	Description *string `json:"description,omitempty"`
+	// The application's documentation.
+	Docs *string `json:"docs,omitempty"`
+	// A link to the application's documentation.
+	Documentation *string `json:"documentation,omitempty"`
+	// The application's git URL.
+	GitURL *string `json:"gitUrl,omitempty"`
+	// The application's homepage.
+	Homepage *string `json:"homepage,omitempty"`
+	// The application's icon.
+	Icon *string `json:"icon,omitempty"`
+	// The application's integration resource definition.
 	IntegrationResourceDefinition *ResourceDefinitionAttributes `json:"integrationResourceDefinition,omitempty"`
-	Name                          *string                       `json:"name,omitempty"`
-	Notes                         *string                       `json:"notes,omitempty"`
-	OauthSettings                 *OauthSettingsAttributes      `json:"oauthSettings,omitempty"`
-	Private                       *bool                         `json:"private,omitempty"`
-	Readme                        *string                       `json:"readme,omitempty"`
-	Secrets                       *string                       `json:"secrets,omitempty"`
-	Tags                          []*TagAttributes              `json:"tags,omitempty"`
-	Trending                      *bool                         `json:"trending,omitempty"`
-	Verified                      *bool                         `json:"verified,omitempty"`
+	// The name of the application.
+	Name *string `json:"name,omitempty"`
+	// Notes about the application rendered after deploying and displayed to the user.
+	Notes *string `json:"notes,omitempty"`
+	// The application's OAuth settings.
+	OauthSettings *OauthSettingsAttributes `json:"oauthSettings,omitempty"`
+	// Whether the application is private.
+	Private *bool `json:"private,omitempty"`
+	// The application's README.
+	Readme *string `json:"readme,omitempty"`
+	// A YAML object of secrets.
+	Secrets *string `json:"secrets,omitempty"`
+	// The application's tags.
+	Tags []*TagAttributes `json:"tags,omitempty"`
+	// Whether the application is trending.
+	Trending *bool `json:"trending,omitempty"`
+	// Whether the application is verified.
+	Verified *bool `json:"verified,omitempty"`
 }
 
 type RepositoryConnection struct {
@@ -1847,10 +1991,13 @@ type ScanViolation struct {
 }
 
 type ScmAttributes struct {
-	Name     string       `json:"name"`
-	Org      *string      `json:"org,omitempty"`
-	Provider *ScmProvider `json:"provider,omitempty"`
-	Token    string       `json:"token"`
+	GitURL     *string      `json:"gitUrl,omitempty"`
+	Name       *string      `json:"name,omitempty"`
+	Org        *string      `json:"org,omitempty"`
+	PrivateKey *string      `json:"privateKey,omitempty"`
+	Provider   *ScmProvider `json:"provider,omitempty"`
+	PublicKey  *string      `json:"publicKey,omitempty"`
+	Token      *string      `json:"token,omitempty"`
 }
 
 type ServiceAccountAttributes struct {
@@ -1872,7 +2019,9 @@ type ServiceLevelAttributes struct {
 }
 
 type ShellConfiguration struct {
+	Buckets              []*string              `json:"buckets"`
 	ContextConfiguration map[string]interface{} `json:"contextConfiguration"`
+	Domains              []*string              `json:"domains"`
 	Git                  *GitConfiguration      `json:"git"`
 	Workspace            *ShellWorkspace        `json:"workspace"`
 }
@@ -1894,6 +2043,7 @@ type ShellWorkspace struct {
 	BucketPrefix *string               `json:"bucketPrefix"`
 	Cluster      *string               `json:"cluster"`
 	Network      *NetworkConfiguration `json:"network"`
+	Region       *string               `json:"region"`
 }
 
 type SlimSubscription struct {
@@ -1921,6 +2071,7 @@ type Stack struct {
 	ID          string             `json:"id"`
 	InsertedAt  *string            `json:"insertedAt"`
 	Name        string             `json:"name"`
+	Sections    []*RecipeSection   `json:"sections"`
 	UpdatedAt   *string            `json:"updatedAt"`
 }
 
@@ -2170,13 +2321,14 @@ type UpgradeQueueDelta struct {
 }
 
 type User struct {
-	Account             *Account             `json:"account"`
+	Account             Account              `json:"account"`
 	Address             *Address             `json:"address"`
 	Avatar              *string              `json:"avatar"`
 	BackgroundColor     *string              `json:"backgroundColor"`
 	BoundRoles          []*Role              `json:"boundRoles"`
 	Cards               *CardConnection      `json:"cards"`
 	DefaultQueueID      *string              `json:"defaultQueueId"`
+	Demoing             *bool                `json:"demoing"`
 	Email               string               `json:"email"`
 	EmailConfirmBy      *string              `json:"emailConfirmBy"`
 	EmailConfirmed      *bool                `json:"emailConfirmed"`
@@ -2504,6 +2656,7 @@ func (e ArtifactType) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
+// Application categories.
 type Category string
 
 const (
@@ -3016,16 +3169,18 @@ func (e IncidentStatus) MarshalGQL(w io.Writer) {
 type LineItemDimension string
 
 const (
-	LineItemDimensionUser LineItemDimension = "USER"
+	LineItemDimensionCluster LineItemDimension = "CLUSTER"
+	LineItemDimensionUser    LineItemDimension = "USER"
 )
 
 var AllLineItemDimension = []LineItemDimension{
+	LineItemDimensionCluster,
 	LineItemDimensionUser,
 }
 
 func (e LineItemDimension) IsValid() bool {
 	switch e {
-	case LineItemDimensionUser:
+	case LineItemDimensionCluster, LineItemDimensionUser:
 		return true
 	}
 	return false
@@ -3314,6 +3469,7 @@ func (e OauthService) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
+// Supported OIDC authentication methods.
 type OidcAuthMethod string
 
 const (
@@ -3678,6 +3834,7 @@ const (
 	ProviderCustom     Provider = "CUSTOM"
 	ProviderEquinix    Provider = "EQUINIX"
 	ProviderGcp        Provider = "GCP"
+	ProviderGeneric    Provider = "GENERIC"
 	ProviderKind       Provider = "KIND"
 	ProviderKubernetes Provider = "KUBERNETES"
 )
@@ -3688,13 +3845,14 @@ var AllProvider = []Provider{
 	ProviderCustom,
 	ProviderEquinix,
 	ProviderGcp,
+	ProviderGeneric,
 	ProviderKind,
 	ProviderKubernetes,
 }
 
 func (e Provider) IsValid() bool {
 	switch e {
-	case ProviderAws, ProviderAzure, ProviderCustom, ProviderEquinix, ProviderGcp, ProviderKind, ProviderKubernetes:
+	case ProviderAws, ProviderAzure, ProviderCustom, ProviderEquinix, ProviderGcp, ProviderGeneric, ProviderKind, ProviderKubernetes:
 		return true
 	}
 	return false
@@ -3849,18 +4007,22 @@ func (e RolloutStatus) MarshalGQL(w io.Writer) {
 type ScmProvider string
 
 const (
+	ScmProviderDemo   ScmProvider = "DEMO"
 	ScmProviderGithub ScmProvider = "GITHUB"
 	ScmProviderGitlab ScmProvider = "GITLAB"
+	ScmProviderManual ScmProvider = "MANUAL"
 )
 
 var AllScmProvider = []ScmProvider{
+	ScmProviderDemo,
 	ScmProviderGithub,
 	ScmProviderGitlab,
+	ScmProviderManual,
 }
 
 func (e ScmProvider) IsValid() bool {
 	switch e {
-	case ScmProviderGithub, ScmProviderGitlab:
+	case ScmProviderDemo, ScmProviderGithub, ScmProviderGitlab, ScmProviderManual:
 		return true
 	}
 	return false
@@ -3884,6 +4046,50 @@ func (e *ScmProvider) UnmarshalGQL(v interface{}) error {
 }
 
 func (e ScmProvider) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+// Possible cluster sources.
+type Source string
+
+const (
+	SourceDefault Source = "DEFAULT"
+	SourceDemo    Source = "DEMO"
+	SourceShell   Source = "SHELL"
+)
+
+var AllSource = []Source{
+	SourceDefault,
+	SourceDemo,
+	SourceShell,
+}
+
+func (e Source) IsValid() bool {
+	switch e {
+	case SourceDefault, SourceDemo, SourceShell:
+		return true
+	}
+	return false
+}
+
+func (e Source) String() string {
+	return string(e)
+}
+
+func (e *Source) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Source(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Source", str)
+	}
+	return nil
+}
+
+func (e Source) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
@@ -3982,17 +4188,19 @@ type TemplateType string
 
 const (
 	TemplateTypeGotemplate TemplateType = "GOTEMPLATE"
+	TemplateTypeJavascript TemplateType = "JAVASCRIPT"
 	TemplateTypeLua        TemplateType = "LUA"
 )
 
 var AllTemplateType = []TemplateType{
 	TemplateTypeGotemplate,
+	TemplateTypeJavascript,
 	TemplateTypeLua,
 }
 
 func (e TemplateType) IsValid() bool {
 	switch e {
-	case TemplateTypeGotemplate, TemplateTypeLua:
+	case TemplateTypeGotemplate, TemplateTypeJavascript, TemplateTypeLua:
 		return true
 	}
 	return false
@@ -4106,20 +4314,22 @@ func (e TestType) MarshalGQL(w io.Writer) {
 type UpgradeType string
 
 const (
-	UpgradeTypeApproval UpgradeType = "APPROVAL"
-	UpgradeTypeBounce   UpgradeType = "BOUNCE"
-	UpgradeTypeDeploy   UpgradeType = "DEPLOY"
+	UpgradeTypeApproval  UpgradeType = "APPROVAL"
+	UpgradeTypeBounce    UpgradeType = "BOUNCE"
+	UpgradeTypeDedicated UpgradeType = "DEDICATED"
+	UpgradeTypeDeploy    UpgradeType = "DEPLOY"
 )
 
 var AllUpgradeType = []UpgradeType{
 	UpgradeTypeApproval,
 	UpgradeTypeBounce,
+	UpgradeTypeDedicated,
 	UpgradeTypeDeploy,
 }
 
 func (e UpgradeType) IsValid() bool {
 	switch e {
-	case UpgradeTypeApproval, UpgradeTypeBounce, UpgradeTypeDeploy:
+	case UpgradeTypeApproval, UpgradeTypeBounce, UpgradeTypeDedicated, UpgradeTypeDeploy:
 		return true
 	}
 	return false

@@ -1,5 +1,5 @@
 query Me{
-    me { id email }
+    me { id email demoing }
 }
 
 query GetLoginMethod($email: String!) {

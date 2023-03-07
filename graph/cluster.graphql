@@ -1,3 +1,28 @@
 mutation DestroyCluster($domain: String!, $name: String!, $provider: Provider!) {
     destroyCluster(domain: $domain, name: $name, provider: $provider)
 }
+
+query Clusters($cursor: String) {
+    clusters(first: 50, after: $cursor) {
+        pageInfo { hasNextPage endCursor }
+        edges { node { ...ClusterFragment } }
+    }
+}
+
+query ClusterInfo($id: ID!) {
+    cluster(id: $id) {
+        ...ClusterFragment
+        upgradeInfo {
+            installation { repository { ...RepositoryFragment } }
+            count 
+        }
+    }
+}
+
+mutation CreateDependency($sourceId: ID!, $destId: ID!) {
+    createClusterDependency(sourceId: $sourceId, destId: $destId) { id }
+}
+
+mutation PromoteCluster {
+    promote
+}

@@ -229,3 +229,12 @@ fragment KeyBackupFragment on KeyBackup {
     repositories
     insertedAt
 }
+
+fragment ClusterFragment on Cluster {
+    id
+    name
+    provider
+    source
+    gitUrl
+    owner { ...UserFragment }
+}

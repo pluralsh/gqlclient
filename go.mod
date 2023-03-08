@@ -3,7 +3,7 @@ module github.com/pluralsh/gqlclient
 go 1.18
 
 require (
-	github.com/Yamashou/gqlgenc v0.0.8
+	github.com/Yamashou/gqlgenc v0.0.9
 	github.com/schollz/progressbar/v3 v3.8.6
 )
 

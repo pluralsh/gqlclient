@@ -292,6 +292,8 @@ type Cluster struct {
 	// The source of the cluster.
 	Source    *Source `json:"source"`
 	UpdatedAt *string `json:"updatedAt"`
+	// pending upgrades for each installed app
+	UpgradeInfo []*UpgradeInfo `json:"upgradeInfo"`
 }
 
 // Input for creating or updating a cluster.
@@ -313,6 +315,17 @@ type ClusterAttributes struct {
 type ClusterConnection struct {
 	Edges    []*ClusterEdge `json:"edges"`
 	PageInfo PageInfo       `json:"pageInfo"`
+}
+
+// A dependncy reference between clusters
+type ClusterDependency struct {
+	// the cluster holding this dependency
+	Cluster *Cluster `json:"cluster"`
+	// the source cluster of this dependency
+	Dependency *Cluster `json:"dependency"`
+	ID         string   `json:"id"`
+	InsertedAt *string  `json:"insertedAt"`
+	UpdatedAt  *string  `json:"updatedAt"`
 }
 
 type ClusterEdge struct {
@@ -394,12 +407,20 @@ type Cvss struct {
 	UserInteraction    *VulnRequirement `json:"userInteraction"`
 }
 
+type DeferredReason struct {
+	Message    *string `json:"message"`
+	Package    *string `json:"package"`
+	Repository *string `json:"repository"`
+}
+
 type DeferredUpdate struct {
 	Attempts              *int64                 `json:"attempts"`
 	ChartInstallation     *ChartInstallation     `json:"chartInstallation"`
 	DequeueAt             *string                `json:"dequeueAt"`
 	ID                    string                 `json:"id"`
 	InsertedAt            *string                `json:"insertedAt"`
+	Messages              []*DeferredReason      `json:"messages"`
+	Pending               *bool                  `json:"pending"`
 	TerraformInstallation *TerraformInstallation `json:"terraformInstallation"`
 	UpdatedAt             *string                `json:"updatedAt"`
 	Version               *Version               `json:"version"`
@@ -898,6 +919,8 @@ type Installation struct {
 	LicenseKey *string `json:"licenseKey"`
 	// The OIDC provider for the application.
 	OidcProvider *OidcProvider `json:"oidcProvider"`
+	// The last ping time of an installed application.
+	PingedAt *string `json:"pingedAt"`
 	// The application that was installed.
 	Repository *Repository `json:"repository"`
 	// The subscription for the application.
@@ -1588,6 +1611,7 @@ type Recipe struct {
 	Name               string           `json:"name"`
 	OidcEnabled        *bool            `json:"oidcEnabled"`
 	OidcSettings       *OidcSettings    `json:"oidcSettings"`
+	Primary            *bool            `json:"primary"`
 	Private            *bool            `json:"private"`
 	Provider           *Provider        `json:"provider"`
 	RecipeDependencies []*Recipe        `json:"recipeDependencies"`
@@ -1603,6 +1627,7 @@ type RecipeAttributes struct {
 	Description  *string                    `json:"description,omitempty"`
 	Name         string                     `json:"name"`
 	OidcSettings *OidcSettingsAttributes    `json:"oidcSettings,omitempty"`
+	Primary      *bool                      `json:"primary,omitempty"`
 	Private      *bool                      `json:"private,omitempty"`
 	Provider     *Provider                  `json:"provider,omitempty"`
 	Restricted   *bool                      `json:"restricted,omitempty"`
@@ -1723,7 +1748,7 @@ type RecipeValidationAttributes struct {
 	Type    ValidationType `json:"type"`
 }
 
-// Attributes of an application.
+// Container for all resources to create an application.
 type Repository struct {
 	// The artifacts of the application.
 	Artifacts []*Artifact `json:"artifacts"`
@@ -2294,6 +2319,12 @@ type UpgradeEdge struct {
 	Node   *Upgrade `json:"node"`
 }
 
+// The pending upgrades for a repository
+type UpgradeInfo struct {
+	Count        *int64        `json:"count"`
+	Installation *Installation `json:"installation"`
+}
+
 type UpgradeQueue struct {
 	Acked      *string            `json:"acked"`
 	Domain     *string            `json:"domain"`
@@ -2321,13 +2352,15 @@ type UpgradeQueueDelta struct {
 }
 
 type User struct {
-	Account             Account              `json:"account"`
-	Address             *Address             `json:"address"`
-	Avatar              *string              `json:"avatar"`
-	BackgroundColor     *string              `json:"backgroundColor"`
-	BoundRoles          []*Role              `json:"boundRoles"`
-	Cards               *CardConnection      `json:"cards"`
-	DefaultQueueID      *string              `json:"defaultQueueId"`
+	Account         Account         `json:"account"`
+	Address         *Address        `json:"address"`
+	Avatar          *string         `json:"avatar"`
+	BackgroundColor *string         `json:"backgroundColor"`
+	BoundRoles      []*Role         `json:"boundRoles"`
+	Cards           *CardConnection `json:"cards"`
+	DefaultQueueID  *string         `json:"defaultQueueId"`
+	// If a user has reached the demo project usage limit.
+	Demoed              *bool                `json:"demoed"`
 	Demoing             *bool                `json:"demoing"`
 	Email               string               `json:"email"`
 	EmailConfirmBy      *string              `json:"emailConfirmBy"`

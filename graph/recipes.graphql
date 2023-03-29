@@ -5,6 +5,13 @@ query GetRecipe($repo: String, $name: String) {
     }
 }
 
+query GetRecipeByID($id: ID) {
+    recipe(id: $id) {
+        ...RecipeFragment
+        recipeDependencies { ...RecipeFragment }
+    }
+}
+
 query ListRecipes($repo: String, $provider: Provider) {
     recipes(repositoryName: $repo, provider: $provider, first: 500) {
         edges { node { ...RecipeFragment } }

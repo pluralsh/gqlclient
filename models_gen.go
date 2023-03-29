@@ -9,23 +9,24 @@ import (
 )
 
 type Account struct {
-	AvailableFeatures  *PlanFeatures         `json:"availableFeatures"`
-	BackgroundColor    *string               `json:"backgroundColor"`
-	BillingAddress     *Address              `json:"billingAddress"`
-	BillingCustomerID  *string               `json:"billingCustomerId"`
-	ClusterCount       *string               `json:"clusterCount"`
-	DelinquentAt       *string               `json:"delinquentAt"`
-	DomainMappings     []*DomainMapping      `json:"domainMappings"`
-	GrandfatheredUntil *string               `json:"grandfatheredUntil"`
-	Icon               *string               `json:"icon"`
-	ID                 string                `json:"id"`
-	InsertedAt         *string               `json:"insertedAt"`
-	Name               *string               `json:"name"`
-	RootUser           *User                 `json:"rootUser"`
-	Subscription       *PlatformSubscription `json:"subscription"`
-	UpdatedAt          *string               `json:"updatedAt"`
-	UserCount          *string               `json:"userCount"`
-	WorkosConnectionID *string               `json:"workosConnectionId"`
+	AvailableFeatures  *PlanFeatures            `json:"availableFeatures"`
+	BackgroundColor    *string                  `json:"backgroundColor"`
+	BillingAddress     *Address                 `json:"billingAddress"`
+	BillingCustomerID  *string                  `json:"billingCustomerId"`
+	ClusterCount       *string                  `json:"clusterCount"`
+	DelinquentAt       *string                  `json:"delinquentAt"`
+	DomainMappings     []*DomainMapping         `json:"domainMappings"`
+	GrandfatheredUntil *string                  `json:"grandfatheredUntil"`
+	Icon               *string                  `json:"icon"`
+	ID                 string                   `json:"id"`
+	InsertedAt         *string                  `json:"insertedAt"`
+	Name               *string                  `json:"name"`
+	PaymentMethods     *PaymentMethodConnection `json:"paymentMethods"`
+	RootUser           *User                    `json:"rootUser"`
+	Subscription       *PlatformSubscription    `json:"subscription"`
+	UpdatedAt          *string                  `json:"updatedAt"`
+	UserCount          *string                  `json:"userCount"`
+	WorkosConnectionID *string                  `json:"workosConnectionId"`
 }
 
 type AccountAttributes struct {
@@ -59,10 +60,36 @@ type AddressAttributes struct {
 	City    string  `json:"city"`
 	Country string  `json:"country"`
 	Line1   string  `json:"line1"`
-	Line2   string  `json:"line2"`
+	Line2   *string `json:"line2,omitempty"`
 	Name    *string `json:"name,omitempty"`
-	State   string  `json:"state"`
+	State   *string `json:"state,omitempty"`
 	Zip     string  `json:"zip"`
+}
+
+type AppLink struct {
+	Description *string `json:"description"`
+	URL         *string `json:"url"`
+}
+
+type ApplicationComponent struct {
+	Group  *string `json:"group"`
+	Kind   *string `json:"kind"`
+	Name   *string `json:"name"`
+	Status *string `json:"status"`
+}
+
+type ApplicationInformation struct {
+	Components      []*ApplicationComponent `json:"components"`
+	ComponentsReady *string                 `json:"componentsReady"`
+	Name            string                  `json:"name"`
+	Ready           *bool                   `json:"ready"`
+	Spec            *ApplicationSpec        `json:"spec"`
+}
+
+type ApplicationSpec struct {
+	Description *string    `json:"description"`
+	Links       []*AppLink `json:"links"`
+	Version     *string    `json:"version"`
 }
 
 type ApplyLock struct {
@@ -1049,6 +1076,7 @@ type Invoice struct {
 	HostedInvoiceURL *string        `json:"hostedInvoiceUrl"`
 	Lines            []*InvoiceItem `json:"lines"`
 	Number           string         `json:"number"`
+	PaymentIntent    *PaymentIntent `json:"paymentIntent"`
 	Status           *string        `json:"status"`
 }
 
@@ -1176,6 +1204,11 @@ type MetricValue struct {
 type NetworkConfiguration struct {
 	PluralDNS *bool   `json:"pluralDns"`
 	Subdomain *string `json:"subdomain"`
+}
+
+type NextAction struct {
+	RedirectToURL *RedirectToURL `json:"redirectToUrl"`
+	Type          *string        `json:"type"`
 }
 
 type Notification struct {
@@ -1364,6 +1397,34 @@ type PageInfo struct {
 	StartCursor *string `json:"startCursor"`
 }
 
+type PaymentIntent struct {
+	Amount        *int64      `json:"amount"`
+	CaptureMethod *string     `json:"captureMethod"`
+	ClientSecret  *string     `json:"clientSecret"`
+	Currency      *string     `json:"currency"`
+	Description   *string     `json:"description"`
+	ID            *string     `json:"id"`
+	NextAction    *NextAction `json:"nextAction"`
+	Status        *string     `json:"status"`
+}
+
+type PaymentMethod struct {
+	Card      *Card   `json:"card"`
+	ID        *string `json:"id"`
+	IsDefault *bool   `json:"isDefault"`
+	Type      *string `json:"type"`
+}
+
+type PaymentMethodConnection struct {
+	Edges    []*PaymentMethodEdge `json:"edges"`
+	PageInfo PageInfo             `json:"pageInfo"`
+}
+
+type PaymentMethodEdge struct {
+	Cursor *string        `json:"cursor"`
+	Node   *PaymentMethod `json:"node"`
+}
+
 type PersistedToken struct {
 	Audits     *PersistedTokenAuditConnection `json:"audits"`
 	ID         *string                        `json:"id"`
@@ -1495,10 +1556,11 @@ type PlatformPlanItem struct {
 }
 
 type PlatformSubscription struct {
-	ExternalID *string                          `json:"externalId"`
-	ID         string                           `json:"id"`
-	LineItems  []*PlatformSubscriptionLineItems `json:"lineItems"`
-	Plan       *PlatformPlan                    `json:"plan"`
+	ExternalID    *string                          `json:"externalId"`
+	ID            string                           `json:"id"`
+	LatestInvoice *Invoice                         `json:"latestInvoice"`
+	LineItems     []*PlatformSubscriptionLineItems `json:"lineItems"`
+	Plan          *PlatformPlan                    `json:"plan"`
 }
 
 type PlatformSubscriptionLineItems struct {
@@ -1746,6 +1808,11 @@ type RecipeValidationAttributes struct {
 	Message string         `json:"message"`
 	Regex   *string        `json:"regex,omitempty"`
 	Type    ValidationType `json:"type"`
+}
+
+type RedirectToURL struct {
+	ReturnURL *string `json:"returnUrl"`
+	URL       *string `json:"url"`
 }
 
 // Container for all resources to create an application.
@@ -2041,6 +2108,14 @@ type ServiceLevelAttributes struct {
 	MaxSeverity  *int64 `json:"maxSeverity,omitempty"`
 	MinSeverity  *int64 `json:"minSeverity,omitempty"`
 	ResponseTime *int64 `json:"responseTime,omitempty"`
+}
+
+type SetupIntent struct {
+	ClientSecret       *string     `json:"clientSecret"`
+	ID                 *string     `json:"id"`
+	NextAction         *NextAction `json:"nextAction"`
+	PaymentMethodTypes []*string   `json:"paymentMethodTypes"`
+	Status             *string     `json:"status"`
 }
 
 type ShellConfiguration struct {

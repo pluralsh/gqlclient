@@ -1866,6 +1866,8 @@ type Repository struct {
 	Readme *string `json:"readme"`
 	// The recipes used to install the application.
 	Recipes []*Recipe `json:"recipes"`
+	// release status of the repository
+	ReleaseStatus *ReleaseStatus `json:"releaseStatus"`
 	// A map of secrets of the application.
 	Secrets map[string]interface{} `json:"secrets"`
 	// The tags of the application.
@@ -1911,6 +1913,8 @@ type RepositoryAttributes struct {
 	Private *bool `json:"private,omitempty"`
 	// The application's README.
 	Readme *string `json:"readme,omitempty"`
+	// release status of the repository
+	ReleaseStatus *ReleaseStatus `json:"releaseStatus,omitempty"`
 	// A YAML object of secrets.
 	Secrets *string `json:"secrets,omitempty"`
 	// The application's tags.
@@ -2441,6 +2445,7 @@ type User struct {
 	EmailConfirmBy      *string              `json:"emailConfirmBy"`
 	EmailConfirmed      *bool                `json:"emailConfirmed"`
 	HasInstallations    *bool                `json:"hasInstallations"`
+	HasShell            *bool                `json:"hasShell"`
 	ID                  string               `json:"id"`
 	ImpersonationPolicy *ImpersonationPolicy `json:"impersonationPolicy"`
 	InsertedAt          *string              `json:"insertedAt"`
@@ -4025,6 +4030,50 @@ func (e *RecipeItemType) UnmarshalGQL(v interface{}) error {
 }
 
 func (e RecipeItemType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+// The release status of a repository, defaults to ALPHA, GA if it is ready for general consumption
+type ReleaseStatus string
+
+const (
+	ReleaseStatusAlpha ReleaseStatus = "ALPHA"
+	ReleaseStatusBeta  ReleaseStatus = "BETA"
+	ReleaseStatusGa    ReleaseStatus = "GA"
+)
+
+var AllReleaseStatus = []ReleaseStatus{
+	ReleaseStatusAlpha,
+	ReleaseStatusBeta,
+	ReleaseStatusGa,
+}
+
+func (e ReleaseStatus) IsValid() bool {
+	switch e {
+	case ReleaseStatusAlpha, ReleaseStatusBeta, ReleaseStatusGa:
+		return true
+	}
+	return false
+}
+
+func (e ReleaseStatus) String() string {
+	return string(e)
+}
+
+func (e *ReleaseStatus) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ReleaseStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ReleaseStatus", str)
+	}
+	return nil
+}
+
+func (e ReleaseStatus) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 

@@ -1875,6 +1875,8 @@ type Repository struct {
 	// Whether the application is trending.
 	Trending  *bool   `json:"trending"`
 	UpdatedAt *string `json:"updatedAt"`
+	// version tags that can be followed to control upgrade flow
+	UpgradeChannels []*string `json:"upgradeChannels"`
 	// Whether the application is verified.
 	Verified *bool `json:"verified"`
 }
@@ -2380,12 +2382,33 @@ type UpdatablePlanAttributes struct {
 }
 
 type Upgrade struct {
-	ID         string       `json:"id"`
-	InsertedAt *string      `json:"insertedAt"`
-	Message    *string      `json:"message"`
-	Repository *Repository  `json:"repository"`
-	Type       *UpgradeType `json:"type"`
-	UpdatedAt  *string      `json:"updatedAt"`
+	Config     *UpgradeConfig `json:"config"`
+	ID         string         `json:"id"`
+	InsertedAt *string        `json:"insertedAt"`
+	Message    *string        `json:"message"`
+	Repository *Repository    `json:"repository"`
+	Type       *UpgradeType   `json:"type"`
+	UpdatedAt  *string        `json:"updatedAt"`
+}
+
+// The information for this upgrade
+type UpgradeAttributes struct {
+	// information for a config upgrade
+	Config *UpgradeConfigAttributes `json:"config,omitempty"`
+	// a simple message to explain this upgrade
+	Message string `json:"message"`
+	// the type of upgrade
+	Type *UpgradeType `json:"type,omitempty"`
+}
+
+type UpgradeConfig struct {
+	Paths []*UpgradePath `json:"paths"`
+}
+
+// the attributes of the config upgrade
+type UpgradeConfigAttributes struct {
+	// paths for a configuration change
+	Paths []*UpgradePathAttributes `json:"paths,omitempty"`
 }
 
 type UpgradeConnection struct {
@@ -2402,6 +2425,22 @@ type UpgradeEdge struct {
 type UpgradeInfo struct {
 	Count        *int64        `json:"count"`
 	Installation *Installation `json:"installation"`
+}
+
+type UpgradePath struct {
+	Path  string    `json:"path"`
+	Type  ValueType `json:"type"`
+	Value string    `json:"value"`
+}
+
+// attributes of a path update
+type UpgradePathAttributes struct {
+	// path the upgrade will occur on, formatted like .some.key[0].here
+	Path string `json:"path"`
+	// the ultimate type of the value
+	Type ValueType `json:"type"`
+	// the stringified value that will be applied on this path
+	Value string `json:"value"`
 }
 
 type UpgradeQueue struct {
@@ -4473,6 +4512,7 @@ type UpgradeType string
 const (
 	UpgradeTypeApproval  UpgradeType = "APPROVAL"
 	UpgradeTypeBounce    UpgradeType = "BOUNCE"
+	UpgradeTypeConfig    UpgradeType = "CONFIG"
 	UpgradeTypeDedicated UpgradeType = "DEDICATED"
 	UpgradeTypeDeploy    UpgradeType = "DEPLOY"
 )
@@ -4480,13 +4520,14 @@ const (
 var AllUpgradeType = []UpgradeType{
 	UpgradeTypeApproval,
 	UpgradeTypeBounce,
+	UpgradeTypeConfig,
 	UpgradeTypeDedicated,
 	UpgradeTypeDeploy,
 }
 
 func (e UpgradeType) IsValid() bool {
 	switch e {
-	case UpgradeTypeApproval, UpgradeTypeBounce, UpgradeTypeDedicated, UpgradeTypeDeploy:
+	case UpgradeTypeApproval, UpgradeTypeBounce, UpgradeTypeConfig, UpgradeTypeDedicated, UpgradeTypeDeploy:
 		return true
 	}
 	return false
@@ -4590,6 +4631,49 @@ func (e *ValidationType) UnmarshalGQL(v interface{}) error {
 }
 
 func (e ValidationType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type ValueType string
+
+const (
+	ValueTypeFloat  ValueType = "FLOAT"
+	ValueTypeInt    ValueType = "INT"
+	ValueTypeString ValueType = "STRING"
+)
+
+var AllValueType = []ValueType{
+	ValueTypeFloat,
+	ValueTypeInt,
+	ValueTypeString,
+}
+
+func (e ValueType) IsValid() bool {
+	switch e {
+	case ValueTypeFloat, ValueTypeInt, ValueTypeString:
+		return true
+	}
+	return false
+}
+
+func (e ValueType) String() string {
+	return string(e)
+}
+
+func (e *ValueType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ValueType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ValueType", str)
+	}
+	return nil
+}
+
+func (e ValueType) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 

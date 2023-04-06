@@ -1,0 +1,5 @@
+mutation CreateUpgrade($queue: String!, $repository: String!, $attributes: UpgradeAttributes!) {
+    createUpgrade(queue: $queue, repositoryName: $repository, attributes: $attributes) { 
+        id
+    }
+}

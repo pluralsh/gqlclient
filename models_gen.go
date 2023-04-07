@@ -411,6 +411,14 @@ type ContextAttributes struct {
 	Domains       []*string              `json:"domains,omitempty"`
 }
 
+// An external repository contributor
+type Contributor struct {
+	ID         string  `json:"id"`
+	InsertedAt *string `json:"insertedAt"`
+	UpdatedAt  *string `json:"updatedAt"`
+	User       *User   `json:"user"`
+}
+
 type Crd struct {
 	Blob       *string `json:"blob"`
 	ID         string  `json:"id"`
@@ -1823,7 +1831,9 @@ type Repository struct {
 	Category *Category `json:"category"`
 	// The community links of the application.
 	Community *Community `json:"community"`
-	DarkIcon  *string    `json:"darkIcon"`
+	// The external contributors to this repository
+	Contributors []*Contributor `json:"contributors"`
+	DarkIcon     *string        `json:"darkIcon"`
 	// The default tag to deploy.
 	DefaultTag *string `json:"defaultTag"`
 	// The description of the application.
@@ -1887,6 +1897,8 @@ type RepositoryAttributes struct {
 	Category *Category `json:"category,omitempty"`
 	// The application's community links.
 	Community *CommunityAttributes `json:"community,omitempty"`
+	// List of emails of external users contributing to this repository and who will be granted access
+	Contributors []*string `json:"contributors,omitempty"`
 	// The application's dark icon.
 	DarkIcon *string `json:"darkIcon,omitempty"`
 	// The default tag to use when deploying the application.
@@ -2398,7 +2410,7 @@ type UpgradeAttributes struct {
 	// a simple message to explain this upgrade
 	Message string `json:"message"`
 	// the type of upgrade
-	Type *UpgradeType `json:"type,omitempty"`
+	Type UpgradeType `json:"type"`
 }
 
 type UpgradeConfig struct {

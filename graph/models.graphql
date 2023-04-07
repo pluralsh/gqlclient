@@ -62,6 +62,7 @@ fragment RecipeSectionFragment on RecipeSection {
 fragment RecipeFragment on Recipe {
     id
     name
+    primary
     description
     restricted
     provider

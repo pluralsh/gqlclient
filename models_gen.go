@@ -299,6 +299,8 @@ type Cluster struct {
 	Account *Account `json:"account"`
 	// The URL of the console running on the cluster.
 	ConsoleURL *string `json:"consoleUrl"`
+	// the dependencies a cluster has
+	Dependency ClusterDependency `json:"dependency"`
 	// The domain name used for applications deployed on the cluster.
 	Domain *string `json:"domain"`
 	// The git repository URL for the cluster.

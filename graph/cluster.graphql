@@ -26,3 +26,7 @@ mutation CreateDependency($sourceId: ID!, $destId: ID!) {
 mutation PromoteCluster {
     promote {...UserFragment}
 }
+
+mutation TransferOwnership($name: String!, $email: String!) {
+    transferOwnership(name: $name, email: $email) { id }
+}

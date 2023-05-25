@@ -78,3 +78,7 @@ query Backup($name: String!) {
 query GetHelp($prompt: String!) {
     helpQuestion(prompt: $prompt)
 }
+
+query Chat($history: [ChatMessageAttributes]) {
+    chat(history: $history) { ...ChatMessageFragment }
+}

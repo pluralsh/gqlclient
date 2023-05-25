@@ -264,6 +264,18 @@ type ChartName struct {
 	Repo  *string `json:"repo,omitempty"`
 }
 
+type ChatMessage struct {
+	Content string  `json:"content"`
+	Name    *string `json:"name"`
+	Role    string  `json:"role"`
+}
+
+type ChatMessageAttributes struct {
+	Content string  `json:"content"`
+	Name    *string `json:"name,omitempty"`
+	Role    string  `json:"role"`
+}
+
 type ClosureItem struct {
 	Dep       *Dependency `json:"dep"`
 	Helm      *Chart      `json:"helm"`
@@ -300,7 +312,7 @@ type Cluster struct {
 	// The URL of the console running on the cluster.
 	ConsoleURL *string `json:"consoleUrl"`
 	// the dependencies a cluster has
-	Dependency ClusterDependency `json:"dependency"`
+	Dependency *ClusterDependency `json:"dependency"`
 	// The domain name used for applications deployed on the cluster.
 	Domain *string `json:"domain"`
 	// The git repository URL for the cluster.
@@ -1057,6 +1069,7 @@ type Invite struct {
 	Email      *string  `json:"email"`
 	Existing   bool     `json:"existing"`
 	ExpiresAt  *string  `json:"expiresAt"`
+	Groups     []*Group `json:"groups"`
 	ID         string   `json:"id"`
 	InsertedAt *string  `json:"insertedAt"`
 	SecureID   *string  `json:"secureId"`
@@ -1065,7 +1078,8 @@ type Invite struct {
 }
 
 type InviteAttributes struct {
-	Email *string `json:"email,omitempty"`
+	Email        *string              `json:"email,omitempty"`
+	InviteGroups []*BindingAttributes `json:"inviteGroups,omitempty"`
 }
 
 type InviteConnection struct {

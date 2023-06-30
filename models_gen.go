@@ -1567,6 +1567,7 @@ type PlatformPlan struct {
 	LineItems  []*PlatformPlanItem `json:"lineItems"`
 	Name       string              `json:"name"`
 	Period     PaymentPeriod       `json:"period"`
+	Trial      *bool               `json:"trial"`
 	UpdatedAt  *string             `json:"updatedAt"`
 	Visible    bool                `json:"visible"`
 }

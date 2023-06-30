@@ -50,3 +50,7 @@ mutation DeleteRepository($id: ID!) {
         id
     }
 }
+
+mutation Release($name: String!, $tags: [String!]) {
+    release(repositoryName: $name, tags: $tags)
+}

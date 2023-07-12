@@ -508,14 +508,15 @@ type UserFragment struct {
 	Email string "json:\"email\" graphql:\"email\""
 }
 type VersionFragment struct {
-	ID             string                "json:\"id\" graphql:\"id\""
-	Readme         *string               "json:\"readme\" graphql:\"readme\""
-	Version        string                "json:\"version\" graphql:\"version\""
-	ValuesTemplate *string               "json:\"valuesTemplate\" graphql:\"valuesTemplate\""
-	TemplateType   *TemplateType         "json:\"templateType\" graphql:\"templateType\""
-	Package        *string               "json:\"package\" graphql:\"package\""
-	Crds           []*CrdFragment        "json:\"crds\" graphql:\"crds\""
-	Dependencies   *DependenciesFragment "json:\"dependencies\" graphql:\"dependencies\""
+	ID             string                 "json:\"id\" graphql:\"id\""
+	Helm           map[string]interface{} "json:\"helm\" graphql:\"helm\""
+	Readme         *string                "json:\"readme\" graphql:\"readme\""
+	Version        string                 "json:\"version\" graphql:\"version\""
+	ValuesTemplate *string                "json:\"valuesTemplate\" graphql:\"valuesTemplate\""
+	TemplateType   *TemplateType          "json:\"templateType\" graphql:\"templateType\""
+	Package        *string                "json:\"package\" graphql:\"package\""
+	Crds           []*CrdFragment         "json:\"crds\" graphql:\"crds\""
+	Dependencies   *DependenciesFragment  "json:\"dependencies\" graphql:\"dependencies\""
 }
 type AcquireLock struct {
 	AcquireLock *ApplyLockFragment "json:\"acquireLock\" graphql:\"acquireLock\""
@@ -1763,6 +1764,7 @@ fragment DependenciesFragment on Dependencies {
 }
 fragment VersionFragment on Version {
 	id
+	helm
 	readme
 	version
 	valuesTemplate
@@ -2214,6 +2216,7 @@ fragment TerraformInstallationFragment on TerraformInstallation {
 }
 fragment VersionFragment on Version {
 	id
+	helm
 	readme
 	version
 	valuesTemplate
@@ -2884,6 +2887,7 @@ fragment TerraformInstallationFragment on TerraformInstallation {
 }
 fragment VersionFragment on Version {
 	id
+	helm
 	readme
 	version
 	valuesTemplate
@@ -2990,6 +2994,7 @@ fragment DependenciesFragment on Dependencies {
 }
 fragment VersionFragment on Version {
 	id
+	helm
 	readme
 	version
 	valuesTemplate

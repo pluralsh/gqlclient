@@ -1694,6 +1694,7 @@ type Recipe struct {
 	OidcSettings       *OidcSettings    `json:"oidcSettings"`
 	Private            *bool            `json:"private"`
 	Restricted         *bool            `json:"restricted"`
+	Primary            *bool            `json:"primary"`
 	OidcEnabled        *bool            `json:"oidcEnabled"`
 	Tests              []*RecipeTest    `json:"tests"`
 	Repository         *Repository      `json:"repository"`
@@ -1712,6 +1713,7 @@ type RecipeAttributes struct {
 	Dependencies []*RecipeReference         `json:"dependencies,omitempty"`
 	OidcSettings *OidcSettingsAttributes    `json:"oidcSettings,omitempty"`
 	Private      *bool                      `json:"private,omitempty"`
+	Primary      *bool                      `json:"primary,omitempty"`
 	Restricted   *bool                      `json:"restricted,omitempty"`
 }
 

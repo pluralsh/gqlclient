@@ -9,23 +9,25 @@ import (
 )
 
 type Account struct {
-	ID                 string                `json:"id"`
-	Name               *string               `json:"name"`
-	BillingCustomerID  *string               `json:"billingCustomerId"`
-	WorkosConnectionID *string               `json:"workosConnectionId"`
-	ClusterCount       *string               `json:"clusterCount"`
-	UserCount          *string               `json:"userCount"`
-	DelinquentAt       *string               `json:"delinquentAt"`
-	GrandfatheredUntil *string               `json:"grandfatheredUntil"`
-	BillingAddress     *Address              `json:"billingAddress"`
-	Icon               *string               `json:"icon"`
-	RootUser           *User                 `json:"rootUser"`
-	DomainMappings     []*DomainMapping      `json:"domainMappings"`
-	Subscription       *PlatformSubscription `json:"subscription"`
-	BackgroundColor    *string               `json:"backgroundColor"`
-	AvailableFeatures  *PlanFeatures         `json:"availableFeatures"`
-	InsertedAt         *string               `json:"insertedAt"`
-	UpdatedAt          *string               `json:"updatedAt"`
+	ID                 string                   `json:"id"`
+	Name               *string                  `json:"name"`
+	BillingCustomerID  *string                  `json:"billingCustomerId"`
+	WorkosConnectionID *string                  `json:"workosConnectionId"`
+	ClusterCount       *string                  `json:"clusterCount"`
+	UserCount          *string                  `json:"userCount"`
+	DelinquentAt       *string                  `json:"delinquentAt"`
+	GrandfatheredUntil *string                  `json:"grandfatheredUntil"`
+	BillingAddress     *Address                 `json:"billingAddress"`
+	Trialed            *bool                    `json:"trialed"`
+	Icon               *string                  `json:"icon"`
+	PaymentMethods     *PaymentMethodConnection `json:"paymentMethods"`
+	RootUser           *User                    `json:"rootUser"`
+	DomainMappings     []*DomainMapping         `json:"domainMappings"`
+	Subscription       *PlatformSubscription    `json:"subscription"`
+	BackgroundColor    *string                  `json:"backgroundColor"`
+	AvailableFeatures  *PlanFeatures            `json:"availableFeatures"`
+	InsertedAt         *string                  `json:"insertedAt"`
+	UpdatedAt          *string                  `json:"updatedAt"`
 }
 
 type AccountAttributes struct {
@@ -58,37 +60,37 @@ type Address struct {
 type AddressAttributes struct {
 	Name    *string `json:"name,omitempty"`
 	Line1   string  `json:"line1"`
-	Line2   string  `json:"line2"`
+	Line2   *string `json:"line2,omitempty"`
 	City    string  `json:"city"`
-	State   string  `json:"state"`
+	State   *string `json:"state,omitempty"`
 	Country string  `json:"country"`
 	Zip     string  `json:"zip"`
 }
 
 type AppLink struct {
-	Description *string `json:"description"`
 	URL         *string `json:"url"`
+	Description *string `json:"description"`
 }
 
 type ApplicationComponent struct {
 	Group  *string `json:"group"`
-	Kind   *string `json:"kind"`
 	Name   *string `json:"name"`
+	Kind   *string `json:"kind"`
 	Status *string `json:"status"`
 }
 
 type ApplicationInformation struct {
-	Components      []*ApplicationComponent `json:"components"`
-	ComponentsReady *string                 `json:"componentsReady"`
 	Name            string                  `json:"name"`
 	Ready           *bool                   `json:"ready"`
+	ComponentsReady *string                 `json:"componentsReady"`
+	Components      []*ApplicationComponent `json:"components"`
 	Spec            *ApplicationSpec        `json:"spec"`
 }
 
 type ApplicationSpec struct {
 	Description *string    `json:"description"`
-	Links       []*AppLink `json:"links"`
 	Version     *string    `json:"version"`
+	Links       []*AppLink `json:"links"`
 }
 
 type ApplyLock struct {
@@ -264,15 +266,15 @@ type ChartName struct {
 }
 
 type ChatMessage struct {
+	Role    string  `json:"role"`
 	Content string  `json:"content"`
 	Name    *string `json:"name"`
-	Role    string  `json:"role"`
 }
 
 type ChatMessageAttributes struct {
+	Role    string  `json:"role"`
 	Content string  `json:"content"`
 	Name    *string `json:"name,omitempty"`
-	Role    string  `json:"role"`
 }
 
 type ClosureItem struct {
@@ -318,14 +320,14 @@ type Cluster struct {
 	GitURL *string `json:"gitUrl"`
 	// The URL of the console running on the cluster.
 	ConsoleURL *string `json:"consoleUrl"`
-	// the dependencies a cluster has
-	Dependency *ClusterDependency `json:"dependency"`
 	// The domain name used for applications deployed on the cluster.
 	Domain *string `json:"domain"`
 	// The last time the cluster was pinged.
 	PingedAt *string `json:"pingedAt"`
 	// pending upgrades for each installed app
 	UpgradeInfo []*UpgradeInfo `json:"upgradeInfo"`
+	// the dependencies a cluster has
+	Dependency *ClusterDependency `json:"dependency"`
 	// The user that owns the cluster.
 	Owner *User `json:"owner"`
 	// The account that the cluster belongs to.
@@ -427,9 +429,9 @@ type ContextAttributes struct {
 // An external repository contributor
 type Contributor struct {
 	ID         string  `json:"id"`
+	User       *User   `json:"user"`
 	InsertedAt *string `json:"insertedAt"`
 	UpdatedAt  *string `json:"updatedAt"`
-	User       *User   `json:"user"`
 }
 
 type Crd struct {
@@ -1071,6 +1073,7 @@ type Invite struct {
 	ExpiresAt  *string  `json:"expiresAt"`
 	Account    *Account `json:"account"`
 	User       *User    `json:"user"`
+	Groups     []*Group `json:"groups"`
 	InsertedAt *string  `json:"insertedAt"`
 	UpdatedAt  *string  `json:"updatedAt"`
 }
@@ -1097,6 +1100,7 @@ type Invoice struct {
 	Currency         string         `json:"currency"`
 	Status           *string        `json:"status"`
 	HostedInvoiceURL *string        `json:"hostedInvoiceUrl"`
+	PaymentIntent    *PaymentIntent `json:"paymentIntent"`
 	CreatedAt        *string        `json:"createdAt"`
 	Lines            []*InvoiceItem `json:"lines"`
 }
@@ -1228,8 +1232,8 @@ type NetworkConfiguration struct {
 }
 
 type NextAction struct {
-	RedirectToURL *RedirectToURL `json:"redirectToUrl"`
 	Type          *string        `json:"type"`
+	RedirectToURL *RedirectToURL `json:"redirectToUrl"`
 }
 
 type Notification struct {
@@ -1419,31 +1423,31 @@ type PageInfo struct {
 }
 
 type PaymentIntent struct {
+	ID            *string     `json:"id"`
+	Description   *string     `json:"description"`
+	ClientSecret  *string     `json:"clientSecret"`
 	Amount        *int64      `json:"amount"`
 	CaptureMethod *string     `json:"captureMethod"`
-	ClientSecret  *string     `json:"clientSecret"`
 	Currency      *string     `json:"currency"`
-	Description   *string     `json:"description"`
-	ID            *string     `json:"id"`
 	NextAction    *NextAction `json:"nextAction"`
 	Status        *string     `json:"status"`
 }
 
 type PaymentMethod struct {
-	Card      *Card   `json:"card"`
 	ID        *string `json:"id"`
-	IsDefault *bool   `json:"isDefault"`
+	Card      *Card   `json:"card"`
 	Type      *string `json:"type"`
+	IsDefault *bool   `json:"isDefault"`
 }
 
 type PaymentMethodConnection struct {
-	Edges    []*PaymentMethodEdge `json:"edges"`
 	PageInfo PageInfo             `json:"pageInfo"`
+	Edges    []*PaymentMethodEdge `json:"edges"`
 }
 
 type PaymentMethodEdge struct {
-	Cursor *string        `json:"cursor"`
 	Node   *PaymentMethod `json:"node"`
+	Cursor *string        `json:"cursor"`
 }
 
 type PersistedToken struct {
@@ -1562,6 +1566,7 @@ type PlatformPlan struct {
 	Cost       int64               `json:"cost"`
 	Period     PaymentPeriod       `json:"period"`
 	Enterprise *bool               `json:"enterprise"`
+	Trial      *bool               `json:"trial"`
 	Features   *PlanFeatures       `json:"features"`
 	LineItems  []*PlatformPlanItem `json:"lineItems"`
 	InsertedAt *string             `json:"insertedAt"`
@@ -1577,10 +1582,14 @@ type PlatformPlanItem struct {
 }
 
 type PlatformSubscription struct {
-	ID         string                           `json:"id"`
-	ExternalID *string                          `json:"externalId"`
-	LineItems  []*PlatformSubscriptionLineItems `json:"lineItems"`
-	Plan       *PlatformPlan                    `json:"plan"`
+	ID            string                           `json:"id"`
+	ExternalID    *string                          `json:"externalId"`
+	LineItems     []*PlatformSubscriptionLineItems `json:"lineItems"`
+	Plan          *PlatformPlan                    `json:"plan"`
+	TrialUntil    *string                          `json:"trialUntil"`
+	LatestInvoice *Invoice                         `json:"latestInvoice"`
+	InsertedAt    *string                          `json:"insertedAt"`
+	UpdatedAt     *string                          `json:"updatedAt"`
 }
 
 type PlatformSubscriptionLineItems struct {
@@ -1831,8 +1840,8 @@ type RecipeValidationAttributes struct {
 }
 
 type RedirectToURL struct {
-	ReturnURL *string `json:"returnUrl"`
 	URL       *string `json:"url"`
+	ReturnURL *string `json:"returnUrl"`
 }
 
 // Container for all resources to create an application.
@@ -1847,6 +1856,8 @@ type Repository struct {
 	Documentation *string `json:"documentation"`
 	// The category of the application.
 	Category *Category `json:"category"`
+	// release status of the repository
+	ReleaseStatus *ReleaseStatus `json:"releaseStatus"`
 	// Whether the application is private.
 	Private *bool `json:"private"`
 	// Whether the application is verified.
@@ -1883,8 +1894,12 @@ type Repository struct {
 	OauthSettings *OauthSettings `json:"oauthSettings"`
 	Icon          *string        `json:"icon"`
 	DarkIcon      *string        `json:"darkIcon"`
+	// The external contributors to this repository
+	Contributors []*Contributor `json:"contributors"`
 	// The installation of the application by a user.
 	Installation *Installation `json:"installation"`
+	// version tags that can be followed to control upgrade flow
+	UpgradeChannels []*string `json:"upgradeChannels"`
 	// If the application can be edited by the current user.
 	Editable *bool `json:"editable"`
 	// A map of secrets of the application.
@@ -1909,6 +1924,8 @@ type RepositoryAttributes struct {
 	Category *Category `json:"category,omitempty"`
 	// A YAML object of secrets.
 	Secrets *string `json:"secrets,omitempty"`
+	// release status of the repository
+	ReleaseStatus *ReleaseStatus `json:"releaseStatus,omitempty"`
 	// The application's icon.
 	Icon *string `json:"icon,omitempty"`
 	// The application's dark icon.
@@ -1933,6 +1950,8 @@ type RepositoryAttributes struct {
 	Homepage *string `json:"homepage,omitempty"`
 	// The application's README.
 	Readme *string `json:"readme,omitempty"`
+	// List of emails of external users contributing to this repository and who will be granted access
+	Contributors []*string `json:"contributors,omitempty"`
 	// The application's OAuth settings.
 	OauthSettings *OauthSettingsAttributes `json:"oauthSettings,omitempty"`
 	// The application's integration resource definition.
@@ -2120,8 +2139,8 @@ type ServiceLevelAttributes struct {
 }
 
 type SetupIntent struct {
-	ClientSecret       *string     `json:"clientSecret"`
 	ID                 *string     `json:"id"`
+	ClientSecret       *string     `json:"clientSecret"`
 	NextAction         *NextAction `json:"nextAction"`
 	PaymentMethodTypes []*string   `json:"paymentMethodTypes"`
 	Status             *string     `json:"status"`
@@ -2385,12 +2404,33 @@ type UpdatablePlanAttributes struct {
 }
 
 type Upgrade struct {
-	ID         string       `json:"id"`
-	Type       *UpgradeType `json:"type"`
-	Message    *string      `json:"message"`
-	Repository *Repository  `json:"repository"`
-	InsertedAt *string      `json:"insertedAt"`
-	UpdatedAt  *string      `json:"updatedAt"`
+	ID         string         `json:"id"`
+	Type       *UpgradeType   `json:"type"`
+	Message    *string        `json:"message"`
+	Config     *UpgradeConfig `json:"config"`
+	Repository *Repository    `json:"repository"`
+	InsertedAt *string        `json:"insertedAt"`
+	UpdatedAt  *string        `json:"updatedAt"`
+}
+
+// The information for this upgrade
+type UpgradeAttributes struct {
+	// a simple message to explain this upgrade
+	Message string `json:"message"`
+	// the type of upgrade
+	Type UpgradeType `json:"type"`
+	// information for a config upgrade
+	Config *UpgradeConfigAttributes `json:"config,omitempty"`
+}
+
+type UpgradeConfig struct {
+	Paths []*UpgradePath `json:"paths"`
+}
+
+// the attributes of the config upgrade
+type UpgradeConfigAttributes struct {
+	// paths for a configuration change
+	Paths []*UpgradePathAttributes `json:"paths,omitempty"`
 }
 
 type UpgradeConnection struct {
@@ -2411,18 +2451,18 @@ type UpgradeInfo struct {
 
 type UpgradePath struct {
 	Path  string    `json:"path"`
-	Type  ValueType `json:"type"`
 	Value string    `json:"value"`
+	Type  ValueType `json:"type"`
 }
 
 // attributes of a path update
 type UpgradePathAttributes struct {
 	// path the upgrade will occur on, formatted like .some.key[0].here
 	Path string `json:"path"`
-	// the ultimate type of the value
-	Type ValueType `json:"type"`
 	// the stringified value that will be applied on this path
 	Value string `json:"value"`
+	// the ultimate type of the value
+	Type ValueType `json:"type"`
 }
 
 type UpgradeQueue struct {
@@ -2473,6 +2513,7 @@ type User struct {
 	Jwt                 *string              `json:"jwt"`
 	HasInstallations    *bool                `json:"hasInstallations"`
 	Demoing             *bool                `json:"demoing"`
+	HasShell            *bool                `json:"hasShell"`
 	Avatar              *string              `json:"avatar"`
 	BackgroundColor     *string              `json:"backgroundColor"`
 	// If a user has reached the demo project usage limit.
@@ -4057,20 +4098,20 @@ func (e RecipeItemType) MarshalGQL(w io.Writer) {
 type ReleaseStatus string
 
 const (
-	ReleaseStatusAlpha ReleaseStatus = "ALPHA"
-	ReleaseStatusBeta  ReleaseStatus = "BETA"
 	ReleaseStatusGa    ReleaseStatus = "GA"
+	ReleaseStatusBeta  ReleaseStatus = "BETA"
+	ReleaseStatusAlpha ReleaseStatus = "ALPHA"
 )
 
 var AllReleaseStatus = []ReleaseStatus{
-	ReleaseStatusAlpha,
-	ReleaseStatusBeta,
 	ReleaseStatusGa,
+	ReleaseStatusBeta,
+	ReleaseStatusAlpha,
 }
 
 func (e ReleaseStatus) IsValid() bool {
 	switch e {
-	case ReleaseStatusAlpha, ReleaseStatusBeta, ReleaseStatusGa:
+	case ReleaseStatusGa, ReleaseStatusBeta, ReleaseStatusAlpha:
 		return true
 	}
 	return false
@@ -4494,21 +4535,21 @@ const (
 	UpgradeTypeDeploy    UpgradeType = "DEPLOY"
 	UpgradeTypeApproval  UpgradeType = "APPROVAL"
 	UpgradeTypeBounce    UpgradeType = "BOUNCE"
-	UpgradeTypeConfig    UpgradeType = "CONFIG"
 	UpgradeTypeDedicated UpgradeType = "DEDICATED"
+	UpgradeTypeConfig    UpgradeType = "CONFIG"
 )
 
 var AllUpgradeType = []UpgradeType{
 	UpgradeTypeDeploy,
 	UpgradeTypeApproval,
 	UpgradeTypeBounce,
-	UpgradeTypeConfig,
 	UpgradeTypeDedicated,
+	UpgradeTypeConfig,
 }
 
 func (e UpgradeType) IsValid() bool {
 	switch e {
-	case UpgradeTypeDeploy, UpgradeTypeApproval, UpgradeTypeBounce, UpgradeTypeDedicated:
+	case UpgradeTypeDeploy, UpgradeTypeApproval, UpgradeTypeBounce, UpgradeTypeDedicated, UpgradeTypeConfig:
 		return true
 	}
 	return false
@@ -4618,20 +4659,20 @@ func (e ValidationType) MarshalGQL(w io.Writer) {
 type ValueType string
 
 const (
-	ValueTypeFloat  ValueType = "FLOAT"
 	ValueTypeInt    ValueType = "INT"
 	ValueTypeString ValueType = "STRING"
+	ValueTypeFloat  ValueType = "FLOAT"
 )
 
 var AllValueType = []ValueType{
-	ValueTypeFloat,
 	ValueTypeInt,
 	ValueTypeString,
+	ValueTypeFloat,
 }
 
 func (e ValueType) IsValid() bool {
 	switch e {
-	case ValueTypeFloat, ValueTypeInt, ValueTypeString:
+	case ValueTypeInt, ValueTypeString, ValueTypeFloat:
 		return true
 	}
 	return false

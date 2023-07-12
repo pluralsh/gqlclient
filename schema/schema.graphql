@@ -58,9 +58,22 @@ type ChartInstallationConnection {
   edges: [ChartInstallationEdge]
 }
 
+type NextAction {
+  type: String
+  redirectToUrl: RedirectToUrl
+}
+
 type PersistedTokenConnection {
   pageInfo: PageInfo!
   edges: [PersistedTokenEdge]
+}
+
+type ApplicationInformation {
+  name: String!
+  ready: Boolean
+  componentsReady: String
+  components: [ApplicationComponent]
+  spec: ApplicationSpec
 }
 
 type DeferredUpdateConnection {
@@ -194,6 +207,11 @@ type EabCredential {
 
 scalar UploadOrUrl
 
+type RedirectToUrl {
+  url: String
+  returnUrl: String
+}
+
 scalar Yaml
 
 type ImageDependency {
@@ -221,6 +239,12 @@ type GroupedTag {
 type Tag {
   id: ID!
   tag: String!
+}
+
+type ChatMessage {
+  role: String!
+  content: String!
+  name: String
 }
 
 enum SpecDatatype {
@@ -360,6 +384,11 @@ type ClusterEdge {
   cursor: String
 }
 
+type PaymentMethodEdge {
+  node: PaymentMethod
+  cursor: String
+}
+
 input DomainMappingInput {
   id: ID
   domain: String
@@ -398,7 +427,9 @@ type Account {
   delinquentAt: DateTime
   grandfatheredUntil: DateTime
   billingAddress: Address
+  trialed: Boolean
   icon: String
+  paymentMethods(after: String, first: Int, before: String, last: Int): PaymentMethodConnection
   rootUser: User
   domainMappings: [DomainMapping]
   subscription: PlatformSubscription
@@ -406,6 +437,14 @@ type Account {
   availableFeatures: PlanFeatures
   insertedAt: DateTime
   updatedAt: DateTime
+}
+
+type SetupIntent {
+  id: String
+  clientSecret: String
+  nextAction: NextAction
+  paymentMethodTypes: [String]
+  status: String
 }
 
 input TestAttributes {
@@ -457,11 +496,23 @@ input TerraformAttributes {
 input AddressAttributes {
   name: String
   line1: String!
-  line2: String!
+  line2: String
   city: String!
-  state: String!
+  state: String
   country: String!
   zip: String!
+}
+
+"attributes of a path update"
+input UpgradePathAttributes {
+  "path the upgrade will occur on, formatted like .some.key[0].here"
+  path: String!
+
+  "the stringified value that will be applied on this path"
+  value: String!
+
+  "the ultimate type of the value"
+  type: ValueType!
 }
 
 input VersionAttributes {
@@ -517,6 +568,13 @@ input SubscriptionLineItemAttributes {
 
 input ChartAttributes {
   tags: [VersionTagAttributes]
+}
+
+"The release status of a repository, defaults to ALPHA, GA if it is ready for general consumption"
+enum ReleaseStatus {
+  GA
+  BETA
+  ALPHA
 }
 
 input PlanFeatureAttributes {
@@ -579,6 +637,7 @@ input FileAttributes {
 
 input InviteAttributes {
   email: String
+  inviteGroups: [BindingAttributes]
 }
 
 input ServiceAccountAttributes {
@@ -779,6 +838,15 @@ type PlatformSubscription {
   externalId: String
   lineItems: [PlatformSubscriptionLineItems]
   plan: PlatformPlan
+  trialUntil: DateTime
+  latestInvoice: Invoice
+  insertedAt: DateTime
+  updatedAt: DateTime
+}
+
+type PaymentMethodConnection {
+  pageInfo: PageInfo!
+  edges: [PaymentMethodEdge]
 }
 
 input ResetTokenRealization {
@@ -912,6 +980,9 @@ type Repository {
   "The category of the application."
   category: Category
 
+  "release status of the repository"
+  releaseStatus: ReleaseStatus
+
   "Whether the application is private."
   private: Boolean
 
@@ -967,8 +1038,14 @@ type Repository {
 
   darkIcon: String
 
+  "The external contributors to this repository"
+  contributors: [Contributor]
+
   "The installation of the application by a user."
   installation: Installation
+
+  "version tags that can be followed to control upgrade flow"
+  upgradeChannels: [String]
 
   "If the application can be edited by the current user."
   editable: Boolean
@@ -1081,6 +1158,7 @@ type Invoice {
   currency: String!
   status: String
   hostedInvoiceUrl: String
+  paymentIntent: PaymentIntent
   createdAt: DateTime
   lines: [InvoiceItem]
 }
@@ -1103,6 +1181,7 @@ type Invite {
   expiresAt: DateTime
   account: Account
   user: User
+  groups: [Group]
   insertedAt: DateTime
   updatedAt: DateTime
 }
@@ -1293,6 +1372,12 @@ input AzureShellCredentialsAttributes {
   subscriptionId: String!
 }
 
+type ApplicationSpec {
+  description: String
+  version: String
+  links: [AppLink]
+}
+
 "Input for the application's OAuth settings."
 input OauthSettingsAttributes {
   "The URI format for the OAuth provider."
@@ -1393,6 +1478,12 @@ input PublisherAttributes {
   community: CommunityAttributes
 }
 
+input ChatMessageAttributes {
+  role: String!
+  content: String!
+  name: String
+}
+
 type GeoMetric {
   country: String
   count: Int
@@ -1402,6 +1493,12 @@ input ShellCredentialsAttributes {
   aws: AwsShellCredentialsAttributes
   gcp: GcpShellCredentialsAttributes
   azure: AzureShellCredentialsAttributes
+}
+
+"the attributes of the config upgrade"
+input UpgradeConfigAttributes {
+  "paths for a configuration change"
+  paths: [UpgradePathAttributes]
 }
 
 input SpecificationAttributes {
@@ -1467,6 +1564,9 @@ type Cluster {
 
   "pending upgrades for each installed app"
   upgradeInfo: [UpgradeInfo]
+
+  "the dependencies a cluster has"
+  dependency: ClusterDependency
 
   "The user that owns the cluster."
   owner: User
@@ -1560,6 +1660,7 @@ type PlatformPlan {
   cost: Int!
   period: PaymentPeriod!
   enterprise: Boolean
+  trial: Boolean
   features: PlanFeatures
   lineItems: [PlatformPlanItem]
   insertedAt: DateTime
@@ -1615,7 +1716,13 @@ type RootMutationType {
 
   createCard(source: String!, address: AddressAttributes): Account
 
+  setupIntent(address: AddressAttributes): SetupIntent
+
+  defaultPaymentMethod(id: String!): Boolean
+
   deleteCard(id: ID!): Account
+
+  deletePaymentMethod(id: ID!): PaymentMethod
 
   linkPublisher(token: String!): Publisher
 
@@ -1629,7 +1736,9 @@ type RootMutationType {
 
   updateLineItem(attributes: LimitAttributes!, subscriptionId: ID!): RepositorySubscription
 
-  createPlatformSubscription(planId: ID!): PlatformSubscription
+  createPlatformSubscription(planId: ID!, billingAddress: AddressAttributes, paymentMethod: String): PlatformSubscription
+
+  beginTrial: PlatformSubscription
 
   deletePlatformSubscription: Account
 
@@ -1708,6 +1817,8 @@ type RootMutationType {
 
   uninstallTerraform(id: ID!): TerraformInstallation
 
+  release(repositoryId: ID, repositoryName: String, tags: [String!]): Boolean
+
   updateVersion(id: ID, spec: VersionSpec, attributes: VersionAttributes!): Version
 
   createServiceAccount(attributes: ServiceAccountAttributes!): User
@@ -1778,6 +1889,8 @@ type RootMutationType {
 
   createQueue(attributes: UpgradeQueueAttributes!): UpgradeQueue
 
+  createUpgrade(repositoryName: String, repositoryId: ID, queue: String!, attributes: UpgradeAttributes!): Upgrade
+
   acceptLogin(challenge: String!): OauthResponse
 
   oauthConsent(challenge: String!, scopes: [String]): OauthResponse
@@ -1845,8 +1958,14 @@ type RootMutationType {
   "adds a dependency for this cluster to gate future upgrades"
   createClusterDependency(sourceId: ID!, destId: ID!): ClusterDependency
 
+  "deletes a dependency for this cluster and potentially disables promotions entirely"
+  deleteClusterDependency(sourceId: ID!, destId: ID!): ClusterDependency
+
   "moves up the upgrade waterline for a user"
   promote: User
+
+  "transfers ownership of a cluster to a service account"
+  transferOwnership(name: String!, email: String!): Cluster
 
   "Delete a cluster."
   deleteCluster(
@@ -2188,6 +2307,8 @@ type RootQueryType {
 
   shellConfiguration: ShellConfiguration
 
+  shellApplications: [ApplicationInformation]
+
   scmAuthorization: [AuthorizationUrl]
 
   scmToken(provider: ScmProvider!, code: String!): String
@@ -2205,6 +2326,8 @@ type RootQueryType {
   test(id: ID!): Test
 
   testLogs(id: ID!, step: ID!): String
+
+  chat(history: [ChatMessageAttributes]): ChatMessage
 
   helpQuestion(prompt: String!): String
 
@@ -2261,6 +2384,12 @@ type DockerRepository {
   metrics(tag: String, precision: String, offset: String): [Metric]
   insertedAt: DateTime
   updatedAt: DateTime
+}
+
+type UpgradePath {
+  path: String!
+  value: String!
+  type: ValueType!
 }
 
 type RoleBinding {
@@ -2332,6 +2461,7 @@ type Upgrade {
   id: ID!
   type: UpgradeType
   message: String
+  config: UpgradeConfig
   repository: Repository
   insertedAt: DateTime
   updatedAt: DateTime
@@ -2402,6 +2532,12 @@ be converted to UTC if there is an offset.
 """
 scalar DateTime
 
+enum ValueType {
+  INT
+  STRING
+  FLOAT
+}
+
 type PersistedTokenAuditEdge {
   node: PersistedTokenAudit
   cursor: String
@@ -2429,6 +2565,7 @@ enum UpgradeType {
   APPROVAL
   BOUNCE
   DEDICATED
+  CONFIG
 }
 
 type DockerImage {
@@ -2488,6 +2625,17 @@ enum PaymentPeriod {
   YEARLY
 }
 
+type PaymentIntent {
+  id: String
+  description: String
+  clientSecret: String
+  amount: Int
+  captureMethod: String
+  currency: String
+  nextAction: NextAction
+  status: String
+}
+
 type DnsRecord {
   id: ID!
   type: DnsRecordType!
@@ -2541,6 +2689,39 @@ type Chart {
   updatedAt: DateTime
 }
 
+type PaymentMethod {
+  id: String
+  card: Card
+  type: String
+  isDefault: Boolean
+}
+
+"Input for creating or updating a cluster."
+input ClusterAttributes {
+  "The name of the cluster."
+  name: String!
+
+  "The cluster's cloud provider."
+  provider: Provider!
+
+  "The source of the cluster."
+  source: Source
+
+  "The git repository URL for the cluster."
+  gitUrl: String
+
+  "The URL of the console running on the cluster."
+  consoleUrl: String
+
+  "The domain name used for applications deployed on the cluster."
+  domain: String
+}
+
+input CrdAttributes {
+  name: String!
+  blob: UploadOrUrl
+}
+
 input PlanMetadataAttributes {
   freeform: Yaml
   features: [PlanFeatureAttributes]
@@ -2578,36 +2759,10 @@ input OnboardingChecklistAttributes {
   dismissed: Boolean
 }
 
-"Input for creating or updating a cluster."
-input ClusterAttributes {
-  "The name of the cluster."
-  name: String!
-
-  "The cluster's cloud provider."
-  provider: Provider!
-
-  "The source of the cluster."
-  source: Source
-
-  "The git repository URL for the cluster."
-  gitUrl: String
-
-  "The URL of the console running on the cluster."
-  consoleUrl: String
-
-  "The domain name used for applications deployed on the cluster."
-  domain: String
-}
-
 enum RolloutStatus {
   QUEUED
   RUNNING
   FINISHED
-}
-
-input CrdAttributes {
-  name: String!
-  blob: UploadOrUrl
 }
 
 "Input for creating or updating an application's attributes."
@@ -2626,6 +2781,9 @@ input RepositoryAttributes {
 
   "A YAML object of secrets."
   secrets: Yaml
+
+  "release status of the repository"
+  releaseStatus: ReleaseStatus
 
   "The application's icon."
   icon: UploadOrUrl
@@ -2662,6 +2820,9 @@ input RepositoryAttributes {
 
   "The application's README."
   readme: String
+
+  "List of emails of external users contributing to this repository and who will be granted access"
+  contributors: [String]
 
   "The application's OAuth settings."
   oauthSettings: OauthSettingsAttributes
@@ -2800,6 +2961,14 @@ type Follower {
   updatedAt: DateTime
 }
 
+"An external repository contributor"
+type Contributor {
+  id: ID!
+  user: User
+  insertedAt: DateTime
+  updatedAt: DateTime
+}
+
 type ImageLayer {
   digest: String
   diffId: String
@@ -2819,6 +2988,26 @@ type CategoryInfo {
 type OauthInfo {
   provider: OauthProvider!
   authorizeUrl: String!
+}
+
+type SlimSubscription {
+  id: ID!
+  lineItems: SubscriptionLineItems
+  plan: Plan
+}
+
+type PersistedToken {
+  id: ID
+  token: String
+  audits(after: String, first: Int, before: String, last: Int): PersistedTokenAuditConnection
+  metrics: [GeoMetric]
+  insertedAt: DateTime
+  updatedAt: DateTime
+}
+
+type GroupedTagConnection {
+  pageInfo: PageInfo!
+  edges: [GroupedTagEdge]
 }
 
 type OuathConfiguration {
@@ -2863,12 +3052,6 @@ type TestConnection {
   edges: [TestEdge]
 }
 
-type SlimSubscription {
-  id: ID!
-  lineItems: SubscriptionLineItems
-  plan: Plan
-}
-
 enum Permission {
   INSTALL
   PUBLISH
@@ -2891,20 +3074,6 @@ type TerraformConnection {
 enum LineItemDimension {
   USER
   CLUSTER
-}
-
-type PersistedToken {
-  id: ID
-  token: String
-  audits(after: String, first: Int, before: String, last: Int): PersistedTokenAuditConnection
-  metrics: [GeoMetric]
-  insertedAt: DateTime
-  updatedAt: DateTime
-}
-
-type GroupedTagConnection {
-  pageInfo: PageInfo!
-  edges: [GroupedTagEdge]
 }
 
 type IncidentHistoryConnection {
@@ -2984,6 +3153,11 @@ type Terraform {
   updatedAt: DateTime
 }
 
+type AppLink {
+  url: String
+  description: String
+}
+
 type IntegrationWebhook {
   id: ID!
   name: String!
@@ -3048,6 +3222,10 @@ enum Category {
   STORAGE
 }
 
+type UpgradeConfig {
+  paths: [UpgradePath]
+}
+
 type ImpersonationPolicyBinding {
   id: ID!
   user: User
@@ -3067,6 +3245,14 @@ type OidcProviderBinding {
   group: Group
   insertedAt: DateTime
   updatedAt: DateTime
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  AUDIO
+  OTHER
+  PDF
 }
 
 enum OauthService {
@@ -3115,14 +3301,6 @@ enum WebhookLogState {
 type PersistedTokenEdge {
   node: PersistedToken
   cursor: String
-}
-
-enum MediaType {
-  IMAGE
-  VIDEO
-  AUDIO
-  OTHER
-  PDF
 }
 
 enum MessageEntityType {
@@ -3215,6 +3393,13 @@ type DemoProject {
   updatedAt: DateTime
 }
 
+type ApplicationComponent {
+  group: String
+  name: String
+  kind: String
+  status: String
+}
+
 enum VulnRequirement {
   NONE
   REQUIRED
@@ -3252,6 +3437,10 @@ enum IncidentSort {
 type Limit {
   dimension: String!
   quantity: Int!
+}
+
+input FollowerAttributes {
+  preferences: NotificationPreferencesAttributes
 }
 
 type Dependencies {
@@ -3315,6 +3504,18 @@ input UserEventAttributes {
   status: UserEventStatus
 }
 
+"The information for this upgrade"
+input UpgradeAttributes {
+  "a simple message to explain this upgrade"
+  message: String!
+
+  "the type of upgrade"
+  type: UpgradeType!
+
+  "information for a config upgrade"
+  config: UpgradeConfigAttributes
+}
+
 input ImpersonationPolicyBindingAttributes {
   id: ID
   userId: ID
@@ -3335,10 +3536,6 @@ input UpgradeQueueAttributes {
   domain: String
   git: String
   provider: Provider
-}
-
-input FollowerAttributes {
-  preferences: NotificationPreferencesAttributes
 }
 
 type Roles {
@@ -3398,24 +3595,6 @@ input SubscriptionAttributes {
   lineItems: SubscriptionLineItemAttributes
 }
 
-type TerraformProvider {
-  name: Provider
-  content: String
-}
-
-type OidcProvider {
-  id: ID!
-  clientSecret: String!
-  clientId: String!
-  redirectUris: [String]
-  authMethod: OidcAuthMethod!
-  configuration: OuathConfiguration
-  consent: ConsentRequest
-  bindings: [OidcProviderBinding]
-  insertedAt: DateTime
-  updatedAt: DateTime
-}
-
 type User {
   id: ID!
 
@@ -3459,6 +3638,8 @@ type User {
 
   demoing: Boolean
 
+  hasShell: Boolean
+
   avatar: String
 
   backgroundColor: String
@@ -3470,6 +3651,24 @@ type User {
 
   insertedAt: DateTime
 
+  updatedAt: DateTime
+}
+
+type TerraformProvider {
+  name: Provider
+  content: String
+}
+
+type OidcProvider {
+  id: ID!
+  clientSecret: String!
+  clientId: String!
+  redirectUris: [String]
+  authMethod: OidcAuthMethod!
+  configuration: OuathConfiguration
+  consent: ConsentRequest
+  bindings: [OidcProviderBinding]
+  insertedAt: DateTime
   updatedAt: DateTime
 }
 

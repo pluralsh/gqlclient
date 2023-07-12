@@ -92,8 +92,8 @@ type RootQueryType struct {
 	DNSDomains             *DNSDomainConnection              "json:\"dnsDomains\" graphql:\"dnsDomains\""
 	DNSRecords             *DNSRecordConnection              "json:\"dnsRecords\" graphql:\"dnsRecords\""
 	Shell                  *CloudShell                       "json:\"shell\" graphql:\"shell\""
-	ShellApplications      []*ApplicationInformation         "json:\"shellApplications\" graphql:\"shellApplications\""
 	ShellConfiguration     *ShellConfiguration               "json:\"shellConfiguration\" graphql:\"shellConfiguration\""
+	ShellApplications      []*ApplicationInformation         "json:\"shellApplications\" graphql:\"shellApplications\""
 	ScmAuthorization       []*AuthorizationURL               "json:\"scmAuthorization\" graphql:\"scmAuthorization\""
 	ScmToken               *string                           "json:\"scmToken\" graphql:\"scmToken\""
 	DemoProject            *DemoProject                      "json:\"demoProject\" graphql:\"demoProject\""
@@ -103,6 +103,7 @@ type RootQueryType struct {
 	Tests                  *TestConnection                   "json:\"tests\" graphql:\"tests\""
 	Test                   *Test                             "json:\"test\" graphql:\"test\""
 	TestLogs               *string                           "json:\"testLogs\" graphql:\"testLogs\""
+	Chat                   *ChatMessage                      "json:\"chat\" graphql:\"chat\""
 	HelpQuestion           *string                           "json:\"helpQuestion\" graphql:\"helpQuestion\""
 	Cluster                *Cluster                          "json:\"cluster\" graphql:\"cluster\""
 	Clusters               *ClusterConnection                "json:\"clusters\" graphql:\"clusters\""
@@ -134,7 +135,10 @@ type RootMutationType struct {
 	CreateKeyBackup            *KeyBackup              "json:\"createKeyBackup\" graphql:\"createKeyBackup\""
 	DeleteKeyBackup            *KeyBackup              "json:\"deleteKeyBackup\" graphql:\"deleteKeyBackup\""
 	CreateCard                 *Account                "json:\"createCard\" graphql:\"createCard\""
+	SetupIntent                *SetupIntent            "json:\"setupIntent\" graphql:\"setupIntent\""
+	DefaultPaymentMethod       *bool                   "json:\"defaultPaymentMethod\" graphql:\"defaultPaymentMethod\""
 	DeleteCard                 *Account                "json:\"deleteCard\" graphql:\"deleteCard\""
+	DeletePaymentMethod        *PaymentMethod          "json:\"deletePaymentMethod\" graphql:\"deletePaymentMethod\""
 	LinkPublisher              *Publisher              "json:\"linkPublisher\" graphql:\"linkPublisher\""
 	CreatePlan                 *Plan                   "json:\"createPlan\" graphql:\"createPlan\""
 	UpdatePlanAttributes       *Plan                   "json:\"updatePlanAttributes\" graphql:\"updatePlanAttributes\""
@@ -142,6 +146,7 @@ type RootMutationType struct {
 	UpdatePlan                 *RepositorySubscription "json:\"updatePlan\" graphql:\"updatePlan\""
 	UpdateLineItem             *RepositorySubscription "json:\"updateLineItem\" graphql:\"updateLineItem\""
 	CreatePlatformSubscription *PlatformSubscription   "json:\"createPlatformSubscription\" graphql:\"createPlatformSubscription\""
+	BeginTrial                 *PlatformSubscription   "json:\"beginTrial\" graphql:\"beginTrial\""
 	DeletePlatformSubscription *Account                "json:\"deletePlatformSubscription\" graphql:\"deletePlatformSubscription\""
 	CancelPlatformSubscription *PlatformSubscription   "json:\"cancelPlatformSubscription\" graphql:\"cancelPlatformSubscription\""
 	UpdatePlatformPlan         *PlatformSubscription   "json:\"updatePlatformPlan\" graphql:\"updatePlatformPlan\""
@@ -178,6 +183,7 @@ type RootMutationType struct {
 	UploadTerraform            *Terraform              "json:\"uploadTerraform\" graphql:\"uploadTerraform\""
 	InstallTerraform           *TerraformInstallation  "json:\"installTerraform\" graphql:\"installTerraform\""
 	UninstallTerraform         *TerraformInstallation  "json:\"uninstallTerraform\" graphql:\"uninstallTerraform\""
+	Release                    *bool                   "json:\"release\" graphql:\"release\""
 	UpdateVersion              *Version                "json:\"updateVersion\" graphql:\"updateVersion\""
 	CreateServiceAccount       *User                   "json:\"createServiceAccount\" graphql:\"createServiceAccount\""
 	UpdateServiceAccount       *User                   "json:\"updateServiceAccount\" graphql:\"updateServiceAccount\""
@@ -213,6 +219,7 @@ type RootMutationType struct {
 	DeleteReaction             *IncidentMessage        "json:\"deleteReaction\" graphql:\"deleteReaction\""
 	ReadNotifications          *int64                  "json:\"readNotifications\" graphql:\"readNotifications\""
 	CreateQueue                *UpgradeQueue           "json:\"createQueue\" graphql:\"createQueue\""
+	CreateUpgrade              *Upgrade                "json:\"createUpgrade\" graphql:\"createUpgrade\""
 	AcceptLogin                *OauthResponse          "json:\"acceptLogin\" graphql:\"acceptLogin\""
 	OauthConsent               *OauthResponse          "json:\"oauthConsent\" graphql:\"oauthConsent\""
 	OauthCallback              *User                   "json:\"oauthCallback\" graphql:\"oauthCallback\""
@@ -244,7 +251,9 @@ type RootMutationType struct {
 	PublishLogs                *TestStep               "json:\"publishLogs\" graphql:\"publishLogs\""
 	CreateCluster              *Cluster                "json:\"createCluster\" graphql:\"createCluster\""
 	CreateClusterDependency    *ClusterDependency      "json:\"createClusterDependency\" graphql:\"createClusterDependency\""
+	DeleteClusterDependency    *ClusterDependency      "json:\"deleteClusterDependency\" graphql:\"deleteClusterDependency\""
 	Promote                    *User                   "json:\"promote\" graphql:\"promote\""
+	TransferOwnership          *Cluster                "json:\"transferOwnership\" graphql:\"transferOwnership\""
 	DeleteCluster              *Cluster                "json:\"deleteCluster\" graphql:\"deleteCluster\""
 }
 type ApplyLockFragment struct {
@@ -277,6 +286,11 @@ type ChartInstallationFragment struct {
 		Dependencies  *DependenciesFragment "json:\"dependencies\" graphql:\"dependencies\""
 	} "json:\"chart\" graphql:\"chart\""
 	Version *VersionFragment "json:\"version\" graphql:\"version\""
+}
+type ChatMessageFragment struct {
+	Role    string  "json:\"role\" graphql:\"role\""
+	Content string  "json:\"content\" graphql:\"content\""
+	Name    *string "json:\"name\" graphql:\"name\""
 }
 type CloudShellFragment struct {
 	ID     string "json:\"id\" graphql:\"id\""
@@ -523,6 +537,9 @@ type Backups struct {
 		} "json:\"edges\" graphql:\"edges\""
 	} "json:\"keyBackups\" graphql:\"keyBackups\""
 }
+type Chat struct {
+	Chat *ChatMessageFragment "json:\"chat\" graphql:\"chat\""
+}
 type ClusterInfo struct {
 	Cluster *struct {
 		ID          string        "json:\"id\" graphql:\"id\""
@@ -613,6 +630,11 @@ type CreateStack struct {
 type CreateTest struct {
 	CreateTest *TestFragment "json:\"createTest\" graphql:\"createTest\""
 }
+type CreateUpgrade struct {
+	CreateUpgrade *struct {
+		ID string "json:\"id\" graphql:\"id\""
+	} "json:\"createUpgrade\" graphql:\"createUpgrade\""
+}
 type DeleteDNSRecord struct {
 	DeleteDNSRecord *DNSRecordFragment "json:\"deleteDnsRecord\" graphql:\"deleteDnsRecord\""
 }
@@ -656,11 +678,6 @@ type GetCharts struct {
 			Node *ChartFragment "json:\"node\" graphql:\"node\""
 		} "json:\"edges\" graphql:\"edges\""
 	} "json:\"charts\" graphql:\"charts\""
-}
-type TransferOwnership struct {
-	TransferOwnership *struct {
-		ID string "json:\"id\" graphql:\"id\""
-	} "json:\"transferOwnership\" graphql:\"transferOwnership\""
 }
 type GetDNSRecords struct {
 	DNSRecords *struct {
@@ -896,6 +913,9 @@ type PublishLogs struct {
 		ID string "json:\"id\" graphql:\"id\""
 	} "json:\"publishLogs\" graphql:\"publishLogs\""
 }
+type Release struct {
+	Release *bool "json:\"release\" graphql:\"release\""
+}
 type ReleaseLock struct {
 	ReleaseLock *ApplyLockFragment "json:\"releaseLock\" graphql:\"releaseLock\""
 }
@@ -907,6 +927,11 @@ type Scaffolds struct {
 		Path    *string "json:\"path\" graphql:\"path\""
 		Content *string "json:\"content\" graphql:\"content\""
 	} "json:\"scaffold\" graphql:\"scaffold\""
+}
+type TransferOwnership struct {
+	TransferOwnership *struct {
+		ID string "json:\"id\" graphql:\"id\""
+	} "json:\"transferOwnership\" graphql:\"transferOwnership\""
 }
 type UninstallChart struct {
 	DeleteChartInstallation *struct {
@@ -933,9 +958,6 @@ type UpdateStep struct {
 }
 type UpdateTest struct {
 	UpdateTest *TestFragment "json:\"updateTest\" graphql:\"updateTest\""
-}
-type Chat struct {
-	Chat *ChatMessageFragment "json:\"chat\" graphql:\"chat\""
 }
 type UpdateVersion struct {
 	UpdateVersion *struct {
@@ -1028,6 +1050,31 @@ func (c *Client) Backups(ctx context.Context, cursor *string, httpRequestOptions
 
 	var res Backups
 	if err := c.Client.Post(ctx, "Backups", BackupsDocument, &res, vars, httpRequestOptions...); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+const ChatDocument = `query Chat ($history: [ChatMessageAttributes]) {
+	chat(history: $history) {
+		... ChatMessageFragment
+	}
+}
+fragment ChatMessageFragment on ChatMessage {
+	role
+	content
+	name
+}
+`
+
+func (c *Client) Chat(ctx context.Context, history []*ChatMessageAttributes, httpRequestOptions ...client.HTTPRequestOption) (*Chat, error) {
+	vars := map[string]interface{}{
+		"history": history,
+	}
+
+	var res Chat
+	if err := c.Client.Post(ctx, "Chat", ChatDocument, &res, vars, httpRequestOptions...); err != nil {
 		return nil, err
 	}
 
@@ -1137,16 +1184,6 @@ func (c *Client) Clusters(ctx context.Context, cursor *string, httpRequestOption
 const CreateAccessTokenDocument = `mutation CreateAccessToken {
 	createToken {
 		token
-	}
-}
-fragment ClusterFragment on Cluster {
-	id
-	name
-	provider
-	source
-	gitUrl
-	owner {
-		... UserFragment
 	}
 }
 `
@@ -1496,6 +1533,28 @@ func (c *Client) CreateTest(ctx context.Context, name string, attrs TestAttribut
 	return &res, nil
 }
 
+const CreateUpgradeDocument = `mutation CreateUpgrade ($queue: String!, $repository: String!, $attributes: UpgradeAttributes!) {
+	createUpgrade(queue: $queue, repositoryName: $repository, attributes: $attributes) {
+		id
+	}
+}
+`
+
+func (c *Client) CreateUpgrade(ctx context.Context, queue string, repository string, attributes UpgradeAttributes, httpRequestOptions ...client.HTTPRequestOption) (*CreateUpgrade, error) {
+	vars := map[string]interface{}{
+		"queue":      queue,
+		"repository": repository,
+		"attributes": attributes,
+	}
+
+	var res CreateUpgrade
+	if err := c.Client.Post(ctx, "CreateUpgrade", CreateUpgradeDocument, &res, vars, httpRequestOptions...); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
 const DeleteDNSRecordDocument = `mutation DeleteDnsRecord ($name: String!, $type: DnsRecordType!) {
 	deleteDnsRecord(name: $name, type: $type) {
 		... DnsRecordFragment
@@ -1755,27 +1814,6 @@ func (c *Client) GetCharts(ctx context.Context, id string, httpRequestOptions ..
 
 	var res GetCharts
 	if err := c.Client.Post(ctx, "GetCharts", GetChartsDocument, &res, vars, httpRequestOptions...); err != nil {
-		return nil, err
-	}
-
-	return &res, nil
-}
-
-const TransferOwnershipDocument = `mutation TransferOwnership ($name: String!, $email: String!) {
-	transferOwnership(name: $name, email: $email) {
-		id
-	}
-}
-`
-
-func (c *Client) TransferOwnership(ctx context.Context, name string, email string, httpRequestOptions ...client.HTTPRequestOption) (*TransferOwnership, error) {
-	vars := map[string]interface{}{
-		"name":  name,
-		"email": email,
-	}
-
-	var res TransferOwnership
-	if err := c.Client.Post(ctx, "TransferOwnership", TransferOwnershipDocument, &res, vars, httpRequestOptions...); err != nil {
 		return nil, err
 	}
 
@@ -2357,6 +2395,159 @@ func (c *Client) GetRecipe(ctx context.Context, repo *string, name *string, http
 	return &res, nil
 }
 
+const GetRecipeByIDDocument = `query GetRecipeByID ($id: ID) {
+	recipe(id: $id) {
+		... RecipeFragment
+		recipeDependencies {
+			... RecipeFragment
+		}
+	}
+}
+fragment ChartFragment on Chart {
+	id
+	name
+	description
+	latestVersion
+}
+fragment DependenciesFragment on Dependencies {
+	dependencies {
+		type
+		name
+		repo
+		optional
+		version
+	}
+	breaking
+	instructions {
+		instructions
+		script
+	}
+	wait
+	application
+	providers
+	secrets
+	wirings {
+		terraform
+		helm
+	}
+	providerWirings
+	outputs
+	providerVsn
+}
+fragment RecipeConfigurationFragment on RecipeConfiguration {
+	name
+	type
+	default
+	documentation
+	optional
+	placeholder
+	functionName
+	condition {
+		field
+		operation
+		value
+	}
+	validation {
+		type
+		regex
+		message
+	}
+}
+fragment RecipeFragment on Recipe {
+	id
+	name
+	primary
+	description
+	restricted
+	provider
+	tests {
+		type
+		name
+		message
+		args {
+			name
+			repo
+			key
+		}
+	}
+	repository {
+		id
+		name
+	}
+	oidcSettings {
+		uriFormat
+		uriFormats
+		authMethod
+		domainKey
+		subdomain
+	}
+	recipeSections {
+		... RecipeSectionFragment
+	}
+}
+fragment RecipeItemFragment on RecipeItem {
+	id
+	chart {
+		... ChartFragment
+	}
+	terraform {
+		... TerraformFragment
+	}
+	configuration {
+		... RecipeConfigurationFragment
+	}
+}
+fragment RecipeSectionFragment on RecipeSection {
+	index
+	repository {
+		... RepositoryFragment
+	}
+	recipeItems {
+		... RecipeItemFragment
+	}
+	configuration {
+		... RecipeConfigurationFragment
+	}
+}
+fragment RepositoryFragment on Repository {
+	id
+	name
+	notes
+	icon
+	darkIcon
+	description
+	publisher {
+		name
+	}
+	recipes {
+		name
+	}
+}
+fragment TerraformFragment on Terraform {
+	id
+	name
+	package
+	description
+	dependencies {
+		... DependenciesFragment
+	}
+	valuesTemplate
+}
+`
+
+func (c *Client) GetRecipeByID(ctx context.Context, id *string, httpRequestOptions ...client.HTTPRequestOption) (*GetRecipeByID, error) {
+	vars := map[string]interface{}{
+		"id": id,
+	}
+
+	var res GetRecipeByID
+	if err := c.Client.Post(ctx, "GetRecipeByID", GetRecipeByIDDocument, &res, vars, httpRequestOptions...); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
 const GetRepositoryDocument = `query GetRepository ($name: String) {
 	repository(name: $name) {
 		... RepositoryFragment
@@ -2472,6 +2663,7 @@ fragment RecipeConfigurationFragment on RecipeConfiguration {
 fragment RecipeFragment on Recipe {
 	id
 	name
+	primary
 	description
 	restricted
 	provider
@@ -2928,6 +3120,7 @@ fragment RecipeConfigurationFragment on RecipeConfiguration {
 fragment RecipeFragment on Recipe {
 	id
 	name
+	primary
 	description
 	restricted
 	provider
@@ -3149,6 +3342,7 @@ fragment RecipeConfigurationFragment on RecipeConfiguration {
 fragment RecipeFragment on Recipe {
 	id
 	name
+	primary
 	description
 	restricted
 	provider
@@ -3341,6 +3535,7 @@ fragment RecipeConfigurationFragment on RecipeConfiguration {
 fragment RecipeFragment on Recipe {
 	id
 	name
+	primary
 	description
 	restricted
 	provider
@@ -3569,6 +3764,25 @@ func (c *Client) PublishLogs(ctx context.Context, id string, logs string, httpRe
 	return &res, nil
 }
 
+const ReleaseDocument = `mutation Release ($name: String!, $tags: [String!]) {
+	release(repositoryName: $name, tags: $tags)
+}
+`
+
+func (c *Client) Release(ctx context.Context, name string, tags []string, httpRequestOptions ...client.HTTPRequestOption) (*Release, error) {
+	vars := map[string]interface{}{
+		"name": name,
+		"tags": tags,
+	}
+
+	var res Release
+	if err := c.Client.Post(ctx, "Release", ReleaseDocument, &res, vars, httpRequestOptions...); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
 const ReleaseLockDocument = `mutation ReleaseLock ($name: String!, $attrs: LockAttributes!) {
 	releaseLock(repository: $name, attributes: $attrs) {
 		... ApplyLockFragment
@@ -3629,6 +3843,27 @@ func (c *Client) Scaffolds(ctx context.Context, app string, pub string, cat Cate
 
 	var res Scaffolds
 	if err := c.Client.Post(ctx, "Scaffolds", ScaffoldsDocument, &res, vars, httpRequestOptions...); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+const TransferOwnershipDocument = `mutation TransferOwnership ($name: String!, $email: String!) {
+	transferOwnership(name: $name, email: $email) {
+		id
+	}
+}
+`
+
+func (c *Client) TransferOwnership(ctx context.Context, name string, email string, httpRequestOptions ...client.HTTPRequestOption) (*TransferOwnership, error) {
+	vars := map[string]interface{}{
+		"name":  name,
+		"email": email,
+	}
+
+	var res TransferOwnership
+	if err := c.Client.Post(ctx, "TransferOwnership", TransferOwnershipDocument, &res, vars, httpRequestOptions...); err != nil {
 		return nil, err
 	}
 

@@ -130,6 +130,7 @@ fragment TerraformInstallationFragment on TerraformInstallation {
 
 fragment VersionFragment on Version {
     id
+    helm
     readme
     version
     valuesTemplate

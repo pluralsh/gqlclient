@@ -334,6 +334,7 @@ type DependenciesFragment struct {
 	ProviderWirings map[string]interface{} "json:\"providerWirings\" graphql:\"providerWirings\""
 	Outputs         map[string]interface{} "json:\"outputs\" graphql:\"outputs\""
 	ProviderVsn     *string                "json:\"providerVsn\" graphql:\"providerVsn\""
+	CliVsn          *string                "json:\"cliVsn\" graphql:\"cliVsn\""
 }
 type DNSDomainFragment struct {
 	ID   string "json:\"id\" graphql:\"id\""
@@ -1761,6 +1762,7 @@ fragment DependenciesFragment on Dependencies {
 	providerWirings
 	outputs
 	providerVsn
+	cliVsn
 }
 fragment VersionFragment on Version {
 	id
@@ -2194,6 +2196,7 @@ fragment DependenciesFragment on Dependencies {
 	providerWirings
 	outputs
 	providerVsn
+	cliVsn
 }
 fragment TerraformFragment on Terraform {
 	id
@@ -2282,6 +2285,7 @@ fragment DependenciesFragment on Dependencies {
 	providerWirings
 	outputs
 	providerVsn
+	cliVsn
 }
 fragment RecipeConfigurationFragment on RecipeConfiguration {
 	name
@@ -2436,6 +2440,7 @@ fragment DependenciesFragment on Dependencies {
 	providerWirings
 	outputs
 	providerVsn
+	cliVsn
 }
 fragment RecipeConfigurationFragment on RecipeConfiguration {
 	name
@@ -2643,6 +2648,7 @@ fragment DependenciesFragment on Dependencies {
 	providerWirings
 	outputs
 	providerVsn
+	cliVsn
 }
 fragment RecipeConfigurationFragment on RecipeConfiguration {
 	name
@@ -2801,6 +2807,7 @@ fragment DependenciesFragment on Dependencies {
 	providerWirings
 	outputs
 	providerVsn
+	cliVsn
 }
 fragment TerraformFragment on Terraform {
 	id
@@ -2865,6 +2872,7 @@ fragment DependenciesFragment on Dependencies {
 	providerWirings
 	outputs
 	providerVsn
+	cliVsn
 }
 fragment TerraformFragment on Terraform {
 	id
@@ -2991,6 +2999,7 @@ fragment DependenciesFragment on Dependencies {
 	providerWirings
 	outputs
 	providerVsn
+	cliVsn
 }
 fragment VersionFragment on Version {
 	id
@@ -3102,6 +3111,7 @@ fragment DependenciesFragment on Dependencies {
 	providerWirings
 	outputs
 	providerVsn
+	cliVsn
 }
 fragment RecipeConfigurationFragment on RecipeConfiguration {
 	name
@@ -3324,6 +3334,7 @@ fragment DependenciesFragment on Dependencies {
 	providerWirings
 	outputs
 	providerVsn
+	cliVsn
 }
 fragment RecipeConfigurationFragment on RecipeConfiguration {
 	name
@@ -3517,6 +3528,7 @@ fragment DependenciesFragment on Dependencies {
 	providerWirings
 	outputs
 	providerVsn
+	cliVsn
 }
 fragment RecipeConfigurationFragment on RecipeConfiguration {
 	name
@@ -4058,6 +4070,7 @@ fragment DependenciesFragment on Dependencies {
 	providerWirings
 	outputs
 	providerVsn
+	cliVsn
 }
 fragment TerraformFragment on Terraform {
 	id

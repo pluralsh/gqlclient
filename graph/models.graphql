@@ -45,6 +45,7 @@ fragment DependenciesFragment on Dependencies {
     providerWirings
     outputs
     providerVsn
+    cliVsn
 }
 
 fragment DnsDomainFragment on DnsDomain {

@@ -817,6 +817,13 @@ type GetTerraformInstallations struct {
 		} "json:\"edges\" graphql:\"edges\""
 	} "json:\"terraformInstallations\" graphql:\"terraformInstallations\""
 }
+type GetTerraformVersions struct {
+	Versions *struct {
+		Edges []*struct {
+			Node *VersionFragment "json:\"node\" graphql:\"node\""
+		} "json:\"edges\" graphql:\"edges\""
+	} "json:\"versions\" graphql:\"versions\""
+}
 type GetTfProviderScaffold struct {
 	TerraformProvider *struct {
 		Name    *Provider "json:\"name\" graphql:\"name\""
@@ -2926,6 +2933,77 @@ func (c *Client) GetTerraformInstallations(ctx context.Context, id string, httpR
 
 	var res GetTerraformInstallations
 	if err := c.Client.Post(ctx, "GetTerraformInstallations", GetTerraformInstallationsDocument, &res, vars, httpRequestOptions...); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+const GetTerraformVersionsDocument = `query GetTerraformVersions ($id: ID!) {
+	versions(terraformId: $id, first: 100) {
+		edges {
+			node {
+				... VersionFragment
+			}
+		}
+	}
+}
+fragment CrdFragment on Crd {
+	id
+	name
+	blob
+}
+fragment DependenciesFragment on Dependencies {
+	dependencies {
+		type
+		name
+		repo
+		optional
+		version
+	}
+	breaking
+	instructions {
+		instructions
+		script
+	}
+	wait
+	application
+	providers
+	secrets
+	wirings {
+		terraform
+		helm
+	}
+	providerWirings
+	outputs
+	providerVsn
+	cliVsn
+}
+fragment VersionFragment on Version {
+	id
+	helm
+	readme
+	version
+	valuesTemplate
+	templateType
+	package
+	crds {
+		... CrdFragment
+	}
+	dependencies {
+		... DependenciesFragment
+	}
+	insertedAt
+}
+`
+
+func (c *Client) GetTerraformVersions(ctx context.Context, id string, httpRequestOptions ...client.HTTPRequestOption) (*GetTerraformVersions, error) {
+	vars := map[string]interface{}{
+		"id": id,
+	}
+
+	var res GetTerraformVersions
+	if err := c.Client.Post(ctx, "GetTerraformVersions", GetTerraformVersionsDocument, &res, vars, httpRequestOptions...); err != nil {
 		return nil, err
 	}
 

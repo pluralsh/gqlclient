@@ -8,6 +8,16 @@ query GetTerraform($id: ID!) {
     }
 }
 
+query GetTerraformVersions($id: ID!) {
+    versions(terraformId: $id, first: 100) {
+        edges {
+            node {
+                ...VersionFragment
+            }
+        }
+    }
+}
+
 query GetTerraformInstallations($id: ID!) {
     terraformInstallations(repositoryId: $id, first: 100) {
         edges {

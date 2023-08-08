@@ -520,6 +520,7 @@ type VersionFragment struct {
 	Package        *string                "json:\"package\" graphql:\"package\""
 	Crds           []*CrdFragment         "json:\"crds\" graphql:\"crds\""
 	Dependencies   *DependenciesFragment  "json:\"dependencies\" graphql:\"dependencies\""
+	InsertedAt     *string                "json:\"insertedAt\" graphql:\"insertedAt\""
 }
 type AcquireLock struct {
 	AcquireLock *ApplyLockFragment "json:\"acquireLock\" graphql:\"acquireLock\""
@@ -1783,6 +1784,7 @@ fragment VersionFragment on Version {
 	dependencies {
 		... DependenciesFragment
 	}
+	insertedAt
 }
 `
 
@@ -2236,6 +2238,7 @@ fragment VersionFragment on Version {
 	dependencies {
 		... DependenciesFragment
 	}
+	insertedAt
 }
 `
 
@@ -2912,6 +2915,7 @@ fragment VersionFragment on Version {
 	dependencies {
 		... DependenciesFragment
 	}
+	insertedAt
 }
 `
 
@@ -3020,6 +3024,7 @@ fragment VersionFragment on Version {
 	dependencies {
 		... DependenciesFragment
 	}
+	insertedAt
 }
 `
 

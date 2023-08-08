@@ -139,6 +139,7 @@ fragment VersionFragment on Version {
     package
     crds { ...CrdFragment }
     dependencies { ...DependenciesFragment }
+    insertedAt
 }
 
 fragment CrdFragment on Crd {

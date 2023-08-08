@@ -1067,6 +1067,7 @@ type IntegrationWebhookEdge struct {
 
 type Invite struct {
 	ID         string   `json:"id"`
+	Admin      *bool    `json:"admin"`
 	SecureID   *string  `json:"secureId"`
 	Existing   bool     `json:"existing"`
 	Email      *string  `json:"email"`
@@ -1079,8 +1080,11 @@ type Invite struct {
 }
 
 type InviteAttributes struct {
-	Email        *string              `json:"email,omitempty"`
-	InviteGroups []*BindingAttributes `json:"inviteGroups,omitempty"`
+	Email            *string              `json:"email,omitempty"`
+	Admin            *bool                `json:"admin,omitempty"`
+	OidcProviderID   *string              `json:"oidcProviderId,omitempty"`
+	ServiceAccountID *string              `json:"serviceAccountId,omitempty"`
+	InviteGroups     []*BindingAttributes `json:"inviteGroups,omitempty"`
 }
 
 type InviteConnection struct {
@@ -1349,6 +1353,7 @@ type OidcProvider struct {
 	AuthMethod    OidcAuthMethod         `json:"authMethod"`
 	Configuration *OuathConfiguration    `json:"configuration"`
 	Consent       *ConsentRequest        `json:"consent"`
+	Invites       []*Invite              `json:"invites"`
 	Bindings      []*OidcProviderBinding `json:"bindings"`
 	InsertedAt    *string                `json:"insertedAt"`
 	UpdatedAt     *string                `json:"updatedAt"`
@@ -2506,10 +2511,14 @@ type User struct {
 	EmailConfirmBy      *string              `json:"emailConfirmBy"`
 	Provider            *Provider            `json:"provider"`
 	Roles               *Roles               `json:"roles"`
+	// the groups attached to this user, only fetch this when querying an individual user
+	Groups []*Group `json:"groups"`
+	// the roles attached to this user, only fetch this when querying an individual user
 	BoundRoles          []*Role              `json:"boundRoles"`
 	Publisher           *Publisher           `json:"publisher"`
 	Account             Account              `json:"account"`
 	ImpersonationPolicy *ImpersonationPolicy `json:"impersonationPolicy"`
+	Invites             []*Invite            `json:"invites"`
 	Jwt                 *string              `json:"jwt"`
 	HasInstallations    *bool                `json:"hasInstallations"`
 	Demoing             *bool                `json:"demoing"`
@@ -2533,6 +2542,7 @@ type UserAttributes struct {
 	LoginMethod         *LoginMethod                   `json:"loginMethod,omitempty"`
 	Roles               *RolesAttributes               `json:"roles,omitempty"`
 	Confirm             *string                        `json:"confirm,omitempty"`
+	GroupIds            []string                       `json:"groupIds,omitempty"`
 }
 
 type UserConnection struct {
@@ -3523,6 +3533,7 @@ const (
 	NotificationTypeIncidentUpdate NotificationType = "INCIDENT_UPDATE"
 	NotificationTypeMention        NotificationType = "MENTION"
 	NotificationTypeLocked         NotificationType = "LOCKED"
+	NotificationTypePending        NotificationType = "PENDING"
 )
 
 var AllNotificationType = []NotificationType{
@@ -3530,11 +3541,12 @@ var AllNotificationType = []NotificationType{
 	NotificationTypeIncidentUpdate,
 	NotificationTypeMention,
 	NotificationTypeLocked,
+	NotificationTypePending,
 }
 
 func (e NotificationType) IsValid() bool {
 	switch e {
-	case NotificationTypeMessage, NotificationTypeIncidentUpdate, NotificationTypeMention, NotificationTypeLocked:
+	case NotificationTypeMessage, NotificationTypeIncidentUpdate, NotificationTypeMention, NotificationTypeLocked, NotificationTypePending:
 		return true
 	}
 	return false

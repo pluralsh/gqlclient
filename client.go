@@ -19,6 +19,7 @@ func NewClient(cli *http.Client, baseURL string, options ...client.HTTPRequestOp
 
 type RootQueryType struct {
 	Me                     *User                             "json:\"me\" graphql:\"me\""
+	User                   *User                             "json:\"user\" graphql:\"user\""
 	LoginMethod            *LoginMethodResponse              "json:\"loginMethod\" graphql:\"loginMethod\""
 	ResetToken             *ResetToken                       "json:\"resetToken\" graphql:\"resetToken\""
 	Tokens                 *PersistedTokenConnection         "json:\"tokens\" graphql:\"tokens\""
@@ -185,6 +186,7 @@ type RootMutationType struct {
 	UninstallTerraform         *TerraformInstallation  "json:\"uninstallTerraform\" graphql:\"uninstallTerraform\""
 	Release                    *bool                   "json:\"release\" graphql:\"release\""
 	UpdateVersion              *Version                "json:\"updateVersion\" graphql:\"updateVersion\""
+	InstallVersion             *bool                   "json:\"installVersion\" graphql:\"installVersion\""
 	CreateServiceAccount       *User                   "json:\"createServiceAccount\" graphql:\"createServiceAccount\""
 	UpdateServiceAccount       *User                   "json:\"updateServiceAccount\" graphql:\"updateServiceAccount\""
 	ImpersonateServiceAccount  *User                   "json:\"impersonateServiceAccount\" graphql:\"impersonateServiceAccount\""
@@ -840,6 +842,9 @@ type InstallRecipe struct {
 	InstallRecipe []*struct {
 		ID string "json:\"id\" graphql:\"id\""
 	} "json:\"installRecipe\" graphql:\"installRecipe\""
+}
+type InstallVersion struct {
+	InstallVersion *bool "json:\"installVersion\" graphql:\"installVersion\""
 }
 type ListAllRecipes struct {
 	Recipes *struct {
@@ -3066,6 +3071,27 @@ func (c *Client) InstallRecipe(ctx context.Context, id string, httpRequestOption
 
 	var res InstallRecipe
 	if err := c.Client.Post(ctx, "InstallRecipe", InstallRecipeDocument, &res, vars, httpRequestOptions...); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+const InstallVersionDocument = `mutation InstallVersion ($type: DependencyType!, $repo: String!, $package: String!, $vsn: String!) {
+	installVersion(type: $type, repository: $repo, package: $package, vsn: $vsn)
+}
+`
+
+func (c *Client) InstallVersion(ctx context.Context, typeArg DependencyType, repo string, packageArg string, vsn string, httpRequestOptions ...client.HTTPRequestOption) (*InstallVersion, error) {
+	vars := map[string]interface{}{
+		"type":    typeArg,
+		"repo":    repo,
+		"package": packageArg,
+		"vsn":     vsn,
+	}
+
+	var res InstallVersion
+	if err := c.Client.Post(ctx, "InstallVersion", InstallVersionDocument, &res, vars, httpRequestOptions...); err != nil {
 		return nil, err
 	}
 

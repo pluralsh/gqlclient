@@ -370,6 +370,7 @@ enum NotificationType {
   INCIDENT_UPDATE
   MENTION
   LOCKED
+  PENDING
 }
 
 enum OnboardingState {
@@ -637,6 +638,9 @@ input FileAttributes {
 
 input InviteAttributes {
   email: String
+  admin: Boolean
+  oidcProviderId: ID
+  serviceAccountId: ID
   inviteGroups: [BindingAttributes]
 }
 
@@ -1175,6 +1179,7 @@ type DnsRecordEdge {
 
 type Invite {
   id: ID!
+  admin: Boolean
   secureId: String
   existing: Boolean!
   email: String
@@ -1467,6 +1472,7 @@ input UserAttributes {
   loginMethod: LoginMethod
   roles: RolesAttributes
   confirm: String
+  groupIds: [ID!]
 }
 
 input PublisherAttributes {
@@ -1821,6 +1827,8 @@ type RootMutationType {
 
   updateVersion(id: ID, spec: VersionSpec, attributes: VersionAttributes!): Version
 
+  installVersion(type: DependencyType!, vsn: String!, package: String!, repository: String!): Boolean
+
   createServiceAccount(attributes: ServiceAccountAttributes!): User
 
   updateServiceAccount(id: ID!, attributes: ServiceAccountAttributes!): User
@@ -2141,6 +2149,8 @@ type Community {
 
 type RootQueryType {
   me: User
+
+  user(id: ID!): User
 
   loginMethod(email: String!, host: String): LoginMethodResponse
 
@@ -3624,6 +3634,10 @@ type User {
 
   roles: Roles
 
+  "the groups attached to this user, only fetch this when querying an individual user"
+  groups: [Group]
+
+  "the roles attached to this user, only fetch this when querying an individual user"
   boundRoles: [Role]
 
   publisher: Publisher
@@ -3631,6 +3645,8 @@ type User {
   account: Account!
 
   impersonationPolicy: ImpersonationPolicy
+
+  invites: [Invite]
 
   jwt: String
 
@@ -3667,6 +3683,7 @@ type OidcProvider {
   authMethod: OidcAuthMethod!
   configuration: OuathConfiguration
   consent: ConsentRequest
+  invites: [Invite]
   bindings: [OidcProviderBinding]
   insertedAt: DateTime
   updatedAt: DateTime

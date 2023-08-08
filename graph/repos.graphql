@@ -54,3 +54,7 @@ mutation DeleteRepository($id: ID!) {
 mutation Release($name: String!, $tags: [String!]) {
     release(repositoryName: $name, tags: $tags)
 }
+
+mutation InstallVersion($type: DependencyType!, $repo: String!, $package: String!, $vsn: String!) {
+    installVersion(type: $type, repository: $repo, package: $package, vsn: $vsn)
+}

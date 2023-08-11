@@ -34,6 +34,7 @@ type RootQueryType struct {
 	EabCredentials         []*EabCredential                  "json:\"eabCredentials\" graphql:\"eabCredentials\""
 	KeyBackups             *KeyBackupConnection              "json:\"keyBackups\" graphql:\"keyBackups\""
 	KeyBackup              *KeyBackup                        "json:\"keyBackup\" graphql:\"keyBackup\""
+	OidcToken              *string                           "json:\"oidcToken\" graphql:\"oidcToken\""
 	RepositorySubscription *RepositorySubscription           "json:\"repositorySubscription\" graphql:\"repositorySubscription\""
 	Subscriptions          *RepositorySubscriptionConnection "json:\"subscriptions\" graphql:\"subscriptions\""
 	PlatformPlans          []*PlatformPlan                   "json:\"platformPlans\" graphql:\"platformPlans\""
@@ -135,6 +136,8 @@ type RootMutationType struct {
 	DestroyCluster             *bool                   "json:\"destroyCluster\" graphql:\"destroyCluster\""
 	CreateKeyBackup            *KeyBackup              "json:\"createKeyBackup\" graphql:\"createKeyBackup\""
 	DeleteKeyBackup            *KeyBackup              "json:\"deleteKeyBackup\" graphql:\"deleteKeyBackup\""
+	CreateTrustRelationship    *OidcTrustRelationship  "json:\"createTrustRelationship\" graphql:\"createTrustRelationship\""
+	DeleteTrustRelationship    *OidcTrustRelationship  "json:\"deleteTrustRelationship\" graphql:\"deleteTrustRelationship\""
 	CreateCard                 *Account                "json:\"createCard\" graphql:\"createCard\""
 	SetupIntent                *SetupIntent            "json:\"setupIntent\" graphql:\"setupIntent\""
 	DefaultPaymentMethod       *bool                   "json:\"defaultPaymentMethod\" graphql:\"defaultPaymentMethod\""
@@ -393,6 +396,13 @@ type OIDCProvider struct {
 		UserinfoEndpoint      *string "json:\"userinfoEndpoint\" graphql:\"userinfoEndpoint\""
 	} "json:\"configuration\" graphql:\"configuration\""
 }
+type OidcTrustRelationshipFragment struct {
+	ID         string   "json:\"id\" graphql:\"id\""
+	Issuer     string   "json:\"issuer\" graphql:\"issuer\""
+	Trust      string   "json:\"trust\" graphql:\"trust\""
+	Scopes     []string "json:\"scopes\" graphql:\"scopes\""
+	InsertedAt *string  "json:\"insertedAt\" graphql:\"insertedAt\""
+}
 type PublicKeyFragment struct {
 	ID      string       "json:\"id\" graphql:\"id\""
 	Content string       "json:\"content\" graphql:\"content\""
@@ -635,6 +645,9 @@ type CreateStack struct {
 type CreateTest struct {
 	CreateTest *TestFragment "json:\"createTest\" graphql:\"createTest\""
 }
+type CreateTrust struct {
+	CreateTrustRelationship *OidcTrustRelationshipFragment "json:\"createTrustRelationship\" graphql:\"createTrustRelationship\""
+}
 type CreateUpgrade struct {
 	CreateUpgrade *struct {
 		ID string "json:\"id\" graphql:\"id\""
@@ -660,6 +673,11 @@ type DeleteRepository struct {
 }
 type DeleteShell struct {
 	DeleteShell *CloudShellFragment "json:\"deleteShell\" graphql:\"deleteShell\""
+}
+type DeleteTrust struct {
+	DeleteTrustRelationship *struct {
+		ID string "json:\"id\" graphql:\"id\""
+	} "json:\"deleteTrustRelationship\" graphql:\"deleteTrustRelationship\""
 }
 type DestroyCluster struct {
 	DestroyCluster *bool "json:\"destroyCluster\" graphql:\"destroyCluster\""
@@ -910,10 +928,14 @@ type Login struct {
 }
 type Me struct {
 	Me *struct {
-		ID      string "json:\"id\" graphql:\"id\""
-		Email   string "json:\"email\" graphql:\"email\""
-		Demoing *bool  "json:\"demoing\" graphql:\"demoing\""
+		ID                 string                         "json:\"id\" graphql:\"id\""
+		Email              string                         "json:\"email\" graphql:\"email\""
+		Demoing            *bool                          "json:\"demoing\" graphql:\"demoing\""
+		TrustRelationships *OidcTrustRelationshipFragment "json:\"trustRelationships\" graphql:\"trustRelationships\""
 	} "json:\"me\" graphql:\"me\""
+}
+type OidcToken struct {
+	OidcToken *string "json:\"oidcToken\" graphql:\"oidcToken\""
 }
 type PollLoginToken struct {
 	LoginToken *struct {
@@ -1548,6 +1570,33 @@ func (c *Client) CreateTest(ctx context.Context, name string, attrs TestAttribut
 	return &res, nil
 }
 
+const CreateTrustDocument = `mutation CreateTrust ($attributes: TrustRelationshipAttributes!) {
+	createTrustRelationship(attributes: $attributes) {
+		... OidcTrustRelationshipFragment
+	}
+}
+fragment OidcTrustRelationshipFragment on OidcTrustRelationship {
+	id
+	issuer
+	trust
+	scopes
+	insertedAt
+}
+`
+
+func (c *Client) CreateTrust(ctx context.Context, attributes TrustRelationshipAttributes, httpRequestOptions ...client.HTTPRequestOption) (*CreateTrust, error) {
+	vars := map[string]interface{}{
+		"attributes": attributes,
+	}
+
+	var res CreateTrust
+	if err := c.Client.Post(ctx, "CreateTrust", CreateTrustDocument, &res, vars, httpRequestOptions...); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
 const CreateUpgradeDocument = `mutation CreateUpgrade ($queue: String!, $repository: String!, $attributes: UpgradeAttributes!) {
 	createUpgrade(queue: $queue, repositoryName: $repository, attributes: $attributes) {
 		id
@@ -1674,6 +1723,26 @@ func (c *Client) DeleteShell(ctx context.Context, httpRequestOptions ...client.H
 
 	var res DeleteShell
 	if err := c.Client.Post(ctx, "DeleteShell", DeleteShellDocument, &res, vars, httpRequestOptions...); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+const DeleteTrustDocument = `mutation DeleteTrust ($id: ID!) {
+	deleteTrustRelationship(id: $id) {
+		id
+	}
+}
+`
+
+func (c *Client) DeleteTrust(ctx context.Context, id string, httpRequestOptions ...client.HTTPRequestOption) (*DeleteTrust, error) {
+	vars := map[string]interface{}{
+		"id": id,
+	}
+
+	var res DeleteTrust
+	if err := c.Client.Post(ctx, "DeleteTrust", DeleteTrustDocument, &res, vars, httpRequestOptions...); err != nil {
 		return nil, err
 	}
 
@@ -3811,7 +3880,17 @@ const MeDocument = `query Me {
 		id
 		email
 		demoing
+		trustRelationships {
+			... OidcTrustRelationshipFragment
+		}
 	}
+}
+fragment OidcTrustRelationshipFragment on OidcTrustRelationship {
+	id
+	issuer
+	trust
+	scopes
+	insertedAt
 }
 `
 
@@ -3820,6 +3899,26 @@ func (c *Client) Me(ctx context.Context, httpRequestOptions ...client.HTTPReques
 
 	var res Me
 	if err := c.Client.Post(ctx, "Me", MeDocument, &res, vars, httpRequestOptions...); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+const OidcTokenDocument = `query OidcToken ($provider: ExternalOidcProvider!, $token: String!, $email: String!) {
+	oidcToken(provider: $provider, idToken: $token, email: $email)
+}
+`
+
+func (c *Client) OidcToken(ctx context.Context, provider ExternalOidcProvider, token string, email string, httpRequestOptions ...client.HTTPRequestOption) (*OidcToken, error) {
+	vars := map[string]interface{}{
+		"provider": provider,
+		"token":    token,
+		"email":    email,
+	}
+
+	var res OidcToken
+	if err := c.Client.Post(ctx, "OidcToken", OidcTokenDocument, &res, vars, httpRequestOptions...); err != nil {
 		return nil, err
 	}
 

@@ -1,5 +1,10 @@
 query Me{
-    me { id email demoing }
+    me { 
+        id 
+        email 
+        demoing 
+        trustRelationships { ...OidcTrustRelationshipFragment }
+    }
 }
 
 query GetLoginMethod($email: String!) {
@@ -82,3 +87,15 @@ query GetHelp($prompt: String!) {
 query Chat($history: [ChatMessageAttributes]) {
     chat(history: $history) { ...ChatMessageFragment }
 }
+
+mutation CreateTrust($attributes: TrustRelationshipAttributes!) {
+    createTrustRelationship(attributes: $attributes) { ...OidcTrustRelationshipFragment }
+}
+
+mutation DeleteTrust($id: ID!) {
+    deleteTrustRelationship(id: $id) { id }
+}
+
+query OidcToken($provider: ExternalOidcProvider!, $token: String!, $email: String!) {
+    oidcToken(provider: $provider, idToken: $token, email: $email)
+} 

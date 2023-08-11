@@ -1389,6 +1389,15 @@ type OidcStepResponse struct {
 	Consent    *ConsentRequest `json:"consent"`
 }
 
+type OidcTrustRelationship struct {
+	ID         string   `json:"id"`
+	Issuer     string   `json:"issuer"`
+	Trust      string   `json:"trust"`
+	Scopes     []string `json:"scopes"`
+	InsertedAt *string  `json:"insertedAt"`
+	UpdatedAt  *string  `json:"updatedAt"`
+}
+
 type OnboardingChecklist struct {
 	Status    *OnboardingChecklistState `json:"status"`
 	Dismissed *bool                     `json:"dismissed"`
@@ -2403,6 +2412,12 @@ type TestStepAttributes struct {
 	Logs        *string     `json:"logs,omitempty"`
 }
 
+type TrustRelationshipAttributes struct {
+	Issuer string   `json:"issuer"`
+	Trust  string   `json:"trust"`
+	Scopes []string `json:"scopes,omitempty"`
+}
+
 type UpdatablePlanAttributes struct {
 	Default       *bool                     `json:"default,omitempty"`
 	ServiceLevels []*ServiceLevelAttributes `json:"serviceLevels,omitempty"`
@@ -2514,17 +2529,18 @@ type User struct {
 	// the groups attached to this user, only fetch this when querying an individual user
 	Groups []*Group `json:"groups"`
 	// the roles attached to this user, only fetch this when querying an individual user
-	BoundRoles          []*Role              `json:"boundRoles"`
-	Publisher           *Publisher           `json:"publisher"`
-	Account             Account              `json:"account"`
-	ImpersonationPolicy *ImpersonationPolicy `json:"impersonationPolicy"`
-	Invites             []*Invite            `json:"invites"`
-	Jwt                 *string              `json:"jwt"`
-	HasInstallations    *bool                `json:"hasInstallations"`
-	Demoing             *bool                `json:"demoing"`
-	HasShell            *bool                `json:"hasShell"`
-	Avatar              *string              `json:"avatar"`
-	BackgroundColor     *string              `json:"backgroundColor"`
+	BoundRoles          []*Role                `json:"boundRoles"`
+	Publisher           *Publisher             `json:"publisher"`
+	Account             Account                `json:"account"`
+	ImpersonationPolicy *ImpersonationPolicy   `json:"impersonationPolicy"`
+	TrustRelationships  *OidcTrustRelationship `json:"trustRelationships"`
+	Invites             []*Invite              `json:"invites"`
+	Jwt                 *string                `json:"jwt"`
+	HasInstallations    *bool                  `json:"hasInstallations"`
+	Demoing             *bool                  `json:"demoing"`
+	HasShell            *bool                  `json:"hasShell"`
+	Avatar              *string                `json:"avatar"`
+	BackgroundColor     *string                `json:"backgroundColor"`
 	// If a user has reached the demo project usage limit.
 	Demoed     *bool           `json:"demoed"`
 	Cards      *CardConnection `json:"cards"`
@@ -3116,6 +3132,45 @@ func (e *DNSRecordType) UnmarshalGQL(v interface{}) error {
 }
 
 func (e DNSRecordType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type ExternalOidcProvider string
+
+const (
+	ExternalOidcProviderGithubActions ExternalOidcProvider = "GITHUB_ACTIONS"
+)
+
+var AllExternalOidcProvider = []ExternalOidcProvider{
+	ExternalOidcProviderGithubActions,
+}
+
+func (e ExternalOidcProvider) IsValid() bool {
+	switch e {
+	case ExternalOidcProviderGithubActions:
+		return true
+	}
+	return false
+}
+
+func (e ExternalOidcProvider) String() string {
+	return string(e)
+}
+
+func (e *ExternalOidcProvider) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ExternalOidcProvider(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ExternalOidcProvider", str)
+	}
+	return nil
+}
+
+func (e ExternalOidcProvider) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 

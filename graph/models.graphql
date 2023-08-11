@@ -248,3 +248,11 @@ fragment ChatMessageFragment on ChatMessage {
     content
     name
 }
+
+fragment OidcTrustRelationshipFragment on OidcTrustRelationship {
+    id
+    issuer
+    trust
+    scopes
+    insertedAt
+}

@@ -928,10 +928,10 @@ type Login struct {
 }
 type Me struct {
 	Me *struct {
-		ID                 string                         "json:\"id\" graphql:\"id\""
-		Email              string                         "json:\"email\" graphql:\"email\""
-		Demoing            *bool                          "json:\"demoing\" graphql:\"demoing\""
-		TrustRelationships *OidcTrustRelationshipFragment "json:\"trustRelationships\" graphql:\"trustRelationships\""
+		ID                 string                           "json:\"id\" graphql:\"id\""
+		Email              string                           "json:\"email\" graphql:\"email\""
+		Demoing            *bool                            "json:\"demoing\" graphql:\"demoing\""
+		TrustRelationships []*OidcTrustRelationshipFragment "json:\"trustRelationships\" graphql:\"trustRelationships\""
 	} "json:\"me\" graphql:\"me\""
 }
 type OidcToken struct {

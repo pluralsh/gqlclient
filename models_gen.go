@@ -2529,18 +2529,18 @@ type User struct {
 	// the groups attached to this user, only fetch this when querying an individual user
 	Groups []*Group `json:"groups"`
 	// the roles attached to this user, only fetch this when querying an individual user
-	BoundRoles          []*Role                `json:"boundRoles"`
-	Publisher           *Publisher             `json:"publisher"`
-	Account             Account                `json:"account"`
-	ImpersonationPolicy *ImpersonationPolicy   `json:"impersonationPolicy"`
-	TrustRelationships  *OidcTrustRelationship `json:"trustRelationships"`
-	Invites             []*Invite              `json:"invites"`
-	Jwt                 *string                `json:"jwt"`
-	HasInstallations    *bool                  `json:"hasInstallations"`
-	Demoing             *bool                  `json:"demoing"`
-	HasShell            *bool                  `json:"hasShell"`
-	Avatar              *string                `json:"avatar"`
-	BackgroundColor     *string                `json:"backgroundColor"`
+	BoundRoles          []*Role                  `json:"boundRoles"`
+	Publisher           *Publisher               `json:"publisher"`
+	Account             Account                  `json:"account"`
+	ImpersonationPolicy *ImpersonationPolicy     `json:"impersonationPolicy"`
+	TrustRelationships  []*OidcTrustRelationship `json:"trustRelationships"`
+	Invites             []*Invite                `json:"invites"`
+	Jwt                 *string                  `json:"jwt"`
+	HasInstallations    *bool                    `json:"hasInstallations"`
+	Demoing             *bool                    `json:"demoing"`
+	HasShell            *bool                    `json:"hasShell"`
+	Avatar              *string                  `json:"avatar"`
+	BackgroundColor     *string                  `json:"backgroundColor"`
 	// If a user has reached the demo project usage limit.
 	Demoed     *bool           `json:"demoed"`
 	Cards      *CardConnection `json:"cards"`

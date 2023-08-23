@@ -977,6 +977,8 @@ type Installation struct {
 	PingedAt   *string `json:"pingedAt"`
 	AcmeKeyID  *string `json:"acmeKeyId"`
 	AcmeSecret *string `json:"acmeSecret"`
+	Locked     *bool   `json:"locked"`
+	Synced     *bool   `json:"synced"`
 	License    *string `json:"license"`
 	InsertedAt *string `json:"insertedAt"`
 	UpdatedAt  *string `json:"updatedAt"`
@@ -1541,9 +1543,10 @@ type PlanFeatureAttributes struct {
 }
 
 type PlanFeatures struct {
-	Vpn            *bool `json:"vpn"`
-	UserManagement *bool `json:"userManagement"`
-	Audit          *bool `json:"audit"`
+	Vpn                *bool `json:"vpn"`
+	UserManagement     *bool `json:"userManagement"`
+	Audit              *bool `json:"audit"`
+	DatabaseManagement *bool `json:"databaseManagement"`
 }
 
 type PlanLineItemAttributes struct {

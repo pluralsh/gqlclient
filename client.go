@@ -169,6 +169,7 @@ type RootMutationType struct {
 	UpsertOidcProvider         *OidcProvider           "json:\"upsertOidcProvider\" graphql:\"upsertOidcProvider\""
 	AcquireLock                *ApplyLock              "json:\"acquireLock\" graphql:\"acquireLock\""
 	ReleaseLock                *ApplyLock              "json:\"releaseLock\" graphql:\"releaseLock\""
+	Synced                     *bool                   "json:\"synced\" graphql:\"synced\""
 	CreateRecipe               *Recipe                 "json:\"createRecipe\" graphql:\"createRecipe\""
 	DeleteRecipe               *Recipe                 "json:\"deleteRecipe\" graphql:\"deleteRecipe\""
 	CreateStack                *Stack                  "json:\"createStack\" graphql:\"createStack\""
@@ -925,6 +926,9 @@ type Login struct {
 	Login *struct {
 		Jwt *string "json:\"jwt\" graphql:\"jwt\""
 	} "json:\"login\" graphql:\"login\""
+}
+type MarkSynced struct {
+	Synced *bool "json:\"synced\" graphql:\"synced\""
 }
 type Me struct {
 	Me *struct {
@@ -3869,6 +3873,24 @@ func (c *Client) Login(ctx context.Context, email string, pwd string, httpReques
 
 	var res Login
 	if err := c.Client.Post(ctx, "Login", LoginDocument, &res, vars, httpRequestOptions...); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+const MarkSyncedDocument = `mutation MarkSynced ($repository: String!) {
+	synced(repository: $repository)
+}
+`
+
+func (c *Client) MarkSynced(ctx context.Context, repository string, httpRequestOptions ...client.HTTPRequestOption) (*MarkSynced, error) {
+	vars := map[string]interface{}{
+		"repository": repository,
+	}
+
+	var res MarkSynced
+	if err := c.Client.Post(ctx, "MarkSynced", MarkSyncedDocument, &res, vars, httpRequestOptions...); err != nil {
 		return nil, err
 	}
 

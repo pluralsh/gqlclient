@@ -29,3 +29,7 @@ mutation ResetInstallations(){
 mutation DeleteInstallation($id: ID!) {
     deleteInstallation(id: $id) { id }
 }
+
+mutation MarkSynced($repository: String!) {
+    synced(repository: $repository)
+}

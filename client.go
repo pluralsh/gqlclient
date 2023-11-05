@@ -613,6 +613,11 @@ type CreateDomain struct {
 type CreateEvent struct {
 	CreateUserEvent *bool "json:\"createUserEvent\" graphql:\"createUserEvent\""
 }
+type CreateInstallation struct {
+	CreateInstallation *struct {
+		ID string "json:\"id\" graphql:\"id\""
+	} "json:\"createInstallation\" graphql:\"createInstallation\""
+}
 type CreateIntegration struct {
 	CreateIntegration *struct {
 		ID string "json:\"id\" graphql:\"id\""
@@ -1409,6 +1414,26 @@ func (c *Client) CreateEvent(ctx context.Context, attrs UserEventAttributes, htt
 
 	var res CreateEvent
 	if err := c.Client.Post(ctx, "CreateEvent", CreateEventDocument, &res, vars, httpRequestOptions...); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+const CreateInstallationDocument = `mutation CreateInstallation ($id: ID!) {
+	createInstallation(repositoryId: $id) {
+		id
+	}
+}
+`
+
+func (c *Client) CreateInstallation(ctx context.Context, id string, httpRequestOptions ...client.HTTPRequestOption) (*CreateInstallation, error) {
+	vars := map[string]interface{}{
+		"id": id,
+	}
+
+	var res CreateInstallation
+	if err := c.Client.Post(ctx, "CreateInstallation", CreateInstallationDocument, &res, vars, httpRequestOptions...); err != nil {
 		return nil, err
 	}
 

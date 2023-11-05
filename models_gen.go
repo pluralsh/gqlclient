@@ -326,6 +326,12 @@ type Cluster struct {
 	PingedAt *string `json:"pingedAt"`
 	// pending upgrades for each installed app
 	UpgradeInfo []*UpgradeInfo `json:"upgradeInfo"`
+	// whether all installations in the cluster have been synced
+	Synced *bool `json:"synced"`
+	// whether any installation in the cluster has been locked
+	Locked *bool `json:"locked"`
+	// CPU/Memory history for this cluster
+	UsageHistory []*ClusterUsageHistory `json:"usageHistory"`
 	// the dependencies a cluster has
 	Dependency *ClusterDependency `json:"dependency"`
 	// The user that owns the cluster.
@@ -388,6 +394,16 @@ type ClusterInformationAttributes struct {
 	GitCommit *string `json:"gitCommit,omitempty"`
 	Version   *string `json:"version,omitempty"`
 	Platform  *string `json:"platform,omitempty"`
+}
+
+// A record of the utilization in a given cluster
+type ClusterUsageHistory struct {
+	CPU        *int64   `json:"cpu"`
+	Memory     *int64   `json:"memory"`
+	Cluster    *Cluster `json:"cluster"`
+	Account    *Account `json:"account"`
+	InsertedAt *string  `json:"insertedAt"`
+	UpdatedAt  *string  `json:"updatedAt"`
 }
 
 type Community struct {
@@ -1547,6 +1563,7 @@ type PlanFeatures struct {
 	UserManagement     *bool `json:"userManagement"`
 	Audit              *bool `json:"audit"`
 	DatabaseManagement *bool `json:"databaseManagement"`
+	Cd                 *bool `json:"cd"`
 }
 
 type PlanLineItemAttributes struct {

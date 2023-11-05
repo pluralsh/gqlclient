@@ -26,6 +26,10 @@ mutation ResetInstallations(){
     resetInstallations
 }
 
+mutation CreateInstallation($id: ID!) {
+    createInstallation(repositoryId: $id) { id }
+}
+
 mutation DeleteInstallation($id: ID!) {
     deleteInstallation(id: $id) { id }
 }

@@ -8,7 +8,7 @@ import (
 	"mime/multipart"
 	"net/http"
 
-	"github.com/Yamashou/gqlgenc/client"
+	client "github.com/Yamashou/gqlgenc/clientv2"
 	"github.com/schollz/progressbar/v3"
 )
 

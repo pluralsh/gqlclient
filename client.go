@@ -17,6 +17,31 @@ func NewClient(cli *http.Client, baseURL string, options *clientv2.Options, inte
 	return &Client{Client: clientv2.NewClient(cli, baseURL, options, interceptors...)}
 }
 
+type ConsoleInstanceFragment struct {
+	ID   string "json:\"id\" graphql:\"id\""
+	Name string "json:\"name\" graphql:\"name\""
+	URL  string "json:\"url\" graphql:\"url\""
+}
+
+func (t *ConsoleInstanceFragment) GetID() string {
+	if t == nil {
+		t = &ConsoleInstanceFragment{}
+	}
+	return t.ID
+}
+func (t *ConsoleInstanceFragment) GetName() string {
+	if t == nil {
+		t = &ConsoleInstanceFragment{}
+	}
+	return t.Name
+}
+func (t *ConsoleInstanceFragment) GetURL() string {
+	if t == nil {
+		t = &ConsoleInstanceFragment{}
+	}
+	return t.URL
+}
+
 type DNSRecordFragment struct {
 	Type    DNSRecordType "json:\"type\" graphql:\"type\""
 	Name    string        "json:\"name\" graphql:\"name\""
@@ -3722,6 +3747,28 @@ func (t *UninstallChart_DeleteChartInstallation) GetID() *string {
 		t = &UninstallChart_DeleteChartInstallation{}
 	}
 	return t.ID
+}
+
+type GetConsoleInstances_ConsoleInstances_Edges struct {
+	Node *ConsoleInstanceFragment "json:\"node,omitempty\" graphql:\"node\""
+}
+
+func (t *GetConsoleInstances_ConsoleInstances_Edges) GetNode() *ConsoleInstanceFragment {
+	if t == nil {
+		t = &GetConsoleInstances_ConsoleInstances_Edges{}
+	}
+	return t.Node
+}
+
+type GetConsoleInstances_ConsoleInstances struct {
+	Edges []*GetConsoleInstances_ConsoleInstances_Edges "json:\"edges,omitempty\" graphql:\"edges\""
+}
+
+func (t *GetConsoleInstances_ConsoleInstances) GetEdges() []*GetConsoleInstances_ConsoleInstances_Edges {
+	if t == nil {
+		t = &GetConsoleInstances_ConsoleInstances{}
+	}
+	return t.Edges
 }
 
 type Clusters_Clusters_PageInfo struct {
@@ -8155,6 +8202,28 @@ func (t *UninstallChart) GetDeleteChartInstallation() *UninstallChart_DeleteChar
 	return t.DeleteChartInstallation
 }
 
+type GetConsoleInstances struct {
+	ConsoleInstances *GetConsoleInstances_ConsoleInstances "json:\"consoleInstances,omitempty\" graphql:\"consoleInstances\""
+}
+
+func (t *GetConsoleInstances) GetConsoleInstances() *GetConsoleInstances_ConsoleInstances {
+	if t == nil {
+		t = &GetConsoleInstances{}
+	}
+	return t.ConsoleInstances
+}
+
+type UpdateConsoleInstance struct {
+	UpdateConsoleInstance *ConsoleInstanceFragment "json:\"updateConsoleInstance,omitempty\" graphql:\"updateConsoleInstance\""
+}
+
+func (t *UpdateConsoleInstance) GetUpdateConsoleInstance() *ConsoleInstanceFragment {
+	if t == nil {
+		t = &UpdateConsoleInstance{}
+	}
+	return t.UpdateConsoleInstance
+}
+
 type DestroyCluster struct {
 	DestroyCluster *bool "json:\"destroyCluster,omitempty\" graphql:\"destroyCluster\""
 }
@@ -9428,6 +9497,69 @@ func (c *Client) UninstallChart(ctx context.Context, id string, interceptors ...
 
 	var res UninstallChart
 	if err := c.Client.Post(ctx, "UninstallChart", UninstallChartDocument, &res, vars, interceptors...); err != nil {
+		if c.Client.ParseDataWhenErrors {
+			return &res, err
+		}
+
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+const GetConsoleInstancesDocument = `query GetConsoleInstances ($first: Int!) {
+	consoleInstances(first: $first) {
+		edges {
+			node {
+				... ConsoleInstanceFragment
+			}
+		}
+	}
+}
+fragment ConsoleInstanceFragment on ConsoleInstance {
+	id
+	name
+	url
+}
+`
+
+func (c *Client) GetConsoleInstances(ctx context.Context, first int64, interceptors ...clientv2.RequestInterceptor) (*GetConsoleInstances, error) {
+	vars := map[string]any{
+		"first": first,
+	}
+
+	var res GetConsoleInstances
+	if err := c.Client.Post(ctx, "GetConsoleInstances", GetConsoleInstancesDocument, &res, vars, interceptors...); err != nil {
+		if c.Client.ParseDataWhenErrors {
+			return &res, err
+		}
+
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+const UpdateConsoleInstanceDocument = `mutation UpdateConsoleInstance ($id: ID!, $attributes: ConsoleInstanceUpdateAttributes!) {
+	updateConsoleInstance(id: $id, attributes: $attributes) {
+		... ConsoleInstanceFragment
+	}
+}
+fragment ConsoleInstanceFragment on ConsoleInstance {
+	id
+	name
+	url
+}
+`
+
+func (c *Client) UpdateConsoleInstance(ctx context.Context, id string, attributes ConsoleInstanceUpdateAttributes, interceptors ...clientv2.RequestInterceptor) (*UpdateConsoleInstance, error) {
+	vars := map[string]any{
+		"id":         id,
+		"attributes": attributes,
+	}
+
+	var res UpdateConsoleInstance
+	if err := c.Client.Post(ctx, "UpdateConsoleInstance", UpdateConsoleInstanceDocument, &res, vars, interceptors...); err != nil {
 		if c.Client.ParseDataWhenErrors {
 			return &res, err
 		}
@@ -12692,6 +12824,8 @@ var DocumentOperationNames = map[string]string{
 	GetPackageInstallationsDocument:   "GetPackageInstallations",
 	CreateCrdDocument:                 "CreateCrd",
 	UninstallChartDocument:            "UninstallChart",
+	GetConsoleInstancesDocument:       "GetConsoleInstances",
+	UpdateConsoleInstanceDocument:     "UpdateConsoleInstance",
 	DestroyClusterDocument:            "DestroyCluster",
 	ClustersDocument:                  "Clusters",
 	ClusterInfoDocument:               "ClusterInfo",

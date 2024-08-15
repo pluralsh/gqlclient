@@ -1,0 +1,21 @@
+fragment ConsoleInstanceFragment on ConsoleInstance {
+    id
+    name
+    url
+}
+
+query GetConsoleInstances($first: Int!) {
+    consoleInstances(first: $first) {
+        edges {
+            node { 
+                ...ConsoleInstanceFragment
+            }
+        }
+    }
+}
+
+mutation UpdateConsoleInstance($id: ID!, $attributes: ConsoleInstanceUpdateAttributes!) {
+    updateConsoleInstance(id: $id, attributes: $attributes) {
+        ...ConsoleInstanceFragment
+    }
+}

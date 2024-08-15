@@ -439,6 +439,60 @@ type ConsentRequest struct {
 	Skip           *bool     `json:"skip,omitempty"`
 }
 
+type ConsoleConfigurationUpdateAttributes struct {
+	EncryptionKey *string `json:"encryptionKey,omitempty"`
+}
+
+type ConsoleInstance struct {
+	ID string `json:"id"`
+	// the name of this instance (globally unique)
+	Name string `json:"name"`
+	// the subdomain this instance lives under
+	Subdomain string `json:"subdomain"`
+	// full console url of this instance
+	URL string `json:"url"`
+	// the cloud provider hosting this instance
+	Cloud CloudProvider `json:"cloud"`
+	// the heuristic size of this instance
+	Size ConsoleSize `json:"size"`
+	// the region this instance is hosted in
+	Region string `json:"region"`
+	// the provisioning status of this instance, liveness is fetched through the console field
+	Status ConsoleInstanceStatus `json:"status"`
+	// the time this instance was deleted on
+	DeletedAt  *string  `json:"deletedAt,omitempty"`
+	Console    *Cluster `json:"console,omitempty"`
+	Owner      *User    `json:"owner,omitempty"`
+	InsertedAt *string  `json:"insertedAt,omitempty"`
+	UpdatedAt  *string  `json:"updatedAt,omitempty"`
+}
+
+type ConsoleInstanceAttributes struct {
+	// the name of this instance (globally unique)
+	Name string `json:"name"`
+	// a heuristic size of this instance
+	Size ConsoleSize `json:"size"`
+	// the cloud provider to deploy to
+	Cloud CloudProvider `json:"cloud"`
+	// the region to deploy to (provider specific)
+	Region string `json:"region"`
+}
+
+type ConsoleInstanceConnection struct {
+	PageInfo *PageInfo              `json:"pageInfo"`
+	Edges    []*ConsoleInstanceEdge `json:"edges,omitempty"`
+}
+
+type ConsoleInstanceEdge struct {
+	Node   *ConsoleInstance `json:"node,omitempty"`
+	Cursor *string          `json:"cursor,omitempty"`
+}
+
+type ConsoleInstanceUpdateAttributes struct {
+	Size          *ConsoleSize                          `json:"size,omitempty"`
+	Configuration *ConsoleConfigurationUpdateAttributes `json:"configuration,omitempty"`
+}
+
 type ContextAttributes struct {
 	Configuration map[string]interface{} `json:"configuration"`
 	Buckets       []*string              `json:"buckets,omitempty"`
@@ -2939,6 +2993,137 @@ func (e *Category) UnmarshalGQL(v interface{}) error {
 }
 
 func (e Category) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type CloudProvider string
+
+const (
+	CloudProviderAws CloudProvider = "AWS"
+)
+
+var AllCloudProvider = []CloudProvider{
+	CloudProviderAws,
+}
+
+func (e CloudProvider) IsValid() bool {
+	switch e {
+	case CloudProviderAws:
+		return true
+	}
+	return false
+}
+
+func (e CloudProvider) String() string {
+	return string(e)
+}
+
+func (e *CloudProvider) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = CloudProvider(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid CloudProvider", str)
+	}
+	return nil
+}
+
+func (e CloudProvider) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type ConsoleInstanceStatus string
+
+const (
+	ConsoleInstanceStatusPending           ConsoleInstanceStatus = "PENDING"
+	ConsoleInstanceStatusDatabaseCreated   ConsoleInstanceStatus = "DATABASE_CREATED"
+	ConsoleInstanceStatusDeploymentCreated ConsoleInstanceStatus = "DEPLOYMENT_CREATED"
+	ConsoleInstanceStatusProvisioned       ConsoleInstanceStatus = "PROVISIONED"
+	ConsoleInstanceStatusDeploymentDeleted ConsoleInstanceStatus = "DEPLOYMENT_DELETED"
+	ConsoleInstanceStatusDatabaseDeleted   ConsoleInstanceStatus = "DATABASE_DELETED"
+)
+
+var AllConsoleInstanceStatus = []ConsoleInstanceStatus{
+	ConsoleInstanceStatusPending,
+	ConsoleInstanceStatusDatabaseCreated,
+	ConsoleInstanceStatusDeploymentCreated,
+	ConsoleInstanceStatusProvisioned,
+	ConsoleInstanceStatusDeploymentDeleted,
+	ConsoleInstanceStatusDatabaseDeleted,
+}
+
+func (e ConsoleInstanceStatus) IsValid() bool {
+	switch e {
+	case ConsoleInstanceStatusPending, ConsoleInstanceStatusDatabaseCreated, ConsoleInstanceStatusDeploymentCreated, ConsoleInstanceStatusProvisioned, ConsoleInstanceStatusDeploymentDeleted, ConsoleInstanceStatusDatabaseDeleted:
+		return true
+	}
+	return false
+}
+
+func (e ConsoleInstanceStatus) String() string {
+	return string(e)
+}
+
+func (e *ConsoleInstanceStatus) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ConsoleInstanceStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ConsoleInstanceStatus", str)
+	}
+	return nil
+}
+
+func (e ConsoleInstanceStatus) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type ConsoleSize string
+
+const (
+	ConsoleSizeSmall  ConsoleSize = "SMALL"
+	ConsoleSizeMedium ConsoleSize = "MEDIUM"
+	ConsoleSizeLarge  ConsoleSize = "LARGE"
+)
+
+var AllConsoleSize = []ConsoleSize{
+	ConsoleSizeSmall,
+	ConsoleSizeMedium,
+	ConsoleSizeLarge,
+}
+
+func (e ConsoleSize) IsValid() bool {
+	switch e {
+	case ConsoleSizeSmall, ConsoleSizeMedium, ConsoleSizeLarge:
+		return true
+	}
+	return false
+}
+
+func (e ConsoleSize) String() string {
+	return string(e)
+}
+
+func (e *ConsoleSize) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ConsoleSize(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ConsoleSize", str)
+	}
+	return nil
+}
+
+func (e ConsoleSize) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 

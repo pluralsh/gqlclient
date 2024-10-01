@@ -1,13 +1,12 @@
 module github.com/pluralsh/gqlclient
 
-go 1.22.0
-
-toolchain go1.22.4
+go 1.22.8
 
 require (
 	github.com/99designs/gqlgen v0.17.44
 	github.com/Yamashou/gqlgenc v0.23.2
 	github.com/schollz/progressbar/v3 v3.8.6
+	github.com/vektah/gqlparser/v2 v2.5.11
 )
 
 require (
@@ -20,7 +19,6 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sosodev/duration v1.2.0 // indirect
 	github.com/urfave/cli/v2 v2.27.1 // indirect
-	github.com/vektah/gqlparser/v2 v2.5.11 // indirect
 	github.com/xrash/smetrics v0.0.0-20231213231151-1d8dd44e695e // indirect
 	golang.org/x/crypto v0.0.0-20220131195533-30dcbda58838 // indirect
 	golang.org/x/mod v0.15.0 // indirect
